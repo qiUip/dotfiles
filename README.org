@@ -1,4 +1,4 @@
 # dotfiles
 A collection of my personal dotfiles
 
-For starters, only .config/i3 and .config/polybar are included.  The full collection of dotfiles will eventually be included.
+Just the basics for starters, more to come.

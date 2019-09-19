@@ -883,12 +883,16 @@ menu-1-1 = " "
 menu-1-1-exec = menu-open-0
 menu-1-1-foreground = ${colors.foreground}
 
+
 menu-2-0 = "shutdown "
 menu-2-0-exec = systemctl poweroff
 menu-2-0-foreground = ${colors.foreground}
-menu-2-1 = " "
-menu-2-1-exec = menu-open-0
+menu-2-1 = "hibernate "
+menu-2-1-exec = systemctl hibernate
 menu-2-1-foreground = ${colors.foreground}
+menu-2-2 = " "
+menu-2-2-exec = menu-open-0
+menu-2-2-foreground = ${colors.foreground}
 
 menu-3-0 = "log out "
 menu-3-0-exec = i3-msg exit

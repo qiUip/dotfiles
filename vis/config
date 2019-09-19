@@ -35,18 +35,18 @@
 
 
 ##Configures what character the spectrum visualizer will use. Specifying a space (e.g " ") means the
-##background will be colored instead of the character. Defaults to " ".
-#visualizer.spectrum.character=#
+#background will be colored instead of the character. Defaults to " ".
+visualizer.spectrum.character=ﱢ
 
-##Spectrum bar width. Defaults to 2.
-#visualizer.spectrum.bar.width=2
+#Spectrum bar width. Defaults to 2.
+visualizer.spectrum.bar.width=1
 
 ##The amount of space between each bar in the spectrum visualizer. Defaults to 1. It's possible to set this to
-##zero to have no space between bars
-#visualizer.spectrum.bar.spacing=1
+#zero to have no space between bars
+visualizer.spectrum.bar.spacing=1
 
 ##Available smoothing options are monstercat, sgs, none.
-#visualizer.spectrum.smoothing.mode=sgs
+visualizer.spectrum.smoothing.mode=sgs
 
 ##This configures the falloff effect on the spectrum visualizer. Available falloff options are fill,top,none.
 ##Defaults to "fill"
@@ -67,8 +67,8 @@
 
 ##This configures the sgs smoothing effect on the spectrum visualizer. More points spreads out the smoothing
 ##effect and increasing passes runs the smoother multiple times on reach run. Defaults are points=3 and passes=1
-#visualizer.sgs.smoothing.points=3
-#visualizer.sgs.smoothing.passes=1
+visualizer.sgs.smoothing.points=1
+visualizer.sgs.smoothing.passes=1
 
 
 ##Configures what character the ellipse visualizer will use. Specifying a space (e.g " ") means the

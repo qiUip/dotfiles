@@ -873,7 +873,7 @@ menu-0-2 = " "
 menu-0-2-exec = menu-open-3
 menu-0-2-foreground = ${colors.foreground}
 menu-0-3 = " "
-menu-0-3-exec = i3lock
+menu-0-3-exec = /home/mashy/.scripts/lock.sh
 menu-0-3-foreground = ${colors.foreground}
 
 menu-1-0 = "reboot "

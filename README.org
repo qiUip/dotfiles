@@ -1,10 +1,10 @@
 # dotfiles
 A collection of my personal dotfiles
 
-The dotfiles here could be soft-linked into .config.  I use them more as tamplets as I have several machines with specific settings so I use these more as tampletes.
+The dotfiles here could be soft-linked into '/\slash{}home\slash{}<username>\slash{}.config/'.  I use them more as tamplets as I have several machines with specific settings so I use these more as tampletes.
 As such, some minor errors might appear as I have not fully tested all the files in a running system.  Never-the-less it should be very easy to get them to run in case they do not.  
 Please don't hesitate to contact me if you encounter any such difficulty.
 
 For starters, only .config/i3 and .config/polybar are included.  The full collection of dotfiles will eventually be included.
-Files in the scripts directory are soft linked to '/home\slash{}<username>\slash{}.scripts' 
+Files in the scripts directory are soft linked to '/\slash{}ome\slash{}<username>\slash{}.scripts/' 
 Added: dunset, compton, and vis (cli-visualiser)

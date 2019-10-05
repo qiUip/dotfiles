@@ -2,4 +2,4 @@
 A collection of my personal dotfiles
 
 For starters, only .config/i3 and .config/polybar are included.  The full collection of dotfiles will eventually be included.
-Files in the scripts directory are soft linked to '/home/<username>/.scripts' 
+Files in the scripts directory are soft linked to '/home\slash{}<username>\slash{}.scripts' 

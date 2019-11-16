@@ -152,7 +152,7 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# color defines for zenburn styled i3
+# color 
 set $bg     #2c2c2e
 set $fg     #9f9f9f
 set $hi     #efef8f

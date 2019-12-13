@@ -7,29 +7,14 @@
    t)
   (package-initialize))
 ;; ----Check if packages are installed and if not install them----
-(defun ensure-package-installed (&rest packages)
-  "Assure every package is installed, ask for installation if it’s not.
-
-Return a list of installed packages or nil for every skipped package."
-  (mapcar
-   (lambda (package)
-     ;; (package-installed-p 'evil)
-     (if (package-installed-p package)
-         nil
-       (if (y-or-n-p (format "Package %s is missing. Install it? " package))
-           (package-install package)
-         package)))
-   packages))
-
-;; make sure to have downloaded archive description.
-;; Or use package-archive-contents as suggested by Nicolas Dudebout
-(or (file-exists-p package-user-dir)
-    (package-refresh-contents))
-
-(ensure-package-installed 'iedit 'magit) ;  --> (nil nil) if iedit and magit are already installed
-
-;; activate installed packages
-(package-initialize)
+(setq package-list '(ac-math ace-flyspell ace-isearch alect-themes all-the-icons-dired all-the-icons-gnus all-the-icons-ivy all-the-icons auto-complete-rst auto-complete-sage auto-correct auto-dictionary auto-dim-other-buffers auto-highlight-symbol auto-indent-mode auto-minor-mode auto-org-md auto-overlays auto-pause calfw calfw-cal calfw-gcal calfw-howm calfw-ical calfw-org call-graph anaconda-mode cherry-blossom-theme code-archive code-library color-theme color-theme-sanityinc-tomorrow comment-tags company-auctex company-bibtex company-box company-c-headers company-ctags company-fuzzy company-lua company-math company-reftex company-shell company-ycmd counsel-etags counsel-gtags counsel counsel-notmuch cuda-mode cyberpunk-theme darkokai-theme elpy company epresent evil-anzu anzu evil-collection evil-commentary evil-ediff evil-expat evil-leader evil-matchit evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-smartparens evil-surround evil-vimish-fold evil excorporate find-file-in-project fsm ggtags gist gh goto-chg hierarchy highlight highlight-indentation iedit linum-relative logito lua-mode magit git-commit marshal math-symbol-lists memoize monokai-alt-theme monokai-pro-theme monokai-theme mutt-mode nadvice neotree notmuch ob-browser ob-http org-ac auto-complete-pcmp auto-complete org-autolist org-babel-eval-in-repl ess julia-mode matlab-mode eval-in-repl ace-window avy org-beautify-theme org-bullets org-cliplink org-edit-latex auctex org-gcal org-gnome gnome-calendar org-grep org-iv impatient-mode org-msg org-ref hydra lv helm-bibtex biblio biblio-core helm helm-core htmlize org-repo-todo org-seek ag org-super-agenda ht org-timeline org-transform-tree-table org-tree-slide org-wild-notifier dash-functional alert log4e gntp origami paredit parsebib pcache pdf-tools popup powerline pythonic pyvenv s-buffer noflet sage-shell-mode scp simple-httpd smartparens smex soothe-theme swiper ivy tablist telepathy transient transpose-frame tree-mode undo-tree url-http-ntlm use-package-chords bind-chord key-chord use-package-el-get use-package-ensure-system-package system-packages use-package-hydra use-package bind-key vimish-fold f volatile-highlights with-editor async xclip yafolding yasnippet yaxception ycmd pkg-info epl request-deferred request deferred s dash))
+; fetch the list of packages available 
+(unless package-archive-contents
+  (package-refresh-contents))
+; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
 
 ;; ----Change some defualts----
 (setq explicit-shell-file-name "/bin/zsh")

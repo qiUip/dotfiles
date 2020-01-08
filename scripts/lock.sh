@@ -5,7 +5,7 @@ B='#00000000'  # blank
 C='#ffffff22'  # clear ish
 D='#008080ee'  # default
 T='#008080ee'  # text
-W='#f57900bb'  # wrong
+W='#9a50dfbb'  # wrong
 V='#008787bb'  # verifying
 
 i3lock \

@@ -8,9 +8,9 @@ case "$1" in
         ;;
     *)
         if [ "$(pgrep dropbox)" ]; then
-            echo -e '\uf16b'
+            echo -e '\uf16b '
         else
-            echo -e '\ufb97'
+            echo -e '\ufb97 '
         fi
         ;;
 esac

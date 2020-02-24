@@ -1,0 +1,147 @@
+#!/bin/bash
+
+#
+# Script that outputs the filesystem usage of snapshots in a location ( root if omited )
+#
+# Usage:
+#          sudo btrfs-du ( path )
+#
+# Copyleft 2017 by Ignacio Nunez Hernanz <nacho _a_t_ ownyourbits _d_o_t_ com>
+# GPL licensed (see end of file) * Use at your own risk!
+#
+# Contributors: Jeroen Wiert Pluimers (jpluimers)
+#
+# Based on btrfs-size by Kyle Agronick
+#
+# More at https://ownyourbits.com/2017/12/06/check-disk-space-of-your-btrfs-snapshots-with-btrfs-du/
+#
+
+# bytesToHumanIEC based on https://unix.stackexchange.com/questions/44040/a-standard-tool-to-convert-a-byte-count-into-human-kib-mib-etc-like-du-ls1/259254#259254
+# both bytesToHumanIEC, an SI implementatation and test cases for both are at https://gist.github.com/jpluimers/0f21bf1d937fe0b9b4044f21944a90ec
+
+bytesToHumanIEC() {
+    b=${1:-0}; d=''; s=0; S=(Bytes {K,M,G,T,E,P,Z,Y}iB)
+    while ((b > 1024)); do
+        d="$(printf ".%02d" $((b % 1024 * 100 / 1024)))"
+        b=$((b / 1024))
+        let s++
+    done
+    echo "$b$d${S[$s]}"
+}
+
+LOCATION=${1:-/}
+
+# checks
+[[ ${EUID} -ne 0 ]] && {
+  printf "Must be run as root. Try 'sudo $( basename "$0" )'\n"
+  exit 1
+}
+
+[[ -d "$LOCATION" ]] || {
+  echo "$LOCATION not found"
+  exit 1
+}
+
+[[ "$( stat -fc%T "$LOCATION" )" != "btrfs" ]] && {
+  echo "$LOCATION is not in a BTRFS system"
+  exit 1
+}
+
+# determine if the '--raw' option is supported:
+btrfs_qgroup_show_raw="btrfs qgroup show --raw"
+
+OUT=$( $btrfs_qgroup_show_raw "$LOCATION" 2>&1 )
+
+grep -i -q -e "no such file or directory" <<< "$OUT" && {
+  echo "old btrfs-tools detected, need to enable quota and wait for rescan to display accurate results"
+  exit 1
+}
+
+grep -q -e "unrecognized option" <<< "$OUT" && {
+  echo "INFO: Legacy btrfs version; trying 'btrfs qgroup show' without '--raw'..."
+  # not supported by "Btrfs v3.12+20131125" and likekly other legacy versions
+  # luckily "Btrfs v3.12+20131125" gives the same output without '--raw'
+  # as "btrfs-progs v4.13.3" does with '--raw'
+  btrfs_qgroup_show_raw="btrfs qgroup show"
+}
+
+# quota management
+sync
+btrfs qgroup show "$LOCATION" 2>&1 | grep -q "quotas not enabled" && {
+  QFLAG=1
+  btrfs quota enable "$LOCATION"
+}
+
+# if we just enabled quota, might have to wait for rescan using 'btrfs qgroup show'
+
+OUT=$( $btrfs_qgroup_show_raw "$LOCATION" 2>&1 )
+grep -i -q -e "rescan is running" -e "data inconsistent" <<< "$OUT" && {
+  echo "INFO: Quota is disabled. Waiting for rescan to finish ..."
+  while true; do
+    sleep 2
+    OUT=$( $btrfs_qgroup_show_raw "$LOCATION" 2>&1 )
+    grep -i -q -e "rescan is running" -e "data inconsistent" <<< "$OUT" || break
+  done
+}
+
+# data
+
+## qgroup data
+OUT=$( sed '1,3d;s|^.*/||' <<< "$OUT" )
+ID__=( $( awk '{ print $1 }' <<< "$OUT" ) )
+TOT_=( $( awk '{ print $2 }' <<< "$OUT" ) )
+EXC_=( $( awk '{ print $3 }' <<< "$OUT" ) )
+
+for (( i = 0 ; i < ${#ID__[@]} ; i++ )); do
+  TOT[${ID__[$i]}]=$( bytesToHumanIEC ${TOT_[$i]} )
+  EXC[${ID__[$i]}]=$( bytesToHumanIEC ${EXC_[$i]} )
+done
+
+## naming data
+OUT=$( btrfs subvolume list --sort=rootid "$LOCATION" | cut -d ' ' -f 2,9 )
+ID__=( $( awk '{ print $1 }' <<< "$OUT" ) )
+NAM_=( $( awk '{ print $2 }' <<< "$OUT" ) )
+
+for (( i = 0 ; i < ${#ID__[@]} ; i++ )); do
+  NAME[${ID__[$i]}]=${NAM_[$i]}
+done
+
+EXCL_TOTAL=0
+
+[[ "$QFLAG" == "1" ]] && btrfs quota disable "$LOCATION"
+
+formatMask="%-60s %10s %10s  %-10s\n"
+separatorLine="─────────────────────────────────────────────────────────────────────────────────────────\n"
+
+# output
+printf "$formatMask" "Subvolume" "Total" "Exclusive" "ID"
+printf "$separatorLine"
+
+## matching by IDs in btrfs subvolume list
+for (( i = 0 ; i < ${#ID__[@]} ; i++ )); do
+  printf "$formatMask" ${NAME[${ID__[$i]}]} "${TOT[${ID__[$i]}]}" "${EXC[${ID__[$i]}]}" ${ID__[$i]}
+  EXC_TMP=${EXC_[$i]}
+  EXCL_TOTAL=$(( EXCL_TOTAL + EXC_TMP ))
+done
+
+EXCL_TOTAL=$( bytesToHumanIEC "$EXCL_TOTAL" )
+
+printf "$separatorLine"
+printf "%s %66s\n" "Total exclusive data" "$EXCL_TOTAL"
+
+# License
+#
+# This script is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This script is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this script; if not, write to the
+# Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+# Boston, MA  02111-1307  USA

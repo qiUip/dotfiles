@@ -5,6 +5,11 @@
         "command": "/home/mashy/.scripts/utc.sh -c"
     },
     {
+        "name": "utc nas",
+        "confirm": true,
+        "command": "/home/mashy/.scripts/utc.sh -n"
+    },
+    {
         "name": "utc disconnect",
         "confirm": true,
         "command": "/home/mashy/.scripts/utc.sh -d"

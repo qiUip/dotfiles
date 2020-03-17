@@ -109,7 +109,7 @@ font-4 = "Font Awesome 5 Brands:pixelsize=8;1"
 ;arrange modules here!
 modules-left = i3 xwindow
 modules-center = 
-modules-right = arrow8 dropbox-isrunning arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu1 arrow3 pavolume arrow2 arch-aur-updates arrow1 date powermenu
+modules-right = arrow8 arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu1 arrow3 pavolume arrow2 arch-aur-updates arrow1 date powermenu
 
 separator = 
 
@@ -205,8 +205,7 @@ fuzzy-match = false
 ws-icon-0 = 1;
 ws-icon-1 = 2;
 ws-icon-2 = 3;
-ws-icon-3 = 4;
-;ws-icon-3 = 4; 
+ws-icon-3 = 4; 
 ws-icon-4 = 5;
 ws-icon-5 = 6;
 ws-icon-6 = 7;
@@ -697,7 +696,7 @@ thermal-zone = 0
 ; $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
 ; to find path to desired file
 ; Default reverts to thermal zone setting
-hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon2/temp1_input
+hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input
 
 format = <ramp> <label>
 format-prefix-foreground = ${colors.background2}
@@ -884,12 +883,11 @@ menu-1-1 = " "
 menu-1-1-exec = menu-open-0
 menu-1-1-foreground = ${colors.foreground}
 
-
 menu-2-0 = "shutdown "
 menu-2-0-exec = systemctl poweroff
 menu-2-0-foreground = ${colors.foreground}
 menu-2-1 = "hibernate "
-menu-2-1-exec = systemctl hibernate
+menu-2-1-exec = /home/mashy/.scripts/lock.sh && systemctl hibernate
 menu-2-1-foreground = ${colors.foreground}
 menu-2-2 = " "
 menu-2-2-exec = menu-open-0

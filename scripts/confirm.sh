@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+#source: https://github.com/moustacheful/myrmidon
 
 message="${1:-"Confirm?"}"
 response=$(echo -e "No\nYes" | rofi -dmenu -i -p "$message ")

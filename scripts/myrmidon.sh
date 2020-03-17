@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#
+# source: https://github.com/moustacheful/myrmidon
+
 
 cwd=$(echo $(dirname $0))
 

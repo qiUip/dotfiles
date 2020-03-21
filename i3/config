@@ -51,6 +51,8 @@ bindsym $mod+Shift+q kill
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
  bindsym $mod+d exec --no-startup-id rofi -show drun
  bindsym $mod+p exec --no-startup-id $HOME/.scripts/myrmidon.sh
+ bindsym $mod+Shift+D exec --no-startup-id dmenu_path | dmenu -n -l 15 "$@" | xargs -l termite -e
+ bindsym $mod+c exec --no-startup-id $HOME/.scripts/dmenu_scripts.sh
 # bindsym $mod+d exec --no-startup-id j4-dmenu-desktop --dmenu='dmenu_run -fn "DejaVu Sans Mono-9"'
 #--dmenu="dmenu -fn 'DejaVu Sans Mono-9'"
 

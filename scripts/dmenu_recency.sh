@@ -5,9 +5,9 @@
 # Edited by Chrysostomus to create/source .dmenurc
 
 if ! [ -f "$HOME/.dmenurc" ]; then
-	cp /usr/share/dmenu/dmenurc $HOME/.dmenurc
+	cp /usr/share/dmenu/dmenurc $HOME/.config/dmenurc
 fi
-. $HOME/.dmenurc
+. $HOME/.config/dmenurc
 
 if [ -z "$TERMINAL_CMD" ]; then
   if [ "$(which terminal)" ]; then

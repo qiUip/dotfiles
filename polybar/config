@@ -231,7 +231,7 @@ label-mode-background = #FFBB00
 ;   %output%
 ; Default: %icon%  %name%
 ; focused = Active workspace on focused monitor
-label-focused = %icon% %name%
+label-focused = %icon%
 label-focused-background = ${colors.background}
 label-focused-foreground = ${colors.foreground}
 label-focused-underline = ${colors.shade5}
@@ -243,14 +243,14 @@ label-focused-padding = 2
 ;   %index%
 ; Default: %icon%  %name%
 ; unfocused = Inactive workspace on any monitor
-label-unfocused = %icon% %name%
+label-unfocused = %icon%
 label-unfocused-padding = 2
 label-unfocused-background = ${colors.background}
 label-unfocused-foreground = ${colors.foreground}
 label-unfocused-underline =
 
 ; visible = Active workspace on unfocused monitor
-label-visible = %icon% %name%
+label-visible = %icon%
 label-visible-background = ${self.label-focused-background}
 label-visible-underline = ${self.label-focused-underline}
 label-visible-padding = 2
@@ -696,7 +696,7 @@ thermal-zone = 0
 ; $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
 ; to find path to desired file
 ; Default reverts to thermal zone setting
-hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input
+hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input
 
 format = <ramp> <label>
 format-prefix-foreground = ${colors.background2}

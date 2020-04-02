@@ -1,0 +1,93 @@
+{
+    "border": "none",
+    "floating": "auto_off",
+    "layout": "splitv",
+    "percent": 0.333333333333333,
+    "type": "con",
+    "nodes": [
+        {
+            "border": "pixel",
+            "current_border_width": 3,
+            "floating": "auto_off",
+            "geometry": {
+               "height": 386,
+               "width": 658,
+               "x": 0,
+               "y": 0
+            },
+            "name": "neomutt",
+            "percent": 0.7,
+            "swallows": [
+               {
+                   "class": "^Termite$",
+                   "instance": "^termite$",
+               }
+            ],
+            "type": "con"
+        },
+        {
+            "border": "pixel",
+            "current_border_width": 3,
+            "floating": "auto_off",
+            "geometry": {
+               "height": 386,
+               "width": 658,
+               "x": 0,
+               "y": 0
+            },
+            "name": "ncmpcpp 0.8.2",
+            "percent": 0.3,
+            "swallows": [
+               {
+                   "class": "^Termite$",
+                   "instance": "^termite$",
+               }
+            ],
+            "type": "con"
+        }
+    ]
+}
+
+{
+    "border": "pixel",
+    "current_border_width": 3,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 386,
+       "width": 658,
+       "x": 0,
+       "y": 0
+    },
+    "name": "mashy@localhost: ~",
+    "percent": 0.333333333333333,
+    "swallows": [
+       {
+           "class": "^Termite$",
+           "instance": "^termite$",
+       }
+    ],
+    "type": "con"
+}
+
+{
+    "border": "pixel",
+    "current_border_width": 3,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 1550,
+       "width": 3810,
+       "x": 15,
+       "y": 35
+    },
+    "name": "qiUip/dotfiles: My personal setup - Chromium",
+    "percent": 0.333333333333333,
+    "swallows": [
+       {
+           "class": "^Chromium\\-browser$",
+           "instance": "^chromium\\-browser$",
+           "window_role": "^browser$"
+       }
+    ],
+    "type": "con"
+}
+

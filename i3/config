@@ -210,7 +210,7 @@ client.urgent               $rd        $rd         $tx		$rd
 
 # init
 exec_always --no-startup-id /usr/lib/gnome-settings-daemon/gsd-xsettings
-exec_always --no-startup-id compton -b --config /home/mashy/.config/picom/picom.conf
+exec_always --no-startup-id picom -b --config /home/mashy/.config/picom/picom.conf
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id nitrogen --set-zoom-fill /home/mashy/Pictures/166087.jpg 
 exec_always --no-startup-id xrdb ~/.Xresources

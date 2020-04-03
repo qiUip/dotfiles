@@ -109,7 +109,7 @@ font-4 = "Font Awesome 5 Brands:pixelsize=8;1"
 ;arrange modules here!
 modules-left = i3 xwindow
 modules-center = 
-modules-right = arrow8 arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu1 arrow3 pavolume arrow2 arch-aur-updates arrow1 date powermenu
+modules-right = arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu1 arrow3 pavolume arrow2 arch-aur-updates arrow1 date powermenu
 
 separator = 
 
@@ -290,7 +290,8 @@ type = custom/text
 content = "%{T2} %{T-}"
 content-font = 2
 content-foreground = ${colors.shade6}
-content-background = ${colors.shade7}
+content-background = ${colors.background}
+; content-background = ${colors.shade7}
 
 [module/arrow6]
 ; grey to Blue
@@ -357,18 +358,6 @@ format-foreground = ${colors.background2}
 format-background = ${colors.shade1}
 format-prefix = "  "
 format-prefix-foreground = ${colors.background2}
-
-################################################################################
-
-[module/compton]
-;https://github.com/jaagr/polybar/wiki/User-contributed-modules#compton
-type = custom/script
-exec = ~/.config/polybar/scripts/compton.sh
-click-left = ~/.config/polybar/scripts/compton-toggle.sh
-interval = 5
-;format-foreground = ${colors.foreground}
-;format-background = ${colors.background}
-;format-underline = #00AF02
 
 ################################################################################
 
@@ -518,16 +507,6 @@ format-background = ${colors.background}
 format-prefix = "  "
 format-prefix-foreground = #0084FF
 format-underline = #4B5665
-
-################################################################################
-
-[module/jgmenu]
-type = custom/script
-interval = 120
-exec = echo "ArcoLinux"
-click-left = "jgmenu_run >/dev/null 2>&1 &"
-format-foreground = ${colors.foreground}
-format-background = ${colors.background2}
 
 ################################################################################
 
@@ -696,7 +675,7 @@ thermal-zone = 0
 ; $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
 ; to find path to desired file
 ; Default reverts to thermal zone setting
-hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input
+hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input
 
 format = <ramp> <label>
 format-prefix-foreground = ${colors.background2}

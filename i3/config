@@ -23,27 +23,19 @@ new_window none
 # is used in the bar {} block below.
 font pango:DejaVu Sans Mono Nerd Font 10
 
-# This font is widely installed, provides lots of unicode glyphs, right-to-left
-# text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono Nerd Font 10
-
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
 bindsym $mod+Return exec st
-# bindsym $mod+Return exec urxvt
-
 
 # kill focused window
 bindsym $mod+q kill
 
 # start dmenu (a program launcher)
-# bindsym $mod+d exec dmenu_run
-# bindsym $mod+d exec --no-startup-id rofi -combi-modi window,drun,ssh -theme solarized -font "hack 10" -show combi
-# bindsym $mod+p exec $HOME/.scripts/myrmidon.sh
 bindsym $mod+d exec --no-startup-id $HOME/.scripts/dmenu_recency.sh
 bindsym $mod+c exec --no-startup-id $HOME/.scripts/dmenu_scripts.sh
+bindsym $mod+p exec --no-startup-id $HOME/.scripts/dmenu_power.sh
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
@@ -51,7 +43,12 @@ bindsym $mod+c exec --no-startup-id $HOME/.scripts/dmenu_scripts.sh
 
 # editor
 bindsym $mod+e exec --no-startup-id st -e emacs -nw
+# mail
 bindsym $mod+m exec --no-startup-id termite -e neomutt
+# music
+bindsym $mod+Shift+m exec --no-startup-id st -e ncmpcpp
+# visualiser
+bindsym $mod+Shift+v exec --no-startup-id termite -e vis
 
 # change focus
 bindsym $mod+h focus left
@@ -100,8 +97,12 @@ bindsym $mod+space focus mode_toggle
 # focus the parent container
 bindsym $mod+a focus parent
 
-# focus the child container
-# bindsym $mod+d focus child
+# Make the currently focused window a scratchpad
+bindsym $mod+Shift+s move scratchpad
+# Show the first scratchpad window
+bindsym $mod+s scratchpad show
+# # Show the sup-mail scratchpad window, if any.
+# bindsym mod4+s [title="^Sup ::"] scratchpad show
 
 # switch to workspace
 bindsym $mod+1 workspace 1

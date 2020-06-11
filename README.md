@@ -1,8 +1,3 @@
-
-# Table of Contents
-
-
-
 A collection of my personal dotfiles. I keep this repository predominantly to
 backup and sync my settings between various machines. The majority of the
 scripts, functions etc. throughout these dotfiles where found in different

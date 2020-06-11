@@ -1,3 +1,5 @@
+#+OPTIONS: toc:nil
+
 # dotfiles
 A collection of my personal dotfiles
 

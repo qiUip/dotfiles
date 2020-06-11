@@ -34,8 +34,11 @@ bindsym $mod+q kill
 
 # start dmenu (a program launcher)
 bindsym $mod+d exec --no-startup-id $HOME/.scripts/dmenu_recency.sh
+bindsym $XF86MenuKB exec --no-startup-id $HOME/.scripts/dmenu_recency.sh
 bindsym $mod+c exec --no-startup-id $HOME/.scripts/dmenu_scripts.sh
 bindsym $mod+p exec --no-startup-id $HOME/.scripts/dmenu_power.sh
+bindcode 135 exec --no-startup-id $HOME/.scripts/dmenu_recency.sh   #bind application launcher to menu key
+
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.

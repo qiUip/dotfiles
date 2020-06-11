@@ -597,7 +597,7 @@ thermal-zone = 0
 ; to find path to desired file
 ; Default reverts to thermal zone settingi
 ; exec = ~/.scripts/gethwmon.sh
-hwmon-path = /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon4/temp1_input
+hwmon-path = /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon3/temp1_input
 ; /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input
 
 format = <ramp> <label>

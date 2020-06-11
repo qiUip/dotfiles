@@ -100,7 +100,8 @@ module-margin-left = 0
 module-margin-right = 0
 
 ;https://github.com/jaagr/polybar/wiki/Fonts
-font-0 = "UbuntuMono Nerd Font:size=12;2"
+; font-0 = "UbuntuMono Nerd Font:size=12;2"
+font-0 = "Ubuntu Nerd Font:size=11;2"
 font-1 = "UbuntuMono Nerd Font:size=16;3"
 font-2 = "Font Awesome 5 Free:style=Regular:pixelsize=8;1"
 font-3 = "Font Awesome 5 Free:style=Solid:pixelsize=8;1"
@@ -109,7 +110,7 @@ font-4 = "Font Awesome 5 Brands:pixelsize=8;1"
 ;arrange modules here!
 modules-left = i3 xwindow
 modules-center = 
-modules-right = arrow8 dropbox-isrunning arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu1 arrow3 pavolume arrow2 arch-aur-updates arrow1 date powermenu
+modules-right = arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu1 arrow3 pavolume arrow2 arch-aur-updates arrow1 date powermenu
 
 separator = 
 
@@ -205,8 +206,7 @@ fuzzy-match = false
 ws-icon-0 = 1;
 ws-icon-1 = 2;
 ws-icon-2 = 3;
-ws-icon-3 = 4;
-;ws-icon-3 = 4; 
+ws-icon-3 = 4; 
 ws-icon-4 = 5;
 ws-icon-5 = 6;
 ws-icon-6 = 7;
@@ -232,7 +232,7 @@ label-mode-background = #FFBB00
 ;   %output%
 ; Default: %icon%  %name%
 ; focused = Active workspace on focused monitor
-label-focused = %icon% %name%
+label-focused = %icon%
 label-focused-background = ${colors.background}
 label-focused-foreground = ${colors.foreground}
 label-focused-underline = ${colors.shade5}
@@ -244,14 +244,14 @@ label-focused-padding = 2
 ;   %index%
 ; Default: %icon%  %name%
 ; unfocused = Inactive workspace on any monitor
-label-unfocused = %icon% %name%
+label-unfocused = %icon%
 label-unfocused-padding = 2
 label-unfocused-background = ${colors.background}
 label-unfocused-foreground = ${colors.foreground}
 label-unfocused-underline =
 
 ; visible = Active workspace on unfocused monitor
-label-visible = %icon% %name%
+label-visible = %icon%
 label-visible-background = ${self.label-focused-background}
 label-visible-underline = ${self.label-focused-underline}
 label-visible-padding = 2
@@ -291,7 +291,8 @@ type = custom/text
 content = "%{T2} %{T-}"
 content-font = 2
 content-foreground = ${colors.shade6}
-content-background = ${colors.shade7}
+content-background = ${colors.background}
+; content-background = ${colors.shade7}
 
 [module/arrow6]
 ; grey to Blue
@@ -358,18 +359,6 @@ format-foreground = ${colors.background2}
 format-background = ${colors.shade1}
 format-prefix = "  "
 format-prefix-foreground = ${colors.background2}
-
-################################################################################
-
-[module/compton]
-;https://github.com/jaagr/polybar/wiki/User-contributed-modules#compton
-type = custom/script
-exec = ~/.config/polybar/scripts/compton.sh
-click-left = ~/.config/polybar/scripts/compton-toggle.sh
-interval = 5
-;format-foreground = ${colors.foreground}
-;format-background = ${colors.background}
-;format-underline = #00AF02
 
 ################################################################################
 
@@ -519,16 +508,6 @@ format-background = ${colors.background}
 format-prefix = "  "
 format-prefix-foreground = #0084FF
 format-underline = #4B5665
-
-################################################################################
-
-[module/jgmenu]
-type = custom/script
-interval = 120
-exec = echo "ArcoLinux"
-click-left = "jgmenu_run >/dev/null 2>&1 &"
-format-foreground = ${colors.foreground}
-format-background = ${colors.background2}
 
 ################################################################################
 
@@ -697,7 +676,7 @@ thermal-zone = 0
 ; $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
 ; to find path to desired file
 ; Default reverts to thermal zone setting
-hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon2/temp1_input
+hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input
 
 format = <ramp> <label>
 format-prefix-foreground = ${colors.background2}
@@ -884,12 +863,11 @@ menu-1-1 = " "
 menu-1-1-exec = menu-open-0
 menu-1-1-foreground = ${colors.foreground}
 
-
 menu-2-0 = "shutdown "
 menu-2-0-exec = systemctl poweroff
 menu-2-0-foreground = ${colors.foreground}
 menu-2-1 = "hibernate "
-menu-2-1-exec = systemctl hibernate
+menu-2-1-exec = /home/mashy/.scripts/lock.sh && systemctl hibernate
 menu-2-1-foreground = ${colors.foreground}
 menu-2-2 = " "
 menu-2-2-exec = menu-open-0

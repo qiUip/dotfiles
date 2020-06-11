@@ -21,11 +21,7 @@ new_window none
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:DejaVu Sans Mono Nerd Font 10
-
-# This font is widely installed, provides lots of unicode glyphs, right-to-left
-# text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono Nerd Font 10
+font pango:Hack Nerd Font Regular 10
 
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
@@ -38,19 +34,31 @@ font pango:DejaVu Sans Mono Nerd Font 10
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec termite
+bindsym $mod+Return exec st
 
 # kill focused window
-bindsym $mod+Shift+q kill
+bindsym $mod+q kill
 
-# start dmenu (a program launcher)
-# bindsym $mod+d exec dmenu_run
-# There also is the (new) i3-dmenu-desktop which only displays applications
-# shipping a .desktop file. It is a wrapper around dmenu, so you need that
-# installed.
-# bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+d exec --no-startup-id j4-dmenu-desktop --dmenu='dmenu_run -fn "DejaVu Sans Mono-9"'
-#--dmenu="dmenu -fn 'DejaVu Sans Mono-9'"
+# start dmenu (a 'program' launcher)
+bindsym $mod+d exec --no-startup-id $HOME/.scripts/dmenu_recency.sh #applications
+bindsym $mod+c exec --no-startup-id $HOME/.scripts/dmenu_scripts.sh #scripts
+bindsym $mod+p exec --no-startup-id $HOME/.scripts/dmenu_power.sh   #power menu
+bindcode 135 exec --no-startup-id $HOME/.scripts/dmenu_recency.sh   #bind application launcher to menu key
+
+# default programs launcher
+# editor
+bindsym $mod+e exec --no-startup-id st -e emacs -nw
+# mail
+bindsym $mod+m exec --no-startup-id termite -e neomutt
+# music
+bindsym $mod+Shift+m exec --no-startup-id st -e ncmpcpp
+# visualiser
+bindsym $mod+Shift+v exec --no-startup-id termite -e vis
+
+# Make the currently focused window a scratchpad
+bindsym $mod+Shift+s move scratchpad
+# Show the first scratchpad window
+bindsym $mod+s scratchpad show
 
 # change focus
 bindsym $mod+h focus left
@@ -90,9 +98,9 @@ bindsym Print exec scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures
 bindsym Control+Print exec gnome-screenshot -i
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+# bindsym $mod+Shift+s layout stacking
+# bindsym $mod+Shift+w layout tabbed
+# bindsym $mod+Shift+s layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -166,20 +174,17 @@ bindsym XF86AudioPrev exec playerctl previous
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
 
-        # Pressing left will shrink the window’s width.
-        # Pressing right will grow the window’s width.
-        # Pressing up will shrink the window’s height.
-        # Pressing down will grow the window’s height.
-        bindsym h resize shrink width 5 px or 5 ppt
-        bindsym j resize grow height 5 px or 5 ppt
-        bindsym k resize shrink height 5 px or 5 ppt
-        bindsym l resize grow width 5 px or 5 ppt
+        # hjkl resize in 10px
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
 
-        # same bindings, but for the arrow keys
-        bindsym Left resize shrink width 5 px or 5 ppt
-        bindsym Down resize grow height 5 px or 5 ppt
-        bindsym Up resize shrink height 5 px or 5 ppt
-        bindsym Right resize grow width 5 px or 5 ppt
+        # the arrow keys resize by 2px
+        bindsym Left resize shrink width 2 px or 2 ppt
+        bindsym Down resize grow height 2 px or 2 ppt
+        bindsym Up resize shrink height 2 px or 2 ppt
+        bindsym Right resize grow width 2 px or 2 ppt
 
         # back to normal: Enter or Escape or $mod+r
         bindsym Return mode "default"
@@ -188,6 +193,12 @@ mode "resize" {
 }
 
 bindsym $mod+r mode "resize"
+
+# window rules, you can find the window class using xprop
+for_window [class=".*"] border pixel 4
+assign [class=ParaView] 3
+for_window [class=Pavucontrol|Blueman*] floating enable
+for_window [class=St|Termite|Firefox|Gimp*|Inkscape] focus
 
 # color definitions 
 set $bg     #2c2c2e
@@ -208,11 +219,8 @@ client.focused_inactive     $bg        $bg         $ac		$ia
 client.urgent               $rd        $rd         $tx		$rd
 
 # init
-exec_always --no-startup-id /usr/lib/gnome-settings-daemon/gsd-xsettings
-exec_always --no-startup-id compton -b --config /home/mashy/.config/compton/compton.conf
+exec_always --no-startup-id picom -b --config /home/mashy/.config/picom/picom.conf
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id nitrogen --set-zoom-fill /home/mashy/Pictures/166087.jpg 
 exec_always --no-startup-id xrdb ~/.Xresources
-exec_always --no-startup-id mopidy -o spotify/password=$(pass music-mopidy)
-exec_always --no-startup-id xbindkeys
-exec --no-startup-id dropbox >/dev/null 2>&1
+# exec_always --no-startup-id xbindkeys

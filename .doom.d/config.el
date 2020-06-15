@@ -52,6 +52,10 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 ;;
+(setq-hook! 'f90-mode-hook flycheck-disabled-checkers '(fortran-gfortran))
+(add-hook 'org-mode-hook #'writegood-passive-voice-turn-off)
+;; (setq-hook! 'org-mode 'writegood-passive-voice-turn-off())
+;;
 ;; (after! mu4e
 ;;   (defun my-string-width (str)
 ;;     "Return the width in pixels of a string in the current

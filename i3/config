@@ -206,17 +206,17 @@ set $fg     #9f9f9f
 set $hi     #efef8f
 set $ac     #008080
 set $tx     #040404
-set $ia     #f57900
+set $ia     #16a085
 set $be     #8faf9f 
 set $yw     #ccdc90
 set $gn     #88b090
 set $rd     #d81b5f
 
-# set colors                border     background  text		indicator
-client.focused              $ac        $ac         $tx		$ia
-client.unfocused            $bg        $bg         $ac		$ia
-client.focused_inactive     $bg        $bg         $ac		$ia
-client.urgent               $rd        $rd         $tx		$rd
+# set colors                border     background  text         indicator
+client.focused              $ac        $ac         $tx          $ia
+client.unfocused            $bg        $bg         $ac          $bg
+client.focused_inactive     $bg        $bg         $ac          $bg
+client.urgent               $rd        $rd         $tx          $rd
 
 # init
 exec_always --no-startup-id picom -b --config /home/mashy/.config/picom/picom.conf

@@ -1,15 +1,19 @@
 #+OPTIONS: toc:nil
 
 # dotfiles
+
 A collection of my personal dotfiles.
 
-The config files here could be symlink into '/\slash{}home\slash{}<username>\slash{}.config/'.  I use them more as templates as I have several machines with specific settings.
-As such, some minor errors might appear as I have not fully tested all the files in a running system.  Never-the-less it should be very easy to get them to run in case they do not.  
-Please don't hesitate to contact me if you encounter any such difficulty.
+All the folders here, with the exemption of /scripts/, should be either symlinked or copied into '/\slash{}home\slash{}<username>\slash{}.config/'.
 
-For starters, only .config/i3 and .config/polybar are included.  The full collection of dotfiles will eventually be included.
-Files in the scripts directory are symlink to '/\slash{}home\slash{}<username>\slash{}.scripts/' 
-Added: dunset, compton, and vis (cli-visualiser)
+Files in the scripts directory should be symlinked or copied into '/\slash{}home\slash{}<username>\slash{}.scripts/'. 
 
-Note: many of the scripts, functions etc. throughout these dotfiles are taken from sources around the web.  I have randomly picked up stuff I found useful and never kept a track record of what came from where.
-Chances are, if it's anything pretty good than it wasn't me and credit is due elsewhere! 
+I use these files more as templates due to running them on several machines with some specific settings I need or like for each.
+This version of the dotfiles are compatible with my Manjaro Linux installation, whereas a version compatible with my OpenSUSE Tumbelweed installation can be found the opensuse branch. An experimental WSL2 setup used in Debian under WSL2 is also available in the WSL branch.
+
+There is a chance that some things I haven't actually used in a while might be broken. Please don't hesitate to contact me if you encounter any such issues.
+
+Note: many of the config files, scripts, functions etc. throughout these dotfiles were taken from various sources around the web.  I have randomly picked up stuff I found useful from all over, and I never kept a record of what came from where.
+Chances are, if it's anything pretty good than it wasn't me and credit is due elsewhere!
+
+

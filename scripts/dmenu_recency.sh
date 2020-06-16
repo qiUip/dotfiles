@@ -4,16 +4,16 @@
 # Pretty much re-written by Mina Nagy (mnzaki)
 # Edited by Chrysostomus to create/source .dmenurc
 
-if ! [ -f "$HOME/.dmenurc" ]; then
+if ! [ -f "$HOME/.config/dmenurc" ]; then
 	cp /usr/share/dmenu/dmenurc $HOME/.config/dmenurc
 fi
 . $HOME/.config/dmenurc
 
 if [ -z "$TERMINAL_CMD" ]; then
-  if [ "$(which terminal)" ]; then
-  TERMINAL_CMD="terminal -e"
-  elif [ "$(which st)" ]; then
+  if [ "$(which st)" ]; then
   TERMINAL_CMD="st -e"
+  elif [ "$(which terminal)" ]; then
+  TERMINAL_CMD="terminal -e"
   elif [ "$(which urxvt)" ]; then
   TERMINAL_CMD="urxvt -e"
   elif [ "$(which termite)" ]; then

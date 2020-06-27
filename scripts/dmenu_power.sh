@@ -11,5 +11,5 @@ case "$chosen" in
     "Restart"   ) [ $(echo -e "Yes\nNo" | dmenu -i -n -l 15 -p "Confirm?") == "Yes" ] && systemctl reboot ;;
     "Hibernate" ) [ $(echo -e "Yes\nNo" | dmenu -i -n -l 15 -p "Confirm?") == "Yes" ] && systemctl hibernate ;;
     "Sleep"     ) [ $(echo -e "Yes\nNo" | dmenu -i -n -l 15 -p "Confirm?") == "Yes" ] && systemctl suspend ;;
-    "Logout"    ) [ $(echo -e "Yes\nNo" | dmenu -i -n -l 15 -p "Confirm?") == "Yes" ] && systemctl restart lightdm.service
+    "Logout"    ) [ $(echo -e "Yes\nNo" | dmenu -i -n -l 15 -p "Confirm?") == "Yes" ] && i3-msg exit
 esac

@@ -42,6 +42,10 @@ import XMonad.Layout.GridVariants (Grid(Grid))
 import XMonad.Layout.SimplestFloat
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.ThreeColumns
+import XMonad.Layout.ResizableThreeColumns
+-- import XMonad.Layout.LayoutBuilder
+-- import XMonad.Layout.Tabbed
+
 
     -- Layouts modifiers
 import XMonad.Layout.LayoutModifier
@@ -81,10 +85,10 @@ myModMask :: KeyMask
 myModMask = mod4Mask       -- Sets modkey to super/windows key
 
 myTerminal :: String
-myTerminal = "termite"     -- Sets default terminal
+myTerminal = "st"          -- Sets default terminal
 
 myBorderWidth :: Dimension
-myBorderWidth = 3          -- Sets border width for windows
+myBorderWidth = 4          -- Sets border width for windows
 
 myNormColor :: String
 myNormColor   = "#292d3e"  -- Border color of normal windows
@@ -258,9 +262,6 @@ myKeys =
         , ("M-<Delete>", withFocused $ windows . W.sink) -- Push floating window back to tile
         , ("M-S-<Delete>", sinkAll)                      -- Push ALL floating windows to tile
 
-    -- Tree Select
-        -- , ("M-S-t", treeselectAction tsDefaultConfig)  -- tree select actions menu
-
     -- Windows navigation
         , ("M-m", windows W.focusMaster)     -- Move focus to the master window
         , ("M-j", windows W.focusDown)       -- Move focus to the next window
@@ -271,7 +272,7 @@ myKeys =
         , ("M-<Backspace>", promote)         -- Moves focused window to master, others maintain order
         , ("M1-S-<Tab>", rotSlavesDown)      -- Rotate all windows except master and keep focus in place
         , ("M1-C-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
-        , ("M-C-s", killAllOtherCopies)
+        , ("M-C-s", killAllOtherCopies)      -- 
 
         -- Layouts
         , ("M-<Tab>", sendMessage NextLayout)                -- Switch to next layout
@@ -287,8 +288,8 @@ myKeys =
 
         , ("M-h", sendMessage Shrink)                       -- Shrink horiz window width
         , ("M-l", sendMessage Expand)                       -- Expand horiz window width
-        , ("M-C-h", sendMessage MirrorShrink)               -- Shrink vert window width
-        , ("M-C-l", sendMessage MirrorExpand)               -- Exoand vert window width
+        , ("M-S-h", sendMessage MirrorShrink)               -- Shrink vert window width (only works with resizeable layouts)
+        , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizeable layouts)
 
     -- Emacs
         , ("C-e e", spawn "emacsclient -c -a ''")                           -- start emacs
@@ -300,10 +301,10 @@ myKeys =
     --- My Applications (Super+Alt+Key)
         , ("M-M1-a", spawn ("pavucontrol"))
         , ("M-M1-b", spawn "firefox duckduckgo.com")
-        , ("M-M1-e", spawn (myTerminal ++ " -e neomutt"))
+        , ("M-M1-e", spawn ("termite" ++ " -e neomutt"))
         , ("M-M1-f", spawn (myTerminal ++ " -e sh ./.config/vifm/scripts/vifmrun"))
-        , ("M-M1-v", spawn (myTerminal ++ " -e vis"))
-        , ("M-M1-m", spawn (myTerminal ++ " -e ncmpcpp"))
+        , ("M-M1-v", spawn ("termite" ++ " -e vis"))
+        , ("M-M1-m", spawn ("termite" ++ " -e ncmpcpp"))
 
     -- Multimedia Keys
         , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
@@ -343,17 +344,14 @@ myWorkspaces = clickable . map xmobarEscape
 -- Forcing programs to a certain workspace with a doShift requires xdotool
 -- if you are using clickable workspaces. You need the className or title 
 -- of the program. Use xprop to get this info.
+-- note that using 'doShift ( myWorkspaces !! 7)' sends program to workspace 8!
 
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-     -- using 'doShift ( myWorkspaces !! 7)' sends program to workspace 8!
-     -- I'm doing it this way because otherwise I would have to write out 
-     -- the full name of my clickable workspaces, which would look like:
-     -- doShift "<action xdotool super+8>gfx</action>"
-     [ title =? "firefox"     --> doShift ( myWorkspaces !! 1)
-     , title =? "qutebrowser" --> doShift ( myWorkspaces !! 1)
-     , className =? "vlc"     --> doShift ( myWorkspaces !! 9)
-     , className =? "Gimp"    --> doShift ( myWorkspaces !! 8)
+     [ title =? "firefox"      --> doShift ( myWorkspaces !! 1)
+     , className =? "vlc"      --> doShift ( myWorkspaces !! 9)
+     , className =? "ParaView" --> doShift ( myWorkspaces !! 2)
+     , className =? "Gimp"     --> doShift ( myWorkspaces !! 8)
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
      ]
 
@@ -385,13 +383,13 @@ grid     = renamed [Replace "grid"]
 threeCol = renamed [Replace "threeCol"]
            $ limitWindows 9
            $ mySpacing' 8
-           $ ThreeColMid 1 (3/100) (3/8)
--- mulCol = renamed [Replace "mulCol"]
---            $ limitWindows 12
+           $ ResizableThreeColMid 1 (3/100) (3/8) []
+-- threeColR = renamed [Replace "threeColR"]
+--            $ limitWindows 9
 --            $ mySpacing' 8
---            $ multiCol [2] 2 0.02 0.33333
+--            $ ThreeColMid 1 (3/100) (3/8)
 
-          
+
 -- The layout hook
 myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts floats $
                mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDefaultLayout
@@ -400,14 +398,30 @@ myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts float
                                  ||| grid
                                  ||| tall
                                  -- ||| mulCol
-  
+
+-- myLayout = ( (layoutN 1 (relBox 0 0 0.5 1) (Just $ relBox 0 0 1 1) $ simpleTabbed)
+--             $ (layoutAll (relBox 0.5 0 1 1)                         $ simpleTabbed)
+--             ) |||
+--             ( (layoutN 1       (relBox (1/3) 0 (1/2) 1) (Just $ relBox 0 0 1 1) $ Tall 0 0.01 0.5)
+--             $ (layoutR 0.1 0.5 (relBox (2/3) 0 1     1) Nothing                 $ Tall 0 0.01 0.5)
+--             $ (layoutAll       (relBox 0     0 (1/3) 1)                         $ Tall 0 0.01 0.5)
+--             ) |||
+--             ( (layoutN 1 (absBox (-512-200) 0 512        0) (Just $ relBox 0 0 1 1) $ simpleTabbed)
+--             $ (layoutN 1 (absBox (-200)     0 0          0) Nothing                 $ simpleTabbed)
+--             $ (layoutAll (absBox 0          0 (-512-200) 0)                         $ simpleTabbed)
+--             ) |||
+--             ( (layoutN 1 (absBox 10 0 0 (-10)) Nothing $ Tall 0 0.01 0.5)
+--             $ (layoutN 1 (absBox 0 0 200 0) Nothing $ Tall 0 0.01 0.5)
+--             $ (layoutAll (absBox 10 10 0 0) $ Tall 2 0.01 0.5)
+--             ) ||| Full
+-- myLayoutHook = myLayout
 ------------------------------------------------------------------------
 -- MAIN
 ------------------------------------------------------------------------
 main :: IO ()
 main = do
     -- Launching three instances of xmobar on their monitors.
-    xmproc0 <- spawnPipe "xmobar -x 0 /home/mashy/.config/xmobar/xmobarrc0"
+    xmproc <- spawnPipe "xmobar /home/mashy/.config/xmobar/config"
   
     xmonad $ ewmh def
         { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook <+> manageDocks
@@ -428,7 +442,7 @@ main = do
         , normalBorderColor  = myNormColor
         , focusedBorderColor = myFocusColor
         , logHook = dynamicLogWithPP xmobarPP
-                        { ppOutput = \x -> hPutStrLn xmproc0 x 
+                        { ppOutput = \x -> hPutStrLn xmproc x 
                         , ppCurrent = xmobarColor "#c3e88d" "" . wrap "[" "]" -- Current workspace in xmobar
                         , ppVisible = xmobarColor "#c3e88d" ""                -- Visible but not current workspace
                         , ppHidden = xmobarColor "#82AAFF" "" . wrap "*" ""   -- Hidden workspaces in xmobar

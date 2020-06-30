@@ -30,12 +30,11 @@ import qualified Data.Map as M
 
     -- Hooks
 import XMonad.Hooks.DynamicLog (dynamicLogWithPP, wrap, xmobarPP, xmobarColor, shorten, PP(..))
-import XMonad.Hooks.EwmhDesktops  -- for some fullscreen events, also for xcomposite in obs.
+import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook, manageDocks, ToggleStruts(..))
 import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat)
 import XMonad.Hooks.ServerMode
 import XMonad.Hooks.SetWMName
--- import XMonad.ManageHook
 
     -- Layouts
 import XMonad.Layout.GridVariants (Grid(Grid))
@@ -43,9 +42,6 @@ import XMonad.Layout.SimplestFloat
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.ResizableThreeColumns
--- import XMonad.Layout.LayoutBuilder
--- import XMonad.Layout.Tabbed
-
 
     -- Layouts modifiers
 import XMonad.Layout.LayoutModifier
@@ -71,8 +67,7 @@ import Control.Arrow (first)
     -- Utilities
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.NamedScratchpad
--- import XMonad.Util.Run (runProcessWithInput, safeSpawn, unsafeSpawn, spawnPipe)
-import XMonad.Util.Run 
+import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 
 ------------------------------------------------------------------------

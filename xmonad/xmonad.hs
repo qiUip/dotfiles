@@ -309,7 +309,7 @@ myKeys =
     -- Multimedia Keys
         , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
         , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
-        , ("<Print>", spawn "scrotd 0")
+        , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
         ]
         -- Appending search engines to keybindings list
         ++ [("M-s " ++ k, S.promptSearch myXPConfig f) | (k,f) <- searchList ]

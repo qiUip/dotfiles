@@ -89,4 +89,4 @@ visualizer.sgs.smoothing.passes=1
 #colors.override.terminal=false
 
 ##Specifies the color scheme. The color scheme must be in ~/.config/vis/colors/ directory. The default scheme is "colors".
-colors.scheme=vt
+colors.scheme=appolo

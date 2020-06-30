@@ -10,16 +10,17 @@ might appear as I have not fully tested all the files in a running system.
 Never-the-less it should be very easy to get them to run in case they do not.
 Please don't hesitate to contact me if you encounter any such difficulty.
 
-For starters, only .config/i3 and .config/polybar are included. The full
-collection of dotfiles will eventually be included. Files in the scripts
-directory are symlink to '/\slash{}home\slash{}<username>\slash{}.scripts/'
-Added: dunset, picom, vis (cli-visualiser), zathura and ncmpcpp. Some of the
-scripts expect the st terminal emulator and dmenu to be installed, however my
-builds of these two programs are not included in this repository and things
-might not work exactly as expected out of the box without them.  A full list
-of dependencies for my setup will be included at some point in the future.
+The files included in this repository form only a part of my full setup. The
+full collection of dotfiles will eventually be included. Files in the scripts
+directory are symlink to '/\slash{}home\slash{}<username>\slash{}.scripts/' Some
+of the config files and scripts expect st (simple terminal emulator) and dmenu
+to be installed, however my builds of these two programs are not included in
+this repository and things might not work exactly as expected out of the box
+without them. A full list of dependencies will also be included at some point in
+the future.
 
-Note: many of the scripts, functions etc. throughout these config files are taken
-from sources around the web. I have randomly picked up stuff I found useful and
-never kept a track record of what came from where. Chances are, if it's anything
-pretty good than it wasn't me and credit is due elsewhere!
+Note: many of the scripts, functions etc. throughout these config files are
+taken from sources around the web. I have randomly picked up stuff I found
+useful and never kept a good track record of what came from where. Chances are,
+if it's anything really good then it wasn't written by me and credit is due
+elsewhere!

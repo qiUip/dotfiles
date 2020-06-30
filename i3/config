@@ -204,5 +204,4 @@ for_window [class=St|Termite|Firefox|Gimp*|Inkscape] focus
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id nitrogen --set-zoom-fill /home/mashy/Pictures/4k+VT+Wallpaper.png
 exec_always --no-startup-id picom --config ~/.config/picom/picom.conf -b
-# exec_always --no-startup-id mopidy -o spotify/password=$(pass music-mopidy)
 exec_always --no-startup-id dropbox start

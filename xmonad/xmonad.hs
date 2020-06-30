@@ -1,5 +1,5 @@
 -- My xmonad configuration.
--- Forked from the xmonad configuration of Derek Taylor (DistroTube)
+-- Forked from the xmonad configuration of Derek Taylor (DistroTube) https://gitlab.com/dwt1/dotfiles/-/tree/master/.xmonad
 -- For more information on Xmonad, visit: https://xmonad.org
 
 ------------------------------------------------------------------------
@@ -7,7 +7,6 @@
 ------------------------------------------------------------------------
     -- Base
 import XMonad
--- import System.IO (hPutStrLn)
 import System.Exit (exitSuccess)
 import qualified XMonad.StackSet as W
 
@@ -25,12 +24,11 @@ import qualified XMonad.Actions.Search as S
 import Data.Char (isSpace)
 import Data.List
 import Data.Monoid
--- import Data.Maybe (isJust)
 import qualified Data.Map as M
 
     -- Hooks
 import XMonad.Hooks.DynamicLog (dynamicLogWithPP, wrap, xmobarPP, xmobarColor, shorten, PP(..))
-import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.EwmhDesktops 
 import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook, manageDocks, ToggleStruts(..))
 import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat)
 import XMonad.Hooks.ServerMode

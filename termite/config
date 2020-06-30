@@ -53,24 +53,24 @@ background = rgba(25, 25, 25, 0.85)
 # If unset, will reverse foreground and background
 # highlight = #2f2f2f
 
-# Colors from color0 to color254 can be set
+# Colors from color0 to color254 can be set - 0/8 black - 1/9 red - 2/10 green - 3/11 yellow - 4/12 blue - 5/13 purple - 6/14 cyan - 7/15 white
 color0 = #252525
-color1 = #d81b5f
-color2 = #118a71
-color3 = #a679cf
-color4 = #42a5f5
-color5 = #9a50df
-color6 = #00acc1
+color1 = #c15c2e
+color2 = #8b8f78
+color3 = #ddbd94
+color4 = #5a8c93
+color5 = #a679cf
+color6 = #118a71
 color7 = #f5f5f5
 #
 color8 = #4f4f4f
 color9 = #ff5252
-color10 = #097f7f
-color11 = #9b51e0
-color12 = #1078da
-color13 = #5d2f81
-color14 = #16a085
-color15 = #f5f5f5
+color10 = #25322b
+color11 = #8d6947
+color12 = #204557
+color13 = #9b51e0
+color14 = #097f7f
+color15 = #d0b693
 
 [hints]
 #font = Monospace 12

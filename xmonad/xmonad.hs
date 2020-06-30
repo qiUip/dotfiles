@@ -88,13 +88,13 @@ myTerminal :: String
 myTerminal = "st"          -- Sets default terminal
 
 myBorderWidth :: Dimension
-myBorderWidth = 4          -- Sets border width for windows
+myBorderWidth = 3          -- Sets border width for windows
 
 myNormColor :: String
 myNormColor   = "#292d3e"  -- Border color of normal windows
 
 myFocusColor :: String
-myFocusColor  = "#5e3082"  -- Border color of focused windows
+myFocusColor  = "#c3a583"  -- Border color of focused windows
 
 altMask :: KeyMask
 altMask = mod1Mask         -- Setting this for use in xprompts
@@ -107,7 +107,7 @@ windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace
 ------------------------------------------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
-          spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/4k+VT+Wallpaper.png"
+          spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/apollo11.jpg"
           spawnOnce "picom -b"
           spawnOnce "/usr/local/bin/emacs --daemon &"
           setWMName "LG3D"
@@ -292,11 +292,11 @@ myKeys =
         , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizeable layouts)
 
     -- Emacs
-        , ("C-e e", spawn "emacsclient -c -a ''")                           -- start emacs
-        , ("C-e a", spawn "emacsclient -c -a '' --eval '(emms)'")           -- emms emacs audio player
-        , ("C-e b", spawn "emacsclient -c -a '' --eval '(ibuffer)'")        -- list emacs buffers
-        , ("C-e d", spawn "emacsclient -c -a '' --eval '(dired nil)'")      -- dired emacs file manager
-        , ("C-e s", spawn "emacsclient -c -a '' --eval '(eshell)'")         -- eshell within emacs
+        , ("M-C-e", spawn "emacsclient -c -a ''")                           -- start emacs
+        -- , ("C-e a", spawn "emacsclient -c -a '' --eval '(emms)'")           -- emms emacs audio player
+        -- , ("C-e b", spawn "emacsclient -c -a '' --eval '(ibuffer)'")        -- list emacs buffers
+        -- , ("C-e d", spawn "emacsclient -c -a '' --eval '(dired nil)'")      -- dired emacs file manager
+        -- , ("C-e s", spawn "emacsclient -c -a '' --eval '(eshell)'")         -- eshell within emacs
 
     --- My Applications (Super+Alt+Key)
         , ("M-M1-a", spawn ("pavucontrol"))
@@ -348,10 +348,10 @@ myWorkspaces = clickable . map xmobarEscape
 
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-     [ title =? "firefox"      --> doShift ( myWorkspaces !! 1)
-     , className =? "vlc"      --> doShift ( myWorkspaces !! 9)
+     [ title =? "firefox"      --> doShift ( myWorkspaces !! 0)
+     , className =? "vlc"      --> doShift ( myWorkspaces !! 8)
      , className =? "ParaView" --> doShift ( myWorkspaces !! 2)
-     , className =? "Gimp"     --> doShift ( myWorkspaces !! 8)
+     , className =? "Gimp"     --> doShift ( myWorkspaces !! 7)
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
      ]
 
@@ -443,10 +443,10 @@ main = do
         , focusedBorderColor = myFocusColor
         , logHook = dynamicLogWithPP xmobarPP
                         { ppOutput = \x -> hPutStrLn xmproc x 
-                        , ppCurrent = xmobarColor "#c3e88d" "" . wrap "[" "]" -- Current workspace in xmobar
-                        , ppVisible = xmobarColor "#c3e88d" ""                -- Visible but not current workspace
-                        , ppHidden = xmobarColor "#82AAFF" "" . wrap "*" ""   -- Hidden workspaces in xmobar
-                        , ppHiddenNoWindows = xmobarColor "#F07178" ""        -- Hidden workspaces (no windows)
+                        , ppCurrent = xmobarColor "#ddbd94" "" . wrap "[" "]" -- Current workspace in xmobar
+                        , ppVisible = xmobarColor "#ddbd94" ""                -- Visible but not current workspace
+                        , ppHidden = xmobarColor "#c15c2e" "" . wrap "*" ""   -- Hidden workspaces in xmobar
+                        , ppHiddenNoWindows = xmobarColor "#5a8c93" ""        -- Hidden workspaces (no windows)
                         , ppTitle = xmobarColor "#d0d0d0" "" . shorten 60     -- Title of active window in xmobar
                         , ppSep =  "<fc=#666666> | </fc>"                     -- Separators in xmobar
                         , ppUrgent = xmobarColor "#C45500" "" . wrap "!" "!"  -- Urgent workspace

@@ -243,14 +243,11 @@ myKeys =
         , ("M-c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
         , ("M-p", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
 
-    -- Ranger
-        , ("M-r", spawn (myTerminal ++ " -e ranger")) -- File manager
-
     -- Windows
         , ("M-q", kill1)                           -- Kill the currently focused client
-        -- , ("M-S-q", killAll)
+        , ("M-S-q", killAll)
 
-        -- Floating windows
+    -- Floating windows
         , ("M-f", sendMessage (T.Toggle "floats"))       -- Toggles my 'floats' layout
         , ("M-<Delete>", withFocused $ windows . W.sink) -- Push floating window back to tile
         , ("M-S-<Delete>", sinkAll)                      -- Push ALL floating windows to tile
@@ -267,10 +264,8 @@ myKeys =
         , ("M1-C-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
         , ("M-C-s", killAllOtherCopies)      -- 
 
-        -- Layouts
+    -- Layouts
         , ("M-<Tab>", sendMessage NextLayout)                -- Switch to next layout
-        , ("M-C-M1-<Up>", sendMessage Arrange)
-        , ("M-C-M1-<Down>", sendMessage DeArrange)
         , ("M-<Space>", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
         , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts
         , ("M-S-n", sendMessage $ MT.Toggle NOBORDERS)      -- Toggles noborder
@@ -278,32 +273,28 @@ myKeys =
         , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in master pane
         , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows
         , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows
-
+        
+    -- Resize windows
         , ("M-h", sendMessage Shrink)                       -- Shrink horiz window width
         , ("M-l", sendMessage Expand)                       -- Expand horiz window width
-        , ("M-S-h", sendMessage MirrorShrink)               -- Shrink vert window width (only works with resizeable layouts)
-        , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizeable layouts)
+        , ("M-S-h", sendMessage MirrorShrink)               -- Shrink vert window width (only works with resizable layouts)
+        , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizable layouts)
 
-    -- Emacs
-        , ("M-C-e", spawn "emacsclient -c -a ''")                           -- start emacs
-        -- , ("C-e a", spawn "emacsclient -c -a '' --eval '(emms)'")           -- emms emacs audio player
-        -- , ("C-e b", spawn "emacsclient -c -a '' --eval '(ibuffer)'")        -- list emacs buffers
-        -- , ("C-e d", spawn "emacsclient -c -a '' --eval '(dired nil)'")      -- dired emacs file manager
-        -- , ("C-e s", spawn "emacsclient -c -a '' --eval '(eshell)'")         -- eshell within emacs
-
-    --- My Applications (Super+Alt+Key)
-        , ("M-M1-a", spawn ("pavucontrol"))
-        , ("M-M1-b", spawn "firefox duckduckgo.com")
-        , ("M-M1-e", spawn ("termite" ++ " -e neomutt"))
-        , ("M-M1-f", spawn (myTerminal ++ " -e sh ./.config/vifm/scripts/vifmrun"))
-        , ("M-M1-v", spawn ("termite" ++ " -e vis"))
-        , ("M-M1-m", spawn ("termite" ++ " -e ncmpcpp"))
+    -- Applications (Super(+Ctrl)+Key)
+        , ("M-e", spawn "emacsclient -c -a ''")         -- Editor (emacs)
+        , ("M-r", spawn (myTerminal ++ " -e ranger"))   -- File manager
+        , ("M-C-a", spawn ("pavucontrol"))              -- Audio control
+        , ("M-C-b", spawn "firefox duckduckgo.com")     -- Browser
+        , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
+        , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
+        , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
 
     -- Multimedia Keys
         , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
         , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
         , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
         ]
+        
         -- Appending search engines to keybindings list
         ++ [("M-s " ++ k, S.promptSearch myXPConfig f) | (k,f) <- searchList ]
         ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
@@ -312,7 +303,7 @@ myKeys =
 ------------------------------------------------------------------------
 -- WORKSPACES
 ------------------------------------------------------------------------
--- My workspaces are clickable meaning that the mouse can be used to switch
+-- Workspaces are clickable meaning that the mouse can be used to switch
 -- workspaces. This requires xdotool.
 
 xmobarEscape :: String -> String
@@ -341,8 +332,7 @@ myWorkspaces = clickable . map xmobarEscape
 
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-     [ title =? "firefox"      --> doShift ( myWorkspaces !! 0)
-     , className =? "vlc"      --> doShift ( myWorkspaces !! 8)
+     [ className =? "vlc"      --> doShift ( myWorkspaces !! 8)
      , className =? "ParaView" --> doShift ( myWorkspaces !! 2)
      , className =? "Gimp"     --> doShift ( myWorkspaces !! 7)
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
@@ -377,7 +367,7 @@ threeCol = renamed [Replace "threeCol"]
            $ limitWindows 9
            $ mySpacing' 8
            $ ResizableThreeColMid 1 (3/100) (3/8) []
--- threeColR = renamed [Replace "threeColR"]
+-- threeCol = renamed [Replace "threeColR"]
 --            $ limitWindows 9
 --            $ mySpacing' 8
 --            $ ThreeColMid 1 (3/100) (3/8)
@@ -392,36 +382,16 @@ myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts float
                                  ||| tall
                                  -- ||| mulCol
 
--- myLayout = ( (layoutN 1 (relBox 0 0 0.5 1) (Just $ relBox 0 0 1 1) $ simpleTabbed)
---             $ (layoutAll (relBox 0.5 0 1 1)                         $ simpleTabbed)
---             ) |||
---             ( (layoutN 1       (relBox (1/3) 0 (1/2) 1) (Just $ relBox 0 0 1 1) $ Tall 0 0.01 0.5)
---             $ (layoutR 0.1 0.5 (relBox (2/3) 0 1     1) Nothing                 $ Tall 0 0.01 0.5)
---             $ (layoutAll       (relBox 0     0 (1/3) 1)                         $ Tall 0 0.01 0.5)
---             ) |||
---             ( (layoutN 1 (absBox (-512-200) 0 512        0) (Just $ relBox 0 0 1 1) $ simpleTabbed)
---             $ (layoutN 1 (absBox (-200)     0 0          0) Nothing                 $ simpleTabbed)
---             $ (layoutAll (absBox 0          0 (-512-200) 0)                         $ simpleTabbed)
---             ) |||
---             ( (layoutN 1 (absBox 10 0 0 (-10)) Nothing $ Tall 0 0.01 0.5)
---             $ (layoutN 1 (absBox 0 0 200 0) Nothing $ Tall 0 0.01 0.5)
---             $ (layoutAll (absBox 10 10 0 0) $ Tall 2 0.01 0.5)
---             ) ||| Full
--- myLayoutHook = myLayout
 ------------------------------------------------------------------------
 -- MAIN
 ------------------------------------------------------------------------
 main :: IO ()
 main = do
-    -- Launching three instances of xmobar on their monitors.
+    -- Launch xmobar
     xmproc <- spawnPipe "xmobar /home/mashy/.config/xmobar/config"
   
     xmonad $ ewmh def
         { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook <+> manageDocks
-        -- Run xmonad commands from command line with "xmonadctl command". Commands include:
-        -- shrink, expand, next-layout, default-layout, restart-wm, xterm, kill, refresh, run,
-        -- focus-up, focus-down, swap-up, swap-down, swap-master, sink, quit-wm. You can run 
-        -- "xmonadctl 0" to generate full list of commands written to ~/.xsession-errors.
         , handleEventHook    = serverModeEventHookCmd 
                                <+> serverModeEventHook 
                                <+> serverModeEventHookF "XMONAD_PRINT" (io . putStrLn)

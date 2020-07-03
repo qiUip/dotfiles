@@ -5,12 +5,12 @@
 ------------------------------------------------------------------------
 -- IMPORTS
 ------------------------------------------------------------------------
-    -- Base
+-- Base
 import XMonad
 import System.Exit (exitSuccess)
 import qualified XMonad.StackSet as W
 
-    -- Actions
+-- Actions
 import XMonad.Actions.CopyWindow (kill1, killAllOtherCopies)
 import XMonad.Actions.CycleWS (moveTo, shiftTo, WSType(..), nextScreen, prevScreen)
 import XMonad.Actions.MouseResize
@@ -19,14 +19,14 @@ import XMonad.Actions.RotSlaves (rotSlavesDown, rotAllDown)
 import XMonad.Actions.WindowGo (runOrRaise)
 import XMonad.Actions.WithAll (sinkAll, killAll)
 import qualified XMonad.Actions.Search as S
-
-    -- Data
+       
+-- Data
 import Data.Char (isSpace)
 import Data.List
 import Data.Monoid
 import qualified Data.Map as M
 
-    -- Hooks
+-- Hooks
 import XMonad.Hooks.DynamicLog (dynamicLogWithPP, wrap, xmobarPP, xmobarColor, shorten, PP(..))
 import XMonad.Hooks.EwmhDesktops 
 import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook, manageDocks, ToggleStruts(..))
@@ -34,14 +34,14 @@ import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat)
 import XMonad.Hooks.ServerMode
 import XMonad.Hooks.SetWMName
 
-    -- Layouts
+-- Layouts
 import XMonad.Layout.GridVariants (Grid(Grid))
 import XMonad.Layout.SimplestFloat
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.ResizableThreeColumns
 
-    -- Layouts modifiers
+-- Layouts modifiers
 import XMonad.Layout.LayoutModifier
 import XMonad.Layout.LimitWindows (limitWindows, increaseLimit, decreaseLimit)
 import XMonad.Layout.MultiToggle (mkToggle, single, EOT(EOT), (??))
@@ -52,7 +52,7 @@ import XMonad.Layout.WindowArranger (windowArrange, WindowArrangerMsg(..))
 import qualified XMonad.Layout.ToggleLayouts as T (toggleLayouts, ToggleLayout(Toggle))
 import qualified XMonad.Layout.MultiToggle as MT (Toggle(..))
 
-    -- Prompt
+-- Prompt
 import XMonad.Prompt
 import XMonad.Prompt.Input
 import XMonad.Prompt.Man
@@ -62,7 +62,7 @@ import XMonad.Prompt.Ssh
 import XMonad.Prompt.XMonad
 import Control.Arrow (first)
 
-    -- Utilities
+-- Utilities
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run
@@ -110,33 +110,33 @@ myStartupHook = do
 ------------------------------------------------------------------------
 myXPConfig :: XPConfig
 myXPConfig = def
-      { font                = "xft:Hack Nerd Font:size=9"
-      , bgColor             = "#292d3e"
-      , fgColor             = "#d0d0d0"
-      , bgHLight            = "#c792ea"
-      , fgHLight            = "#000000"
-      , borderColor         = "#535974"
-      , promptBorderWidth   = 0
-      , promptKeymap        = myXPKeymap
-      -- , position            = Top
-      , position            = CenteredAt { xpCenterY = 0.3, xpWidth = 0.3 }
-      , height              = 20
-      , historySize         = 256
-      , historyFilter       = id
-      , defaultText         = []
-      , autoComplete        = Just 100000  -- set Just 100000 for .1 sec
-      , showCompletionOnTab = True
-      , searchPredicate     = isPrefixOf
-      , alwaysHighlight     = True
-      , maxComplRows        = Nothing      -- set to Just 5 for 5 rows
-      }
+     { font                = "xft:Hack Nerd Font:size=9"
+     , bgColor             = "#292d3e"
+     , fgColor             = "#d0d0d0"
+     , bgHLight            = "#c792ea"
+     , fgHLight            = "#000000"
+     , borderColor         = "#535974"
+     , promptBorderWidth   = 0
+     , promptKeymap        = myXPKeymap
+       -- , position            = Top
+     , position            = CenteredAt { xpCenterY = 0.3, xpWidth = 0.3 }
+     , height              = 20
+     , historySize         = 256
+     , historyFilter       = id
+     , defaultText         = []
+     , autoComplete        = Just 100000  -- set Just 100000 for .1 sec
+     , showCompletionOnTab = True
+     , searchPredicate     = isPrefixOf
+     , alwaysHighlight     = True
+     , maxComplRows        = Nothing      -- set to Just 5 for 5 rows
+     }
 
 -- The same config minus the autocomplete feature which is annoying on
 -- certain Xprompts, like the search engine prompts.
 myXPConfig' :: XPConfig
 myXPConfig' = myXPConfig
-      { autoComplete = Nothing
-      }
+     { autoComplete = Nothing
+     }
 
 -- A list of all of the standard Xmonad prompts
 promptList :: [(String, XPConfig -> X ())]
@@ -227,78 +227,78 @@ searchList = [ ("a", archwiki)
 -- to be written in simpler, emacs-like format.
 myKeys :: [(String, X ())]
 myKeys =
-    -- Xmonad
-        [ ("M-C-r", spawn "xmonad --recompile")      -- Recompiles xmonad
-        , ("M-S-r", spawn "xmonad --restart")        -- Restarts xmonad
-        , ("M-C-S-q", io exitSuccess)                -- Quits xmonad
+     [ -- Xmonad
+       ("M-C-r", spawn "xmonad --recompile")      -- Recompiles xmonad
+     , ("M-S-r", spawn "xmonad --restart")        -- Restarts xmonad
+     , ("M-C-S-q", io exitSuccess)                -- Quits xmonad
 
-    -- Open my preferred terminal
-        , ("M-<Return>", spawn (myTerminal))
+       -- Open my preferred terminal
+     , ("M-<Return>", spawn (myTerminal))
+  
+       -- Run Prompt
+     , ("M-S-<Return>", shellPrompt myXPConfig')   -- Shell Prompt
 
-    -- Run Prompt
-        , ("M-S-<Return>", shellPrompt myXPConfig')   -- Shell Prompt
+       -- Dmenu
+     , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
+     , ("M-c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
+     , ("M-p", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
 
-    -- Dmenu
-        , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-        , ("M-c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
-        , ("M-p", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
-
-    -- Windows
-        , ("M-q", kill1)                           -- Kill the currently focused client
-        , ("M-S-q", killAll)
-
-    -- Floating windows
-        , ("M-f", sendMessage (T.Toggle "floats"))       -- Toggles my 'floats' layout
-        , ("M-<Delete>", withFocused $ windows . W.sink) -- Push floating window back to tile
-        , ("M-S-<Delete>", sinkAll)                      -- Push ALL floating windows to tile
-
-    -- Windows navigation
-        , ("M-m", windows W.focusMaster)     -- Move focus to the master window
-        , ("M-j", windows W.focusDown)       -- Move focus to the next window
-        , ("M-k", windows W.focusUp)         -- Move focus to the prev window
-        , ("M-S-m", windows W.swapMaster)    -- Swap the focused window and the master window
-        , ("M-S-j", windows W.swapDown)      -- Swap focused window with next window
-        , ("M-S-k", windows W.swapUp)        -- Swap focused window with prev window
-        , ("M-<Backspace>", promote)         -- Moves focused window to master, others maintain order
-        , ("M1-S-<Tab>", rotSlavesDown)      -- Rotate all windows except master and keep focus in place
-        , ("M1-C-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
-        , ("M-C-s", killAllOtherCopies)      -- 
-
-    -- Layouts
-        , ("M-<Tab>", sendMessage NextLayout)                -- Switch to next layout
-        , ("M-<Space>", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
-        , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts
-        , ("M-S-n", sendMessage $ MT.Toggle NOBORDERS)      -- Toggles noborder
-        , ("M-<KP_Multiply>", sendMessage (IncMasterN 1))   -- Increase number of clients in master pane
-        , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in master pane
-        , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows
-        , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows
-        
-    -- Resize windows
-        , ("M-h", sendMessage Shrink)                       -- Shrink horiz window width
-        , ("M-l", sendMessage Expand)                       -- Expand horiz window width
-        , ("M-S-h", sendMessage MirrorShrink)               -- Shrink vert window width (only works with resizable layouts)
-        , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizable layouts)
-
-    -- Applications (Super(+Ctrl)+Key)
-        , ("M-e", spawn "emacsclient -c -a ''")         -- Editor (emacs)
-        , ("M-r", spawn (myTerminal ++ " -e ranger"))   -- File manager
-        , ("M-C-a", spawn ("pavucontrol"))              -- Audio control
-        , ("M-C-b", spawn "firefox duckduckgo.com")     -- Browser
-        , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
-        , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
-        , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
-
-    -- Multimedia Keys
-        , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
-        , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
-        , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
-        ]
-        
-        -- Appending search engines to keybindings list
-        ++ [("M-s " ++ k, S.promptSearch myXPConfig f) | (k,f) <- searchList ]
-        ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
-        ++ [("M-S-p " ++ k, f myXPConfig) | (k,f) <- promptList ]
+       -- Windows
+     , ("M-q", kill1)                           -- Kill the currently focused client
+     , ("M-S-q", killAll)
+    
+       -- Floating windows
+     , ("M-f", sendMessage (T.Toggle "floats"))       -- Toggles my 'floats' layout
+     , ("M-<Delete>", withFocused $ windows . W.sink) -- Push floating window back to tile
+     , ("M-S-<Delete>", sinkAll)                      -- Push ALL floating windows to tile
+    
+       -- Windows navigation
+     , ("M-m", windows W.focusMaster)     -- Move focus to the master window
+     , ("M-j", windows W.focusDown)       -- Move focus to the next window
+     , ("M-k", windows W.focusUp)         -- Move focus to the prev window
+     , ("M-S-m", windows W.swapMaster)    -- Swap the focused window and the master window
+     , ("M-S-j", windows W.swapDown)      -- Swap focused window with next window
+     , ("M-S-k", windows W.swapUp)        -- Swap focused window with prev window
+     , ("M-<Backspace>", promote)         -- Moves focused window to master, others maintain order
+     , ("M1-S-<Tab>", rotSlavesDown)      -- Rotate all windows except master and keep focus in place
+     , ("M1-C-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
+     , ("M-C-s", killAllOtherCopies)      -- 
+    
+       -- Layouts
+     , ("M-<Tab>", sendMessage NextLayout)                -- Switch to next layout
+     , ("M-<Space>", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
+     , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts
+     , ("M-S-n", sendMessage $ MT.Toggle NOBORDERS)      -- Toggles noborder
+     , ("M-<KP_Multiply>", sendMessage (IncMasterN 1))   -- Increase number of clients in master pane
+     , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in master pane
+     , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows
+     , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows
+    
+       -- Resize windows
+     , ("M-h", sendMessage Shrink)                       -- Shrink horiz window width
+     , ("M-l", sendMessage Expand)                       -- Expand horiz window width
+     , ("M-S-h", sendMessage MirrorShrink)               -- Shrink vert window width (only works with resizable layouts)
+     , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizable layouts)
+    
+       -- Applications (Super(+Ctrl)+Key)
+     , ("M-e", spawn "emacsclient -c -a ''")         -- Editor (emacs)
+     , ("M-r", spawn (myTerminal ++ " -e ranger"))   -- File manager
+     , ("M-C-a", spawn ("pavucontrol"))              -- Audio control
+     , ("M-C-b", spawn "firefox duckduckgo.com")     -- Browser
+     , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
+     , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
+     , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
+    
+       -- Multimedia Keys
+     , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
+     , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
+     , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
+     ]
+         
+  -- Appending search engines to keybindings list
+  ++ [("M-s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
+  ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
+  ++ [("M-S-p " ++ k, f myXPConfig') | (k,f) <- promptList ]
 
 ------------------------------------------------------------------------
 -- WORKSPACES

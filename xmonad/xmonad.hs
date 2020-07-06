@@ -48,6 +48,7 @@ import XMonad.Layout.MultiToggle (mkToggle, single, EOT(EOT), (??))
 import XMonad.Layout.MultiToggle.Instances (StdTransformers(NBFULL, MIRROR, NOBORDERS))
 import XMonad.Layout.Renamed 
 import XMonad.Layout.Spacing
+import XMonad.Layout.PerWorkspace
 import XMonad.Layout.WindowArranger (windowArrange, WindowArrangerMsg(..))
 import qualified XMonad.Layout.ToggleLayouts as T (toggleLayouts, ToggleLayout(Toggle))
 import qualified XMonad.Layout.MultiToggle as MT (Toggle(..))
@@ -351,36 +352,40 @@ mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
 mySpacing' :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing' i = spacingRaw True (Border i i i i) True (Border i i i i) True
 
--- Defining a bunch of layouts, many that I don't use.
-tall     = renamed [Replace "tall"]
-           $ limitWindows 12
-           $ mySpacing 8
-           $ ResizableTall 1 (3/100) (1/2) []
-floats   = renamed [Replace "floats"]
-           $ limitWindows 20 simplestFloat
+-- Defining some layouts.
+threeCol = renamed [Replace "threeCol"]
+           $ limitWindows 9
+           $ mySpacing' 8
+           $ ResizableThreeColMid 1 (4/100) (3/8) []
 grid     = renamed [Replace "grid"]
            $ limitWindows 12
            $ mySpacing 8
            $ mkToggle (single MIRROR)
            $ Grid (16/10)
-threeCol = renamed [Replace "threeCol"]
-           $ limitWindows 9
+floats   = renamed [Replace "floats"]
+           $ limitWindows 20 simplestFloat
+-- tall     = renamed [Replace "tall"]
+--            $ limitWindows 12
+--            $ mySpacing 8
+--            $ ResizableTall 1 (3/100) (1/2) []
+threeColDev = renamed [Replace "threeColDev"]
+           $ limitWindows 10
            $ mySpacing' 8
-           $ ResizableThreeColMid 1 (3/100) (3/8) []
--- threeCol = renamed [Replace "threeColR"]
---            $ limitWindows 9
---            $ mySpacing' 8
---            $ ThreeColMid 1 (3/100) (3/8)
+           $ ResizableThreeColMid 2 (1/100) (5/8) [(1/10)]
 
-
--- The layout hook
-myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts floats $
-               mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDefaultLayout
+-- The layout hook. onWorkspace spcifies the workspaces from the first
+-- layout hook, myDevLHook, while all other workspaces use myDefaultLHook
+myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2),(myWorkspaces !! 3)]
+                myDevLHook myDefaultLHook 
              where
-               myDefaultLayout =     threeCol
-                                 ||| grid
-                                 ||| tall
-                                 -- ||| mulCol
+               -- The layout hooks 
+               myDefaultLHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts floats $
+                 mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDefaultLayout
+               myDevLHook = avoidStruts $ mouseResize $ windowArrange $ 
+                 mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDevLayout
+               -- The layouts
+               myDefaultLayout = threeCol ||| grid 
+               myDevLayout = threeColDev ||| grid ||| threeCol 
 
 ------------------------------------------------------------------------
 -- MAIN

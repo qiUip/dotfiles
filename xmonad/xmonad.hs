@@ -298,6 +298,8 @@ myKeys =
      , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 1%+ unmute")
      , ("S-<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
      , ("S-<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
+
+       -- Print screen. Requires scrot.
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
      ]
          

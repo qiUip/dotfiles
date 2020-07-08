@@ -11,7 +11,7 @@ import System.Exit (exitSuccess)
 import qualified XMonad.StackSet as W
 
 -- Actions
-import XMonad.Actions.CopyWindow (kill1, killAllOtherCopies)
+import XMonad.Actions.CopyWindow (kill1, killAllOtherCopies, copyToAll, copy)
 import XMonad.Actions.CycleWS (moveTo, shiftTo, WSType(..), nextScreen, prevScreen)
 import XMonad.Actions.MouseResize
 import XMonad.Actions.Promote
@@ -229,24 +229,26 @@ searchList = [ ("a", archwiki)
 myKeys :: [(String, X ())]
 myKeys =
      [ -- Xmonad
-       ("M-C-r", spawn "xmonad --recompile")      -- Recompiles xmonad
-     , ("M-S-r", spawn "xmonad --restart")        -- Restarts xmonad
-     , ("M-C-S-q", io exitSuccess)                -- Quits xmonad
+       ("M-C-r", spawn "xmonad --recompile && xmonad --restart") -- Recompiles xmonad
+     , ("M-S-r", spawn "xmonad --restart")                       -- Restarts xmonad
+     , ("M-C-S-q", io exitSuccess)                               -- Quits xmonad
 
        -- Open my preferred terminal
      , ("M-<Return>", spawn (myTerminal))
   
        -- Run Prompt
      , ("M-S-<Return>", shellPrompt myXPConfig')   -- Shell Prompt
+     , ("<XF86MenuKB> r", shellPrompt myXPConfig')   -- Shell Prompt
 
        -- Dmenu
      , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-     , ("M-c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
-     , ("M-p", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
+     , ("<XF86MenuKB> d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
+     , ("<XF86MenuKB> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
+     , ("<XF86MenuKB> q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
 
        -- Windows
-     , ("M-q", kill1)                           -- Kill the currently focused client
-     , ("M-S-q", killAll)
+     , ("M-q", kill1)      -- Kill the currently focused client
+     , ("M-S-q", killAll)  -- Kill all windows in current layout
     
        -- Floating windows
      , ("M-f", sendMessage (T.Toggle "floats"))       -- Toggles my 'floats' layout
@@ -255,15 +257,16 @@ myKeys =
     
        -- Windows navigation
      , ("M-m", windows W.focusMaster)     -- Move focus to the master window
+     , ("M-c", windows copyToAll)         -- Move focus to the master window
      , ("M-j", windows W.focusDown)       -- Move focus to the next window
      , ("M-k", windows W.focusUp)         -- Move focus to the prev window
      , ("M-S-m", windows W.swapMaster)    -- Swap the focused window and the master window
      , ("M-S-j", windows W.swapDown)      -- Swap focused window with next window
      , ("M-S-k", windows W.swapUp)        -- Swap focused window with prev window
      , ("M-<Backspace>", promote)         -- Moves focused window to master, others maintain order
-     , ("M1-S-<Tab>", rotSlavesDown)      -- Rotate all windows except master and keep focus in place
-     , ("M1-C-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
-     , ("M-C-s", killAllOtherCopies)      -- 
+     , ("C-S-<Tab>", rotSlavesDown)      -- Rotate all windows except master and keep focus in place
+     , ("M1-S-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
+     , ("M-C-c", killAllOtherCopies)      -- 
     
        -- Layouts
      , ("M-<Tab>", sendMessage NextLayout)                -- Switch to next layout
@@ -283,7 +286,7 @@ myKeys =
     
        -- Applications (Super(+Ctrl)+Key)
      , ("M-e", spawn "emacsclient -c -a ''")         -- Editor (emacs)
-     , ("M-r", spawn (myTerminal ++ " -e ranger"))   -- File manager
+     , ("M-r", runInTerm "" "ranger")                -- File manager
      , ("M-C-a", spawn ("pavucontrol"))              -- Audio control
      , ("M-C-b", spawn "firefox duckduckgo.com")     -- Browser
      , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
@@ -291,15 +294,18 @@ myKeys =
      , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
     
        -- Multimedia Keys
-     , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
-     , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
+     , ("<XF86AudioLowerVolume>", spawn "amixer set Master 1%- unmute")
+     , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 1%+ unmute")
+     , ("S-<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
+     , ("S-<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
      ]
          
   -- Appending search engines to keybindings list
-  ++ [("M-s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
+  ++ [("<XF86MenuKB> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
+  -- ++ [("<XF86MenuKB> " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
   ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
-  ++ [("M-S-p " ++ k, f myXPConfig') | (k,f) <- promptList ]
+  ++ [("<XF86MenuKB> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
 
 ------------------------------------------------------------------------
 -- WORKSPACES
@@ -333,9 +339,11 @@ myWorkspaces = clickable . map xmobarEscape
 
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-     [ className =? "vlc"      --> doShift ( myWorkspaces !! 8)
-     , className =? "ParaView" --> doShift ( myWorkspaces !! 2)
-     , className =? "Gimp"     --> doShift ( myWorkspaces !! 7)
+     [ className =? "vlc"       --> doShift ( myWorkspaces !! 8)
+     , className =? "ParaView"  --> doShift ( myWorkspaces !! 2)
+     , className =? "Gimp"      --> doShift ( myWorkspaces !! 7)
+     , className =? "Pavucontrol"     --> doFloat
+     , className =? "Blueman-manager" --> doFloat
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
      ]
 

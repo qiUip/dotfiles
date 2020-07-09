@@ -203,11 +203,14 @@ archwiki = S.searchEngine "archwiki" "https://wiki.archlinux.org/index.php?searc
 ebay     = S.searchEngine "ebay" "https://www.ebay.com/sch/i.html?_nkw="
 news     = S.searchEngine "news" "https://news.google.com/search?q="
 reddit   = S.searchEngine "reddit" "https://www.reddit.com/search/?q="
+amazon   = S.searchEngine "amazon" "https://www.amazon.co.uk/s?k="
+scholar  = S.searchEngine "scholar" "https://scholar.google.co.uk/scholar?hl=en&as_sdt=0%2C5&q="
 
 -- This is the list of search engines that I want to use. Some are from
 -- XMonad.Actions.Search, and some are the ones that I added above.
 searchList :: [(String, S.SearchEngine)]
 searchList = [ ("a", archwiki)
+             , ("c", scholar)
              , ("d", S.duckduckgo)
              , ("e", ebay)
              , ("g", S.google)
@@ -218,7 +221,7 @@ searchList = [ ("a", archwiki)
              , ("v", S.vocabulary)
              , ("w", S.wikipedia)
              , ("y", S.youtube)
-             , ("z", S.amazon)
+             , ("z", amazon)
              ]
 
 ------------------------------------------------------------------------
@@ -301,11 +304,17 @@ myKeys =
 
        -- Print screen. Requires scrot.
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
+
+       -- Print screen. Requires scrot.
+     , ("M-s t", namedScratchpadAction myScratchPads "term")
+     , ("M-s m", namedScratchpadAction myScratchPads "music")
+     , ("M-s e", namedScratchpadAction myScratchPads "mail")
+     , ("M-s b", namedScratchpadAction myScratchPads "bt")
+     , ("M-s p", namedScratchpadAction myScratchPads "audio")
      ]
          
   -- Appending search engines to keybindings list
   ++ [("<XF86MenuKB> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
-  -- ++ [("<XF86MenuKB> " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
   ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
   ++ [("<XF86MenuKB> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
 
@@ -344,10 +353,9 @@ myManageHook = composeAll
      [ className =? "vlc"       --> doShift ( myWorkspaces !! 8)
      , className =? "ParaView"  --> doShift ( myWorkspaces !! 2)
      , className =? "Gimp"      --> doShift ( myWorkspaces !! 7)
-     , className =? "Pavucontrol"     --> doFloat
-     , className =? "Blueman-manager" --> doFloat
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
-     ]
+     ] <+> namedScratchpadManageHook myScratchPads
+
 
 ------------------------------------------------------------------------
 -- LAYOUTS
@@ -374,14 +382,14 @@ grid     = renamed [Replace "grid"]
            $ Grid (16/10)
 floats   = renamed [Replace "floats"]
            $ limitWindows 20 simplestFloat
--- tall     = renamed [Replace "tall"]
---            $ limitWindows 12
---            $ mySpacing 8
---            $ ResizableTall 1 (3/100) (1/2) []
 threeColDev = renamed [Replace "threeColDev"]
            $ limitWindows 10
            $ mySpacing' 8
            $ ResizableThreeColMid 2 (1/100) (5/8) [(1/10)]
+-- tall     = renamed [Replace "tall"]
+--            $ limitWindows 12
+--            $ mySpacing 8
+--            $ ResizableTall 1 (3/100) (1/2) []
 
 -- The layout hook. onWorkspace spcifies the workspaces from the first
 -- layout hook, myDevLHook, while all other workspaces use myDefaultLHook
@@ -395,7 +403,37 @@ myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2),(myWorkspa
                  mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDevLayout
                -- The layouts
                myDefaultLayout = threeCol ||| grid 
-               myDevLayout = threeColDev ||| grid ||| threeCol 
+               myDevLayout = threeColDev ||| grid ||| threeCol
+
+
+------------------------------------------------------------------------
+-- SCRATCHPADS
+------------------------------------------------------------------------
+myScratchPads = [
+                  NS "term" spawnTerm findTerm manageScratch
+                , NS "music" spawnNcmp findNcmp manageScratch
+                , NS "mail" spawnEmail findEmail manageScratch
+                , NS "bt" spawnBT findBT manageScratch
+                , NS "audio" spawnPavu findPavu manageScratch
+                ]
+                where
+                  -- Terminal (st)
+                  spawnTerm  = "st" ++ " -n scratchpad"
+                  findTerm   = resource =? "scratchpad"
+                  -- Music player
+                  spawnNcmp  = "termite -e ncmpcpp --title scramusic"
+                  findNcmp   = title =? "scramusic"
+                  -- Email
+                  spawnEmail  = "termite -e neomutt --title scramail"
+                  findEmail   = title =? "scramail"
+                  -- Bluetooth manager
+                  spawnBT  = "blueman-manager"
+                  findBT   = className =? "Blueman-manager"
+                  -- Audio mixer
+                  spawnPavu  = "pavucontrol"
+                  findPavu   = className =? "Pavucontrol"
+                  manageScratch = customFloating $ center 0.3 0.5
+                    where center w h = W.RationalRect ((1 - w) / 2) ((1 - h) / 2) w h
 
 ------------------------------------------------------------------------
 -- MAIN
@@ -404,7 +442,7 @@ main :: IO ()
 main = do
     -- Launch xmobar
     xmproc <- spawnPipe "xmobar /home/mashy/.config/xmobar/config"
-  
+    -- Launch ewmh desktop
     xmonad $ ewmh def
         { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook <+> manageDocks
         , handleEventHook    = serverModeEventHookCmd 
@@ -419,17 +457,17 @@ main = do
         , borderWidth        = myBorderWidth
         , normalBorderColor  = myNormColor
         , focusedBorderColor = myFocusColor
-        , logHook = dynamicLogWithPP xmobarPP
-                        { ppOutput = \x -> hPutStrLn xmproc x 
-                        , ppCurrent = xmobarColor "#ddbd94" "" . wrap "[" "]" -- Current workspace in xmobar
-                        , ppVisible = xmobarColor "#ddbd94" ""                -- Visible but not current workspace
-                        , ppHidden = xmobarColor "#c15c2e" "" . wrap "*" ""   -- Hidden workspaces in xmobar
-                        , ppHiddenNoWindows = xmobarColor "#5a8c93" ""        -- Hidden workspaces (no windows)
-                        , ppTitle = xmobarColor "#d0d0d0" "" . shorten 60     -- Title of active window in xmobar
-                        , ppSep =  "<fc=#666666> | </fc>"                     -- Separators in xmobar
-                        , ppUrgent = xmobarColor "#C45500" "" . wrap "!" "!"  -- Urgent workspace
-                        , ppExtras  = [windowCount]                           -- # of windows current workspace
-                        , ppOrder  = \(ws:l:t:ex) -> [ws,l]++ex++[t]
-                        }
+        , logHook            = dynamicLogWithPP xmobarPP
+                               { ppOutput          = \x -> hPutStrLn xmproc x
+                               , ppCurrent         = xmobarColor "#ddbd94" "" . wrap "[" "]"  -- Current workspace in xmobar
+                               , ppVisible         = xmobarColor "#ddbd94" ""                 -- Visible but not current workspace
+                               , ppHidden          = xmobarColor "#c15c2e" "" . wrap "*" ""   -- Hidden workspaces in xmobar
+                               , ppHiddenNoWindows = xmobarColor "#5a8c93" ""                 -- Hidden workspaces (no windows)
+                               , ppTitle           = xmobarColor "#d0d0d0" "" . shorten 60    -- Title of active window in xmobar
+                               , ppSep             =  "<fc=#666666> | </fc>"                  -- Separators in xmobar
+                               , ppUrgent          = xmobarColor "#C45500" "" . wrap "!" "!"  -- Urgent workspace
+                               , ppExtras          = [windowCount]                            -- # of windows current workspace
+                               , ppOrder           = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+                               }
         } `additionalKeysP` myKeys 
 

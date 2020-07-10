@@ -385,7 +385,7 @@ floats   = renamed [Replace "floats"]
 threeColDev = renamed [Replace "threeColDev"]
            $ limitWindows 10
            $ mySpacing' 8
-           $ ResizableThreeColMid 2 (1/100) (5/8) [(1/10)]
+           $ ResizableThreeColMid 2 (1/100) (5/8) [(19/10)]
 -- tall     = renamed [Replace "tall"]
 --            $ limitWindows 12
 --            $ mySpacing 8
@@ -402,34 +402,35 @@ myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2),(myWorkspa
                myDevLHook = avoidStruts $ mouseResize $ windowArrange $ 
                  mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDevLayout
                -- The layouts
-               myDefaultLayout = threeCol ||| grid 
-               myDevLayout = threeColDev ||| grid ||| threeCol
+               myDefaultLayout = threeCol ||| floats 
+               myDevLayout = threeColDev ||| threeCol
 
 
 ------------------------------------------------------------------------
 -- SCRATCHPADS
 ------------------------------------------------------------------------
 myScratchPads = [
-                  NS "term" spawnTerm findTerm manageScratch
-                , NS "music" spawnNcmp findNcmp manageScratch
-                , NS "mail" spawnEmail findEmail manageScratch
-                , NS "bt" spawnBT findBT manageScratch
-                , NS "audio" spawnPavu findPavu manageScratch
+                  NS "term"  spawnTerm  findTerm  manageScratch
+                , NS "music" spawnNcmp  findNcmp  manageScratch
+                , NS "mail"  spawnEmail findEmail manageScratch
+                , NS "bt"    spawnBT    findBT    manageScratch
+                , NS "audio" spawnPavu  findPavu  manageScratch
                 ]
                 where
                   -- Terminal (st)
                   spawnTerm  = "st" ++ " -n scratchpad"
                   findTerm   = resource =? "scratchpad"
-                  -- Music player
+                  -- Music player (ncmpcpp)
+                  -- Note that using termite requires to define the title with --title manually
                   spawnNcmp  = "termite -e ncmpcpp --title scramusic"
                   findNcmp   = title =? "scramusic"
-                  -- Email
+                  -- Email (neomutt) 
                   spawnEmail  = "termite -e neomutt --title scramail"
                   findEmail   = title =? "scramail"
-                  -- Bluetooth manager
+                  -- Bluetooth manager (blueman)
                   spawnBT  = "blueman-manager"
                   findBT   = className =? "Blueman-manager"
-                  -- Audio mixer
+                  -- Audio mixer (pulseaudio)
                   spawnPavu  = "pavucontrol"
                   findPavu   = className =? "Pavucontrol"
                   manageScratch = customFloating $ center 0.3 0.5

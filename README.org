@@ -1,7 +1,6 @@
 #+OPTIONS: toc:nil
 #+TITLE: A collection of my personal dotfiles.
 
-* Description
 I use these files more as templates due to running them on several machines with
 some specific settings I need or like for each. This version of the dotfiles are
 compatible with my Manjaro Linux installation, whereas a version compatible with
@@ -27,7 +26,7 @@ Files in the scripts directory should be symlinked or copied into
 
 The xmonad folder will not work properly if placed in /~\slash{}.config/
 folder without some additional work. Detail about this problem can be found
-here: https://github.com/xmonad/xmonad/issues/164 In short, you have to create a
+here: https://github.com/xmonad/xmonad/issues/164. In short, you have to create a
 folder /~\slash{}.local\slash{}share\slash{}xmonad/ so that
 /~\slash{}.xmonad/ doesn't get created the next time xmonad is recompiled.
 Alternatively, the xmonad folder can just be symlinked or moved to

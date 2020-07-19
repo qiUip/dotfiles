@@ -24,9 +24,9 @@ commented and should be easy to use without emacs. You may find that additional
 comments however are available in the .org variants.
 
 * How to use these files
-All the folders here, with the exception of /scripts/, should be either
-symlinked or copied into /\slash{}home\slash{}<username>\slash{}.config/ or
-/~\slash{}.config/ in short.
+All the folders here, with the exception of /scripts/ and /.doom/, should be
+either symlinked or copied into /\slash{}home\slash{}<username>\slash{}.config/
+or /~\slash{}.config/ in short.
 
 Files in the scripts directory should be symlinked or copied into
 /~\slash{}.scripts/.

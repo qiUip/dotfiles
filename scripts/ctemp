@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Prints an integer value of the temperature value directly from the sysfs path
+# Use `sensors` to find preferred temperature source, then run
+# $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
+# to find path to desired file
+
+value=$(</sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input)
+value=$((value/1000))
+printf "$value\n"

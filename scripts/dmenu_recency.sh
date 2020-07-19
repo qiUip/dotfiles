@@ -33,7 +33,7 @@ if [ -z "$TERMINAL_CMD" ]; then
   fi
 fi
 
-dmenu_cmd="dmenu -l 15 $DMENU_OPTIONS"
+dmenu_cmd="/usr/local/bin/dmenu -l 15 $DMENU_OPTIONS"
 max_recent=199 # Number of recent commands to track
 
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/dmenu-recent"

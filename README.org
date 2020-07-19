@@ -31,7 +31,7 @@ Alternatively, the xmonad folder can just be symlinked or moved to
 /~\slash{}.xmonad/.
 
 Files in the scripts directory should be symlinked or copied into
-/\slash{}~.scripts/.
+/~\slash{}.scripts/.
 
 * Note
 Many of the config files, scripts, functions etc. throughout these dotfiles were

@@ -16,6 +16,13 @@ the i3 settings might not be updated. For instance, some changes in the scripts
 might not be compatible with how i3 calls them. These should all be easy to fix,
 but might not currently work as intended out of the box.
 
+For the sake of my sanity, I'm slowly migrating some of the files here to
+literate programming files with org-mode as it makes them much easier for me to
+follow and adapt. Bit by bit I expect most files to eventually be converted. The
+tangled files (the actual source files that the programs read) are still
+commented and should be easy to use without emacs. You may find that additional
+comments however are available in the .org variants.
+
 * How to use these files
 All the folders here, with the exception of /scripts/, should be either
 symlinked or copied into /\slash{}home\slash{}<username>\slash{}.config/ or

@@ -562,10 +562,10 @@ Config { font    = "xft:Hack Nerd Font:pixelsize=12:antialias=true:hinting=true"
 #+END_SRC
 
 * Colours
-The list of colours used in this setup for using in various places. These are
-not in a code block as I do not want them to get tangled, they are just useful
-for me to have here. In the future I might look into having these referenced and
-exported into different code blocks.
+The list of colours used in various places throughout this setup. These are not
+in a code block as I do not want them to get tangled, they are just useful for
+me to have here so I can easily have them on hand. In the future I might look
+into having these referenced and exported into different code blocks.
 - color0 (black)           : #252525
 - color1 (red)             : #ff5252
 - color2 (green)           : #118a71

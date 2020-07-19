@@ -1,0 +1,22 @@
+#+TITLE: Colours
+
+The list of colours used in various places throughout the setup.
+There are some exceptions, but generally I tried to be consistent with them.
+
+- color0 (black)           : #252525
+- color1 (red)             : #ff5252
+- color2 (green)           : #118a71
+- color3 (yellow)          : #f57900
+- color4 (blue)            : #42a5f5
+- color5 (magenta)         : #ff5c79
+- color6 (cyne)            : #00acc1
+- color7 (white)           : #f5f5f5
+
+- color8 (bright black)    : #708284
+- color9 (bright red)      : #d81b5f
+- color10 (bright green)   : #097f7f
+- color11 (bright yellow)  : #ffc135
+- color12 (bright blue)    : #1078da
+- color13 (bright magenta) : #d81b5f
+- color14 (bright cyan)    : #16a085
+- color15 (bright white)   : #f5f5f5

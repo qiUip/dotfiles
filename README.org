@@ -22,6 +22,9 @@ All the folders here, with the exception of /scripts/, should be either
 symlinked or copied into /\slash{}home\slash{}<username>\slash{}.config/ or
 /~\slash{}.config/ in short.
 
+Files in the scripts directory should be symlinked or copied into
+/~\slash{}.scripts/.
+
 The xmonad folder will not work properly if placed in /~\slash{}.config/
 folder without some additional work. Detail about this problem can be found
 here: https://github.com/xmonad/xmonad/issues/164 In short, you have to create a
@@ -29,9 +32,6 @@ folder /~\slash{}.local\slash{}share\slash{}xmonad/ so that
 /~\slash{}.xmonad/ doesn't get created the next time xmonad is recompiled.
 Alternatively, the xmonad folder can just be symlinked or moved to
 /~\slash{}.xmonad/.
-
-Files in the scripts directory should be symlinked or copied into
-/~\slash{}.scripts/.
 
 * Note
 Many of the config files, scripts, functions etc. throughout these dotfiles were

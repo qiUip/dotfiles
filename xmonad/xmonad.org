@@ -18,7 +18,7 @@ These are the full list of imported modules. With the exception of
 release of /xmonad-contrib/ https://github.com/xmonad/xmonad-contrib.
 =XMonad.Layout.ResizableThreeColumns= is taken directly from the
 /xmonad-contrib/ github page but has not yet been included in the official
-release, hence it is placed in the /\slash{}lib/Xmonad/Layout\slahs{}/
+release, hence it is placed in the /\slash{}lib\slash{}Xmonad\slash{}Layout\slahs{}/
 directory.
 #+BEGIN_SRC haskell
 -- Base

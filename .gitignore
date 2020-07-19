@@ -1,8 +1,12 @@
 # emacs backup
 *# *~
-#
+# haskell
+*.hi
+*.o 
+# extra
 *.log
-#
-*.hi *.o *.errors *.bak
+*.errors
+*.bak
+# xmonad
 prompt-history
 xmonad-x86_64-linux

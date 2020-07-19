@@ -16,7 +16,7 @@ the i3 settings might not be updated. For instance, some changes in the scripts
 might not be compatible with how i3 calls them. These should all be easy to fix,
 but might not currently work as intended out of the box.
 
-* Installation
+* How to use these files
 All the folders here, with the exception of /scripts/, should be either
 symlinked or copied into /\slash{}home\slash{}<username>\slash{}.config/ or
 /~\slash{}.config/ in short.

@@ -197,7 +197,7 @@ myXPKeymap = M.fromList $
 -- Xmonad has several search engines available to use located in
 -- XMonad.Actions.Search. Additionally, you can add other search engines
 -- such as those listed below.
-archwiki, ebay, news, reddit :: S.SearchEngine
+archwiki, ebay, news, reddit, amazon, scholar :: S.SearchEngine
 
 archwiki = S.searchEngine "archwiki" "https://wiki.archlinux.org/index.php?search="
 ebay     = S.searchEngine "ebay" "https://www.ebay.com/sch/i.html?_nkw="
@@ -295,6 +295,8 @@ myKeys =
      , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
      , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
      , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
+     , ("M-C-t", spawn ("teams"))                    -- MS teams (thanks work!!!)
+     , ("M-C-d", spawn ("discord"))                  -- MS teams (thanks work!!!)
     
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "amixer set Master 1%- unmute")
@@ -346,15 +348,20 @@ myWorkspaces = clickable . map xmobarEscape
 -- Forcing programs to a certain workspace with a doShift requires xdotool
 -- if you are using clickable workspaces. You need the className or title 
 -- of the program. Use xprop to get this info.
--- note that using 'doShift ( myWorkspaces !! 7)' sends program to workspace 8!
-
+-- note that indecies in haskell start at 0, so using '(myWorkspaces !! 7)'
+-- corresponds to workspace 8.
+-- There has to be a better way to set the windows as floating AND also set their initial size.
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-     [ className =? "vlc"       --> doShift ( myWorkspaces !! 8)
-     , className =? "ParaView"  --> doShift ( myWorkspaces !! 2)
-     , className =? "Gimp"      --> doShift ( myWorkspaces !! 7)
+     [ className =? "vlc"       --> doShift ( myWorkspaces !! 8) -- 'watch'
+     , className =? "ParaView"  --> doShift ( myWorkspaces !! 3) -- 'dev3'
+     , className =? "Gimp"      --> doShift ( myWorkspaces !! 7) -- 'edit'
+     , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
+     , className =? "discord"   --> doFloat
+     , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
+     , className =? "Microsoft Teams - Preview" --> doFloat
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
-     ] <+> namedScratchpadManageHook myScratchPads
+     ] <+> namedScratchpadManageHook myScratchPads -- add named sctachpads hook to myManageHook
 
 
 ------------------------------------------------------------------------
@@ -393,7 +400,7 @@ threeColDev = renamed [Replace "threeColDev"]
 
 -- The layout hook. onWorkspace spcifies the workspaces from the first
 -- layout hook, myDevLHook, while all other workspaces use myDefaultLHook
-myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2),(myWorkspaces !! 3)]
+myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2)]
                 myDevLHook myDefaultLHook 
              where
                -- The layout hooks 
@@ -442,7 +449,7 @@ myScratchPads = [
 main :: IO ()
 main = do
     -- Launch xmobar
-    xmproc <- spawnPipe "xmobar /home/mashy/.config/xmobar/config"
+    xmproc <- spawnPipe "xmobar /home/mashy/.config/xmonad/xmobar"
     -- Launch ewmh desktop
     xmonad $ ewmh def
         { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook <+> manageDocks

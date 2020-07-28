@@ -85,7 +85,7 @@ windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace
 
 myStartupHook :: X ()
 myStartupHook = do
-          spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/166087.jpg"
+          spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/solar2.jpg"
           spawnOnce "picom -b"
           spawnOnce "/usr/sbin/emacs --daemon &"
           setWMName "LG3D"

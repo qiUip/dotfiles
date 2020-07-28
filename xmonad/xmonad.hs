@@ -87,7 +87,7 @@ myStartupHook :: X ()
 myStartupHook = do
           spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/166087.jpg"
           spawnOnce "picom -b"
-          spawnOnce "/usr/local/bin/emacs --daemon &"
+          spawnOnce "/usr/sbin/emacs --daemon &"
           setWMName "LG3D"
 
 -- Prompt parameters (fonts, colours, soze, location, features etc.)
@@ -262,12 +262,15 @@ myKeys =
      , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
      , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
      , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
+     , ("M-C-t", spawn ("teams"))                    -- MS teams (thanks work!!!)
+     , ("M-C-d", spawn ("discord"))                  -- MS teams (thanks work!!!)
 
        -- Multimedia Keys
-     , ("<XF86AudioLowerVolume>", spawn "amixer set Master 1%- unmute")
-     , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 1%+ unmute")
-     , ("S-<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
-     , ("S-<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
+
+     , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")
+     , ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +1%")
+     , ("S-<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%")
+     , ("S-<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%")
 
        -- Print screen. Requires scrot.
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")

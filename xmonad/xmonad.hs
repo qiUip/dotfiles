@@ -51,6 +51,8 @@ import XMonad.Prompt.Pass
 import XMonad.Prompt.Shell
 import XMonad.Prompt.Ssh
 import XMonad.Prompt.XMonad
+import XMonad.Prompt.RunOrRaise
+import XMonad.Prompt.Window
 import Control.Arrow (first)
 
 -- Utilities
@@ -87,6 +89,7 @@ myStartupHook :: X ()
 myStartupHook = do
           spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/solar2.jpg"
           spawnOnce "picom -b"
+          spawnOnce "xmodmap /home/mashy/.Xmodmap"
           spawnOnce "/usr/sbin/emacs --daemon &"
           setWMName "LG3D"
 
@@ -125,10 +128,22 @@ promptList :: [(String, XPConfig -> X ())]
 promptList = [ ("m", manPrompt)          -- manpages prompt
              , ("p", passPrompt)         -- get passwords (requires 'pass')
              , ("g", passGeneratePrompt) -- generate passwords (requires 'pass')
-             , ("r", passRemovePrompt)   -- remove passwords (requires 'pass')
+             , ("r", runOrRaisePrompt)   -- runs or focus on a (gui) program
              , ("s", sshPrompt)          -- ssh prompt
              , ("x", xmonadPrompt)       -- xmonad prompt
              ]
+
+promptList' :: [(String, XPConfig -> String -> X (), String)]
+promptList' = [ ("c", calcPrompt, "qalc")         -- requires qalculate-gtk
+              ]
+
+calcPrompt c ans =
+    inputPrompt c (trim ans) ?+ \input ->
+        liftIO(runProcessWithInput "qalc" [input] "") >>= calcPrompt c
+    where
+        trim  = f . f
+            where f = reverse . dropWhile isSpace
+
 
 -- Keymaps (emacs-like key bindings)
 myXPKeymap :: M.Map (KeyMask,KeySym) (XP ())
@@ -207,8 +222,8 @@ myKeys =
      , ("M-<Return>", spawn (myTerminal))
 
        -- Run Prompt
-     , ("M-S-<Return>", shellPrompt myXPConfig')   -- Shell Prompt
-     , ("<XF86MenuKB> r", shellPrompt myXPConfig')   -- Shell Prompt
+     , ("M-S-<Return>", shellPrompt myXPConfig')   --- Shell Prompt
+     -- , ("<XF86MenuKB> r", shellPrompt myXPConfig')  -- Shell Prompt
 
        -- Dmenu
      , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
@@ -266,7 +281,6 @@ myKeys =
      , ("M-C-d", spawn ("discord"))                  -- MS teams (thanks work!!!)
 
        -- Multimedia Keys
-
      , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")
      , ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +1%")
      , ("S-<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%")
@@ -281,12 +295,18 @@ myKeys =
      , ("M-s e", namedScratchpadAction myScratchPads "mail")
      , ("M-s b", namedScratchpadAction myScratchPads "bt")
      , ("M-s p", namedScratchpadAction myScratchPads "audio")
+
+     , ("<XF86MenuKB> r t", prompt ("termite" ++ " -e") myXPConfig)   -- for cli
+     , ("<XF86MenuKB> r g", runOrRaisePrompt            myXPConfig)   -- for gui
+     , ("<XF86MenuKB> w b", windowPrompt myXPConfig Bring allWindows)
+     , ("<XF86MenuKB> w g", windowPrompt myXPConfig Goto allWindows)
      ]
 
   -- Appending search engines to keybindings list
   ++ [("<XF86MenuKB> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
   ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
   ++ [("<XF86MenuKB> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
+  ++ [("<XF86MenuKB> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
 
 xmobarEscape :: String -> String
 xmobarEscape = concatMap doubleLts

@@ -61,6 +61,8 @@ import XMonad.Prompt.Pass
 import XMonad.Prompt.Shell
 import XMonad.Prompt.Ssh
 import XMonad.Prompt.XMonad
+import XMonad.Prompt.RunOrRaise
+import XMonad.Prompt.Window
 import Control.Arrow (first)
 
 -- Utilities
@@ -103,6 +105,7 @@ myStartupHook :: X ()
 myStartupHook = do
           spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/apollo11.jpg"
           spawnOnce "picom -b"
+          spawnOnce "xmodmap /home/mashy/.Xmodmap"
           spawnOnce "/usr/local/bin/emacs --daemon &"
           setWMName "LG3D"
 
@@ -148,6 +151,17 @@ promptList = [ ("m", manPrompt)          -- manpages prompt
              , ("s", sshPrompt)          -- ssh prompt
              , ("x", xmonadPrompt)       -- xmonad prompt
              ]
+
+promptList' :: [(String, XPConfig -> String -> X (), String)]
+promptList' = [ ("c", calcPrompt, "qalc")         -- requires qalculate-gtk
+              ]
+
+calcPrompt c ans =
+    inputPrompt c (trim ans) ?+ \input ->
+        liftIO(runProcessWithInput "qalc" [input] "") >>= calcPrompt c
+    where
+        trim  = f . f
+            where f = reverse . dropWhile isSpace
 
 ------------------------------------------------------------------------
 -- XPROMPT KEYMAP (emacs-like key bindings)
@@ -241,7 +255,6 @@ myKeys =
   
        -- Run Prompt
      , ("M-S-<Return>", shellPrompt myXPConfig')   -- Shell Prompt
-     , ("<XF86MenuKB> r", shellPrompt myXPConfig')   -- Shell Prompt
 
        -- Dmenu
      , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
@@ -313,12 +326,18 @@ myKeys =
      , ("M-s e", namedScratchpadAction myScratchPads "mail")
      , ("M-s b", namedScratchpadAction myScratchPads "bt")
      , ("M-s p", namedScratchpadAction myScratchPads "audio")
+
+     , ("<XF86MenuKB> r t", prompt ("termite" ++ " -e") myXPConfig)   -- for cli
+     , ("<XF86MenuKB> r g", runOrRaisePrompt            myXPConfig)   -- for gui
+     , ("<XF86MenuKB> w b", windowPrompt myXPConfig Bring allWindows)
+     , ("<XF86MenuKB> w g", windowPrompt myXPConfig Goto allWindows)
      ]
          
   -- Appending search engines to keybindings list
   ++ [("<XF86MenuKB> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
   ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
   ++ [("<XF86MenuKB> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
+  ++ [("<XF86MenuKB> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
 
 ------------------------------------------------------------------------
 -- WORKSPACES

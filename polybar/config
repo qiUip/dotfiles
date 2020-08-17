@@ -100,8 +100,9 @@ module-margin-left = 0
 module-margin-right = 0
 
 ;https://github.com/jaagr/polybar/wiki/Fonts
-font-0 = "UbuntuMono Nerd Font:size=12;2"
-font-1 = "UbuntuMono Nerd Font:size=16;3"
+font-0 = "Ubuntu Nerd Font:size=12;3"
+; font-0 = "Hack Nerd Font:size=10;3"
+font-1 = "Hack Nerd Font:size=16;3"
 font-2 = "Font Awesome 5 Free:style=Regular:pixelsize=8;1"
 font-3 = "Font Awesome 5 Free:style=Solid:pixelsize=8;1"
 font-4 = "Font Awesome 5 Brands:pixelsize=8;1"
@@ -109,7 +110,7 @@ font-4 = "Font Awesome 5 Brands:pixelsize=8;1"
 ;arrange modules here!
 modules-left = i3 xwindow
 modules-center = 
-modules-right = arrow8 arrow7 arrow6 arrow5 memory1 arrow4 cpu1 arrow3 arrow2 arch-aur-updates arrow1 date powermenu
+modules-right =  arrow3 memory1 arrow2 cpu1 arrow1 date
 
 separator = 
 
@@ -323,7 +324,8 @@ type = custom/text
 content = "%{T2} %{T-}"
 content-font = 2
 content-foreground = ${colors.shade2}
-content-background = ${colors.shade3}
+content-background = ${colors.background}
+; content-background = ${colors.shade3}
 
 [module/arrow2]
 ; shade1 to shade2
@@ -380,7 +382,7 @@ type = internal/cpu
 ; Default: 1
 interval = 1
 format-foreground = ${colors.background2}
-format-background = ${colors.shade3}
+format-background = ${colors.shade1}
 ;   
 format-prefix = " "
 format-prefix-foreground = ${colors.background2}
@@ -522,16 +524,6 @@ format-underline = #4B5665
 
 ################################################################################
 
-[module/jgmenu]
-type = custom/script
-interval = 120
-exec = echo "ArcoLinux"
-click-left = "jgmenu_run >/dev/null 2>&1 &"
-format-foreground = ${colors.foreground}
-format-background = ${colors.background2}
-
-################################################################################
-
 [module/load-average]
 type = custom/script
 exec = uptime | grep -ohe 'load average[s:][: ].*' | awk '{ print $3" "$4" "$5"," }' | sed 's/,//g'
@@ -574,7 +566,7 @@ format = <label>
 format-prefix = " "
 format-prefix-foreground = ${colors.background2}
 format-foreground = ${colors.background2}
-format-background = ${colors.shade4}
+format-background = ${colors.shade2}
 
 ################################################################################
 
@@ -854,57 +846,57 @@ format-background = ${colors.background}
 
 ###############################################################################
 
-[module/powermenu]
-type = custom/menu
+; [module/powermenu]
+; type = custom/menu
 
-label-open = " "
-label-open-foreground = ${colors.foreground}
-label-close = " "
-label-close-foreground = ${colors.foreground}
-format-foreground = ${colors.foreground}
-format-background = ${colors.background}
+; label-open = " "
+; label-open-foreground = ${colors.foreground}
+; label-close = " "
+; label-close-foreground = ${colors.foreground}
+; format-foreground = ${colors.foreground}
+; format-background = ${colors.background}
 
-menu-0-0 = "ﰇ "
-menu-0-0-exec = menu-open-1
-menu-0-0-foreground = ${colors.foreground}
-menu-0-1 = " "
-menu-0-1-exec = menu-open-2
-menu-0-1-foreground = ${colors.foreground}
-menu-0-2 = " "
-menu-0-2-exec = menu-open-3
-menu-0-2-foreground = ${colors.foreground}
-menu-0-3 = " "
-menu-0-3-exec = /home/mashy/.scripts/lock.sh
-menu-0-3-foreground = ${colors.foreground}
+; menu-0-0 = "ﰇ "
+; menu-0-0-exec = menu-open-1
+; menu-0-0-foreground = ${colors.foreground}
+; menu-0-1 = " "
+; menu-0-1-exec = menu-open-2
+; menu-0-1-foreground = ${colors.foreground}
+; menu-0-2 = " "
+; menu-0-2-exec = menu-open-3
+; menu-0-2-foreground = ${colors.foreground}
+; menu-0-3 = " "
+; menu-0-3-exec = /home/mashy/.scripts/lock.sh
+; menu-0-3-foreground = ${colors.foreground}
 
-menu-1-0 = "reboot "
-menu-1-0-exec = systemctl reboot
-menu-1-0-foreground = ${colors.foreground}
-menu-1-1 = " "
-menu-1-1-exec = menu-open-0
-menu-1-1-foreground = ${colors.foreground}
+; menu-1-0 = "reboot "
+; menu-1-0-exec = systemctl reboot
+; menu-1-0-foreground = ${colors.foreground}
+; menu-1-1 = " "
+; menu-1-1-exec = menu-open-0
+; menu-1-1-foreground = ${colors.foreground}
 
 
-menu-2-0 = "shutdown "
-menu-2-0-exec = systemctl poweroff
-menu-2-0-foreground = ${colors.foreground}
-menu-2-1 = "hibernate "
-menu-2-1-exec = systemctl hibernate
-menu-2-1-foreground = ${colors.foreground}
-menu-2-2 = " "
-menu-2-2-exec = menu-open-0
-menu-2-2-foreground = ${colors.foreground}
+; menu-2-0 = "shutdown "
+; menu-2-0-exec = systemctl poweroff
+; menu-2-0-foreground = ${colors.foreground}
+; menu-2-1 = "hibernate "
+; menu-2-1-exec = systemctl hibernate
+; menu-2-1-foreground = ${colors.foreground}
+; menu-2-2 = " "
+; menu-2-2-exec = menu-open-0
+; menu-2-2-foreground = ${colors.foreground}
 
-menu-3-0 = "log out "
-menu-3-0-exec = i3-msg exit
-menu-3-0-foreground = ${colors.foreground}
-menu-3-1 = " "
-menu-3-1-exec = menu-open-0
-menu-3-1-foreground = ${colors.foreground}
+; menu-3-0 = "log out "
+; menu-3-0-exec = i3-msg exit
+; menu-3-0-foreground = ${colors.foreground}
+; menu-3-1 = " "
+; menu-3-1-exec = menu-open-0
+; menu-3-1-foreground = ${colors.foreground}
 
-{% include 'by_host/' + ansible_hostname + '/modules-def.j2' ignore missing %}
+; {% include 'by_host/' + ansible_hostname + '/modules-def.j2' ignore missing %}
 
-{% include 'by_os/' + ansible_distribution|lower + '/modules-def.j2' ignore missing %}
+; {% include 'by_os/' + ansible_distribution|lower + '/modules-def.j2' ignore missing %}
 
 
 [module/dropbox-isrunning]

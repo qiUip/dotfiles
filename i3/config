@@ -13,10 +13,7 @@ set $mod Mod1
 
 # i3-gaps stuff
 # You can also use any non-zero value if you'd like to have a border
-for_window [class=".*"] border pixel 3
-gaps inner 10
-gaps outer 5
-smart_borders on
+for_window [class=".*"] border pixel 1
 new_window none
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -48,7 +45,8 @@ bindsym $mod+Shift+q kill
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
-bindsym $mod+d exec --no-startup-id rofi -show run
+bindsym $mod+d exec --no-startup-id rofi -show drun
+bindsym $mod+p exec $HOME/.scripts/myrmidon.sh
 # bindsym $mod+d exec --no-startup-id j4-dmenu-desktop --dmenu='dmenu_run -fn "DejaVu Sans Mono-9"'
 #--dmenu="dmenu -fn 'DejaVu Sans Mono-9'"
 

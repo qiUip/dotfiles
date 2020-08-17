@@ -47,6 +47,7 @@ bindsym $mod+Shift+q kill
 # installed.
 bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+p exec $HOME/.scripts/myrmidon.sh
+bindsym $mod+Shift+D exec --no-startup-id dmenu_path | dmenu -c -l 15 "$@" | xargs -l termite -e
 # bindsym $mod+d exec --no-startup-id j4-dmenu-desktop --dmenu='dmenu_run -fn "DejaVu Sans Mono-9"'
 #--dmenu="dmenu -fn 'DejaVu Sans Mono-9'"
 
@@ -207,9 +208,9 @@ client.urgent               $rd        $rd         $tx		$rd
 
 # init
 exec_always --no-startup-id /usr/lib/gnome-settings-daemon/gsd-xsettings
-# exec_always --no-startup-id picom -b --config /home/mashy/.config/compton/compton.conf
+# exec_always --no-startup-id picom -b --config /home/mashy/.config/picom/picom.conf
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-# exec_always --no-startup-id nitrogen --set-zoom-fill /home/mashy/Pictures/166087.jpg 
+exec_always --no-startup-id /home/mashy/Pictures/4k+VT+Wallpaper.png
 # exec_always --no-startup-id xrdb ~/.Xresources
 # exec_always --no-startup-id mopidy -o spotify/password=$(pass music-mopidy)
 # exec_always --no-startup-id xbindkeys

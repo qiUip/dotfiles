@@ -220,6 +220,7 @@ myKeys =
 
        -- Open my preferred terminal
      , ("M-<Return>", spawn (myTerminal))
+     , ("M-t", spawn "termite")
 
        -- Run Prompt
      , ("M-S-<Return>", shellPrompt myXPConfig')   --- Shell Prompt
@@ -227,9 +228,9 @@ myKeys =
 
        -- Dmenu
      , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86MenuKB> d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86MenuKB> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
-     , ("<XF86MenuKB> q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
+     , ("<XF86Explorer> d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
+     , ("<XF86Explorer> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
+     , ("<XF86Explorer> q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
 
        -- Windows
      , ("M-q", kill1)      -- Kill the currently focused client
@@ -273,12 +274,13 @@ myKeys =
      , ("M-e", spawn "emacsclient -c -a ''")         -- Editor (emacs)
      , ("M-r", runInTerm "" "ranger")                -- File manager
      , ("M-C-a", spawn ("pavucontrol"))              -- Audio control
-     , ("M-C-b", spawn "firefox duckduckgo.com")     -- Browser
+     , ("M-C-b", spawn ("firefox"))                  -- Browser
+     , ("M-C-S-b", spawn ("brave"))                  -- Browser
      , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
      , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
      , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
      , ("M-C-t", spawn ("teams"))                    -- MS teams (thanks work!!!)
-     , ("M-C-d", spawn ("discord"))                  -- MS teams (thanks work!!!)
+     , ("M-C-d", spawn ("discord"))                  -- Chat
 
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")
@@ -289,24 +291,24 @@ myKeys =
        -- Print screen. Requires scrot.
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
 
-       -- Print screen. Requires scrot.
+       -- Scratchpads
      , ("M-s t", namedScratchpadAction myScratchPads "term")
      , ("M-s m", namedScratchpadAction myScratchPads "music")
      , ("M-s e", namedScratchpadAction myScratchPads "mail")
      , ("M-s b", namedScratchpadAction myScratchPads "bt")
      , ("M-s p", namedScratchpadAction myScratchPads "audio")
 
-     , ("<XF86MenuKB> r t", prompt ("termite" ++ " -e") myXPConfig)   -- for cli
-     , ("<XF86MenuKB> r g", runOrRaisePrompt            myXPConfig)   -- for gui
-     , ("<XF86MenuKB> w b", windowPrompt myXPConfig Bring allWindows)
-     , ("<XF86MenuKB> w g", windowPrompt myXPConfig Goto allWindows)
+     , ("<XF86Explorer> r t", prompt ("termite" ++ " -e") myXPConfig)   -- for cli
+     , ("<XF86Explorer> r g", runOrRaisePrompt            myXPConfig)   -- for gui
+     , ("<XF86Explorer> w b", windowPrompt myXPConfig Bring allWindows)
+     , ("<XF86Explorer> w g", windowPrompt myXPConfig Goto allWindows)
      ]
 
   -- Appending search engines to keybindings list
-  ++ [("<XF86MenuKB> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
-  ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
-  ++ [("<XF86MenuKB> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
-  ++ [("<XF86MenuKB> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
+  ++ [("<XF86Explorer> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
+  ++ [("M-S-s "            ++ k, S.selectSearch f) | (k,f) <- searchList ]
+  ++ [("<XF86Explorer> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
+  ++ [("<XF86Explorer> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
 
 xmobarEscape :: String -> String
 xmobarEscape = concatMap doubleLts

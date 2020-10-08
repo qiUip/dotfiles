@@ -12,5 +12,5 @@ case "$chosen" in
     "Restart"   ) [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ] && systemctl reboot ;;
     "Hibernate" ) [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ] && systemctl hibernate ;;
     "Sleep"     ) [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ] && systemctl suspend ;;
-    "Logout"    ) [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ] && systemctl restart lightdm.service
+    "Logout"    ) [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ] && kill -9 -1 ;;
 esac

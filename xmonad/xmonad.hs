@@ -65,7 +65,7 @@ myFont :: String
 myFont = "xft:Hack Nerd Font:bold:pixelsize=13"
 
 myModMask :: KeyMask
-myModMask = mod4Mask       -- Sets modkey to super/windows key
+myModMask =  mod1Mask       -- Sets modkey to super/windows key
 
 myTerminal :: String
 myTerminal = "st"          -- Sets default terminal
@@ -80,7 +80,7 @@ myFocusColor :: String
 myFocusColor  = "#008080"  -- Border color of focused windows
 
 altMask :: KeyMask
-altMask = mod1Mask         -- Setting this for use in xprompts
+altMask = mod3Mask         -- Setting this for use in xprompts
 
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
@@ -89,8 +89,8 @@ myStartupHook :: X ()
 myStartupHook = do
           spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/solar2.jpg"
           spawnOnce "picom -b"
-          spawnOnce "xmodmap /home/mashy/.Xmodmap"
-          spawnOnce "/usr/sbin/emacs --daemon &"
+          -- spawnOnce "xmodmap /home/mashy/.Xmodmap"
+          -- spawnOnce "/usr/sbin/emacs --daemon &"
           setWMName "LG3D"
 
 -- Prompt parameters (fonts, colours, soze, location, features etc.)

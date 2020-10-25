@@ -7,7 +7,7 @@
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Mashy D Green"
-      user-mail-address "mdgreen@ic.ac.uk")
+      user-mail-address "green@dive-solutions.de")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -25,10 +25,6 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-molokai)
-
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Orgs/")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -51,10 +47,118 @@
 ;;
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
-;;
-(setq-hook! 'f90-mode-hook flycheck-disabled-checkers '(fortran-gfortran))
+
+;; Taking seom stuff from tecosaur - https://tecosaur.github.io/emacs-config/config.html
+;; I will adapt to my likeing later.
+
+(setq-default
+ x-stretch-cursor t)
+
+(setq undo-limit 80000000                         ; Raise undo-limit to 80Mb
+      evil-want-fine-undo t                       ; By default while in insert all changes are one big blob. Be more granular
+      auto-save-default t                         ; Nobody likes to loose work, I certainly don't
+      truncate-string-ellipsis "…")               ; Unicode ellispis are nicer than "...", and also save /precious/ space
+
+;; better splitting with ivy
+(setq evil-vsplit-window-right t
+      evil-split-window-below t)
+(defadvice! prompt-for-buffer (&rest _)
+  :after '(evil-window-split evil-window-vsplit)
+  (+ivy/switch-buffer))
+(setq +ivy-buffer-preview t)
+
+(setq doom-fallback-buffer-name "► Doom"
+      +doom-dashboard-name "► Doom")
+
+(after! company
+  (setq company-idle-delay 0.5
+        company-minimum-prefix-length 2)
+  (setq company-show-numbers t)
+  (add-hook 'evil-normal-state-entry-hook #'company-abort)) ;; make aborting less annoying
+
+(set-company-backend!
+  '(text-mode
+    markdown-mode
+    gfm-mode)
+  '(:seperate
+    company-ispell
+    company-files
+    company-yasnippet))
+
+(after! evil (setq evil-ex-substitute-global t)) ; I like my s/../.. to by global by default
+
+(setq projectile-ignored-projects '("~/" "/tmp" "~/.emacs.d/.local/straight/repos/"))
+(defun projectile-ignored-project-function (filepath)
+  "Return t if FILEPATH is within any of `projectile-ignored-projects'"
+  (or (mapcar (lambda (p) (s-starts-with-p p filepath)) projectile-ignored-projects)))
+
+(after! text-mode
+  (add-hook! 'text-mode-hook
+             ;; Apply ANSI color codes
+             (with-silent-modifications
+               (ansi-color-apply-on-region (point-min) (point-max)))))
+
+;; If you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. It must be set before org loads!
+(setq org-directory "~/Orgs/"
+      org-use-property-inheritance t              ; it's convenient to have properties inherited
+      org-log-done 'time                          ; having the time a item is done sounds convininet
+      org-list-allow-alphabetical t               ; have a. A. a) A) list bullets
+      org-export-in-background t                  ; run export processes in external emacs process
+      org-catch-invisible-edits 'smart            ; try not to accidently do weird stuff in invisible regions
+      org-re-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+(setq org-babel-default-header-args
+      '((:session . "none")
+        (:results . "replace")
+        (:exports . "code")
+        (:cache . "no")
+        (:noweb . "no")
+        (:hlines . "no")
+        (:tangle . "no")
+        (:comments . "link")))
 (add-hook 'org-mode-hook #'writegood-passive-voice-turn-off)
-;; (setq-hook! 'org-mode 'writegood-passive-voice-turn-off())
+(remove-hook 'text-mode-hook #'visual-line-mode)
+(add-hook 'text-mode-hook #'auto-fill-mode)
+(setq org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+") ("1." . "a.")))
+;; (use-package! org-ref
+;;   :after org
+;;   :config
+;;   (setq org-ref-completion-library 'org-ref-ivy-cite))
+(after! org (add-hook 'org-mode-hook 'turn-on-flyspell))
+;; Use space-v to view output files
+(after! org
+  (map! :map org-mode-map
+        :localleader
+        :desc "View exported file" "v" #'org-view-output-file)
+
+  (defun org-view-output-file (&optional org-file-path)
+    "Visit buffer open on the first output file (if any) found, using `org-view-output-file-extensions'"
+    (interactive)
+    (let* ((org-file-path (or org-file-path (buffer-file-name) ""))
+           (dir (file-name-directory org-file-path))
+           (basename (file-name-base org-file-path))
+           (output-file nil))
+      (dolist (ext org-view-output-file-extensions)
+        (unless output-file
+          (when (file-exists-p
+                 (concat dir basename "." ext))
+            (setq output-file (concat dir basename "." ext)))))
+      (if output-file
+          (if (member (file-name-extension output-file) org-view-external-file-extensions)
+              (browse-url-xdg-open output-file)
+            (pop-to-buffer (or (find-buffer-visiting output-file)
+                               (find-file-noselect output-file))))
+        (message "No exported file found")))))
+
+(defvar org-view-output-file-extensions '("pdf" "md" "rst" "txt" "tex" "html")
+  "Search for output files with these extensions, in order, viewing the first that matches")
+(defvar org-view-external-file-extensions '("html")
+  "File formats that should be opened externally.")
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;
 ;; (after! mu4e
 ;;   (defun my-string-width (str)
@@ -190,16 +294,3 @@
 ;;                                  org-msg-greeting-fmt))
 ;;          (headers (-filter (lambda (spec) (not (-contains-p '("To" "Subject" "Body") (car spec)))) mailto)))
 ;;     (mu4e~compose-mail to subject headers)))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("e2acbf379aa541e07373395b977a99c878c30f20c3761aac23e9223345526bcc" default)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

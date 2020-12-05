@@ -114,8 +114,8 @@ modules-right = arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu
 
 separator = 
 
-;tray-position = right
-tray-position = 
+tray-position = right
+; tray-position = 
 tray-detached = false
 tray-maxsize = 20
 tray-background = ${colors.background}

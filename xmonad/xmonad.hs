@@ -243,16 +243,16 @@ myKeys =
 
        -- Windows navigation
      , ("M-m", windows W.focusMaster)     -- Move focus to the master window
-     , ("M-c", windows copyToAll)         -- Move focus to the master window
+     , ("M-c", windows copyToAll)         -- Copies focused window to all workspaces
      , ("M-j", windows W.focusDown)       -- Move focus to the next window
      , ("M-k", windows W.focusUp)         -- Move focus to the prev window
      , ("M-S-m", windows W.swapMaster)    -- Swap the focused window and the master window
      , ("M-S-j", windows W.swapDown)      -- Swap focused window with next window
      , ("M-S-k", windows W.swapUp)        -- Swap focused window with prev window
      , ("M-<Backspace>", promote)         -- Moves focused window to master, others maintain order
-     , ("C-S-<Tab>", rotSlavesDown)      -- Rotate all windows except master and keep focus in place
+     , ("C-S-<Tab>", rotSlavesDown)       -- Rotate all windows except master and keep focus in place
      , ("M1-S-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
-     , ("M-C-c", killAllOtherCopies)      --
+     , ("M-C-c", killAllOtherCopies)      -- Delete all copies of window
 
        -- Layouts
      , ("M-<Tab>", sendMessage NextLayout)                -- Switch to next layout
@@ -280,7 +280,7 @@ myKeys =
      , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
      , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
      , ("M-C-t", spawn ("teams"))                    -- MS teams (thanks work!!!)
-     , ("M-C-d", spawn ("discord"))                  -- Chat
+     , ("M-C-d", spawn ("discord"))                  -- Because sometimes you wanna talk about keyboards and emacs
 
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")
@@ -329,6 +329,10 @@ myManageHook = composeAll
      [ className =? "vlc"       --> doShift ( myWorkspaces !! 8)
      , className =? "ParaView"  --> doShift ( myWorkspaces !! 2)
      , className =? "Gimp"      --> doShift ( myWorkspaces !! 7)
+     , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
+     , className =? "discord"   --> doFloat
+     , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
+     , className =? "Microsoft Teams - Preview" --> doFloat
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
      ] <+> namedScratchpadManageHook myScratchPads
 

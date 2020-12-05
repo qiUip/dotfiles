@@ -54,7 +54,7 @@
 (setq-default
  x-stretch-cursor t)
 
-(setq undo-limit 80000000                         ; Raise undo-limit to 80Mb
+(setq undo-limit 100000000                        ; Raise undo-limit to 100Mb
       evil-want-fine-undo t                       ; By default while in insert all changes are one big blob. Be more granular
       auto-save-default t                         ; Nobody likes to loose work, I certainly don't
       truncate-string-ellipsis "…")               ; Unicode ellispis are nicer than "...", and also save /precious/ space
@@ -100,30 +100,30 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Orgs/"
-      org-use-property-inheritance t              ; it's convenient to have properties inherited
-      org-log-done 'time                          ; having the time a item is done sounds convininet
-      org-list-allow-alphabetical t               ; have a. A. a) A) list bullets
-      org-export-in-background t                  ; run export processes in external emacs process
-      org-catch-invisible-edits 'smart            ; try not to accidently do weird stuff in invisible regions
-      org-re-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-(setq org-babel-default-header-args
-      '((:session . "none")
-        (:results . "replace")
-        (:exports . "code")
-        (:cache . "no")
-        (:noweb . "no")
-        (:hlines . "no")
-        (:tangle . "no")
-        (:comments . "link")))
-(add-hook 'org-mode-hook #'writegood-passive-voice-turn-off)
-(remove-hook 'text-mode-hook #'visual-line-mode)
-(add-hook 'text-mode-hook #'auto-fill-mode)
-(setq org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+") ("1." . "a.")))
-;; (use-package! org-ref
-;;   :after org
-;;   :config
-;;   (setq org-ref-completion-library 'org-ref-ivy-cite))
+(setq org-directory "~/Orgs/" )
+;;       org-use-property-inheritance t              ; it's convenient to have properties inherited
+;;       org-log-done 'time                          ; having the time a item is done sounds convininet
+;;       org-list-allow-alphabetical t               ; have a. A. a) A) list bullets
+;;       org-export-in-background t                  ; run export processes in external emacs process
+;;       org-catch-invisible-edits 'smart            ; try not to accidently do weird stuff in invisible regions
+;;       org-re-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+;; (setq org-babel-default-header-args
+;;       '((:session . "none")
+;;         (:results . "replace")
+;;         (:exports . "code")
+;;         (:cache . "no")
+;;         (:noweb . "no")
+;;         (:hlines . "no")
+;;         (:tangle . "no")
+;;         (:comments . "link")))
+;; (add-hook 'org-mode-hook #'writegood-passive-voice-turn-off)
+;; (remove-hook 'text-mode-hook #'visual-line-mode)
+;; (add-hook 'text-mode-hook #'auto-fill-mode)
+;; (setq org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+") ("1." . "a.")))
+;; ;; (use-package! org-ref
+;; ;;   :after org
+;; ;;   :config
+;; ;;   (setq org-ref-completion-library 'org-ref-ivy-cite))
 (after! org (add-hook 'org-mode-hook 'turn-on-flyspell))
 ;; Use space-v to view output files
 (after! org
@@ -152,8 +152,10 @@
 
 (defvar org-view-output-file-extensions '("pdf" "md" "rst" "txt" "tex" "html")
   "Search for output files with these extensions, in order, viewing the first that matches")
-(defvar org-view-external-file-extensions '("html")
+(defvar org-view-external-file-extensions '("pdf" "html")
   "File formats that should be opened externally.")
+;; (after! org
+;;  (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")))
 
 
 

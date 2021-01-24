@@ -758,7 +758,7 @@ label-disconnected-foreground = ${colors.foreground}
 [module/wireless-network]
 ;https://github.com/jaagr/polybar/wiki/Module:-network
 type = internal/network
-interface = ${env:WIRELESS}
+interface = ${env
 interval = 3.0
 label-connected = %{A1:nm-connection-editor:}%essid%%{A}
 ;label-connected = %essid% %downspeed:2%
@@ -879,11 +879,6 @@ menu-3-0-foreground = ${colors.foreground}
 menu-3-1 = " "
 menu-3-1-exec = menu-open-0
 menu-3-1-foreground = ${colors.foreground}
-
-{% include 'by_host/' + ansible_hostname + '/modules-def.j2' ignore missing %}
-
-{% include 'by_os/' + ansible_distribution|lower + '/modules-def.j2' ignore missing %}
-
 
 [module/dropbox-isrunning]
 type = custom/script

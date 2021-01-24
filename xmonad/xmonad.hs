@@ -5,7 +5,7 @@ import qualified XMonad.StackSet as W
 
 -- Actions
 import XMonad.Actions.CopyWindow (kill1, killAllOtherCopies, copyToAll, copy)
-import XMonad.Actions.CycleWS (moveTo, shiftTo, WSType(..), nextScreen, prevScreen)
+import qualified XMonad.Actions.CycleWS as WS
 import XMonad.Actions.Promote
 import XMonad.Actions.RotSlaves (rotSlavesDown, rotAllDown)
 import XMonad.Actions.WindowGo (runOrRaise)
@@ -263,6 +263,8 @@ myKeys =
      , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in master pane
      , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows
      , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows
+     , ("M-<End>", WS.nextWS)              -- Increase number of windows
+     , ("M-<Home>", WS.prevWS)                -- Decrease number of windows
 
        -- Resize windows
      , ("M-h", sendMessage Shrink)                       -- Shrink horiz window width
@@ -326,15 +328,15 @@ myWorkspaces = clickable . map xmobarEscape
 
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-     [ className =? "vlc"       --> doShift ( myWorkspaces !! 8)
-     , className =? "ParaView"  --> doShift ( myWorkspaces !! 2)
-     , className =? "Gimp"      --> doShift ( myWorkspaces !! 7)
-     , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
-     , className =? "discord"   --> doFloat
-     , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
-     , className =? "Microsoft Teams - Preview" --> doFloat
-     , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
-     ] <+> namedScratchpadManageHook myScratchPads
+               [ className =? "vlc"       --> doShift ( myWorkspaces !! 8)
+               , className =? "ParaView"  --> doShift ( myWorkspaces !! 2)
+               , className =? "Gimp"      --> doShift ( myWorkspaces !! 7)
+               , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
+               , className =? "discord"   --> doFloat
+               , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
+               , className =? "Microsoft Teams - Preview" --> doFloat
+               , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
+               ] <+> namedScratchpadManageHook myScratchPads
 
 -- The spacingRaw module adds a configurable amount of space around windows.
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a

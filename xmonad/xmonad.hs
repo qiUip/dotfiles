@@ -255,7 +255,7 @@ myKeys =
      , ("M-C-c", killAllOtherCopies)      -- Delete all copies of window
 
        -- Layouts
-     , ("M-<Tab>", sendMessage NextLayout)                -- Switch to next layout
+     , ("M-<Tab>", sendMessage NextLayout)               -- Switch to next layout
      , ("M-<Space>", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
      , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts
      , ("M-S-n", sendMessage $ MT.Toggle NOBORDERS)      -- Toggles noborder
@@ -263,8 +263,8 @@ myKeys =
      , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in master pane
      , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows
      , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows
-     , ("M-<End>", WS.nextWS)              -- Increase number of windows
-     , ("M-<Home>", WS.prevWS)                -- Decrease number of windows
+     , ("M-<End>", WS.nextWS)                            -- Increase number of windows
+     , ("M-<Home>", WS.prevWS)                           -- Decrease number of windows
 
        -- Resize windows
      , ("M-h", sendMessage Shrink)                       -- Shrink horiz window width

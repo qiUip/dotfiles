@@ -103,7 +103,7 @@ font-4 = "Font Awesome 5 Brands:pixelsize=8;1"
 ;arrange modules here!
 modules-left = i3 xwindow
 modules-center = 
-modules-right = arrow8 dropbox-isrunning arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu1 arrow3 pavolume arrow2 pkg-updates arrow1 date powermenu
+modules-right = arrow8 arrow7 nvidia_info arrow6 temperature1 arrow5 memory1 arrow4 cpu1 arrow3 pavolume arrow2 pkg-updates arrow1 date powermenu
 
 separator = 
 

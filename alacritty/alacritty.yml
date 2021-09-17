@@ -1,0 +1,140 @@
+env:
+   TERM: xterm-256color
+
+window:
+    padding:
+        x: 4
+        y: 4
+    dynamic_padding: false
+
+    title: Alacritty
+
+    class:
+        instance: Alacritty
+        general: Alacritty
+
+        # gtk_theme_variant: None
+
+scrolling:
+    history:
+    50000
+
+
+font:
+    normal:
+        # family: Source Code Pro
+        # family: RobotoMono Nerd Font
+        family: Hack Nerd Font
+        # family: UbuntuMono Nerd Font
+        # family: Mononoki Nerd Font
+        style: Regular
+
+    bold:
+        # family: Source Code Pro
+        # family: RobotoMono Nerd Font
+        family: Hack Nerd Font
+        # family: UbuntuMono Nerd Font
+        # family: Mononoki Nerd Font
+        style: Bold
+
+    italic:
+        # family: Source Code Pro
+        # family: RobotoMono Nerd Font
+        family: Hack Nerd Font
+        # family: UbuntuMono Nerd Font
+        # family: Mononoki Nerd Font
+        style: Italic
+
+    bold_italic:
+        # family: Source Code Pro
+        # family: RobotoMono Nerd Font
+        family: Hack Nerd Font
+        # family: UbuntuMono Nerd Font
+        # family: Mononoki Nerd Font
+        style: Bold Italic
+
+    size: 9.0
+
+    offset:
+        x: 0
+        y: 0
+
+    #glyph_offset:
+        #x: 0
+        #y: 0
+
+    draw_bold_text_with_bright_colors: true
+
+colors:
+    primary:
+        background: '0x161616'
+        foreground: '0xa1b0b8'
+
+        #dim_foreground: '0x9a9a9a'
+        #bright_foreground: '0xffffff'
+
+    #cursor:
+        #text: '0x000000'
+        #cursor: '0xffffff'
+
+    selection:
+        text: '0xbbc2cf'
+
+# Normal colors
+    normal:
+        black:   '0x252525'
+        red:     '0xc15c2e'
+        green:   '0x8b8f78'
+        yellow:  '0xddbd94'
+        blue:    '0x5a8c93'
+        magenta: '0xa679cf'
+        cyan:    '0x118a71'
+        white:   '0xf5f5f5'
+
+# Bright colors
+    bright:
+        black:   '0x4f4f4f'
+        red:     '0xff5252'
+        green:   '0x25322b'
+        yellow:  '0x8d6947'
+        blue:    '0x204557'
+        magenta: '0x9b51e0'
+        cyan:    '0x097f7f'
+        white:   '0xd0b693'
+
+# Dim colors
+    #dim:
+        #black:   '0x000000'
+        #red:     '0x8c3336'
+        #green:   '0x7a8530'
+        #yellow:  '0x97822e'
+        #blue:    '0x506d8f'
+        #magenta: '0x80638e'
+        #cyan:    '0x497e7a'
+        #white:   '0x9a9a9a'
+
+background_opacity: 0.90
+
+# Bindings are always filled by default, but will be replaced when a new
+# binding with the same triggers is defined. To unset a default binding, it can
+# be mapped to the `ReceiveChar` action. Alternatively, you can use `None` for
+# a no-op if you do not wish to receive input characters for that binding.
+key_bindings:
+    # (Windows, Linux, and BSD only)
+    - { key: V,         mods: Control|Shift, action: Paste                        }
+    - { key: C,         mods: Control|Shift, action: Copy                         }
+    - { key: Insert,    mods: Shift,         action: PasteSelection               }
+    - { key: Key0,      mods: Control,       action: ResetFontSize                }
+    - { key: Equals,    mods: Control,       action: IncreaseFontSize             }
+    - { key: Plus,      mods: Control,       action: IncreaseFontSize             }
+    - { key: Minus,     mods: Control,       action: DecreaseFontSize             }
+    - { key: Minus,     mods: Control,       action: DecreaseFontSize             }
+    - { key: F11,       mods: None,          action: ToggleFullscreen             }
+    - { key: Paste,     mods: None,          action: Paste                        }
+    - { key: Copy,      mods: None,          action: Copy                         }
+    - { key: L,         mods: Control,       action: ClearLogNotice               }
+    - { key: L,         mods: Control,       chars: "\x0c"                        }
+    - { key: PageUp,    mods: None,          action: ScrollPageUp,   mode: ~Alt   }
+    - { key: PageDown,  mods: None,          action: ScrollPageDown, mode: ~Alt   }
+    - { key: Home,      mods: Shift,         action: ScrollToTop,    mode: ~Alt   }
+    - { key: End,       mods: Shift,         action: ScrollToBottom, mode: ~Alt   }

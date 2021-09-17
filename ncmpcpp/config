@@ -99,7 +99,7 @@ audio_output {
 }
 
 #
-visualizer_fifo_path = "/tmp/mpd.fifo"
+# visualizer_fifo_path = "/tmp/mpd.fifo"
 #
 ##
 ## Note: Below parameter is needed for ncmpcpp to determine which output
@@ -121,7 +121,7 @@ visualizer_in_stereo = "yes"
 ## that sane values start with >=10.
 ##
 #
-visualizer_sync_interval = "30"
+# visualizer_sync_interval = "30"
 #
 ##
 ## Note: To enable spectrum frequency visualization you need to compile ncmpcpp
@@ -405,7 +405,7 @@ media_library_albums_split_by_date = yes
 #
 #lines_scrolled = 2
 #
-lyrics_fetchers = lyricwiki, azlyrics, genius, sing365, lyricsmania, metrolyrics, justsomelyrics, jahlyrics, plyrics, tekstowo, internet
+# lyrics_fetchers = lyricwiki, azlyrics, genius, sing365, lyricsmania, metrolyrics, justsomelyrics, jahlyrics, plyrics, tekstowo, internet
 #
 #follow_now_playing_lyrics = no
 #

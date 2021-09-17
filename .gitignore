@@ -4,3 +4,6 @@
 *.log
 *.o
 *.hi
+*.errors
+xmonad/xmonad-x86_64-linux
+xmonad/prompt-history

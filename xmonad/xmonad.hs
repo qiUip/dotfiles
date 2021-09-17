@@ -12,7 +12,7 @@ import qualified XMonad.StackSet as W
 
 -- Actions
 import XMonad.Actions.CopyWindow (kill1, killAllOtherCopies, copyToAll, copy)
-import XMonad.Actions.CycleWS (moveTo, shiftTo, WSType(..), nextScreen, prevScreen)
+import qualified XMonad.Actions.CycleWS as WS
 import XMonad.Actions.MouseResize
 import XMonad.Actions.Promote
 import XMonad.Actions.RotSlaves (rotSlavesDown, rotAllDown)
@@ -50,6 +50,7 @@ import XMonad.Layout.Renamed
 import XMonad.Layout.Spacing
 import XMonad.Layout.PerWorkspace
 import XMonad.Layout.WindowArranger (windowArrange, WindowArrangerMsg(..))
+import XMonad.Layout.Reflect
 import qualified XMonad.Layout.ToggleLayouts as T (toggleLayouts, ToggleLayout(Toggle))
 import qualified XMonad.Layout.MultiToggle as MT (Toggle(..))
 
@@ -81,7 +82,7 @@ myModMask :: KeyMask
 myModMask = mod4Mask       -- Sets modkey to super/windows key
 
 myTerminal :: String
-myTerminal = "st"          -- Sets default terminal
+myTerminal = "alacritty"          -- Sets default terminal
 
 myBorderWidth :: Dimension
 myBorderWidth = 3          -- Sets border width for windows
@@ -105,6 +106,7 @@ myStartupHook :: X ()
 myStartupHook = do
           spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/apollo11.jpg"
           spawnOnce "picom -b"
+          spawnOnce "udiskie -an"
           spawnOnce "xmodmap /home/mashy/.Xmodmap"
           spawnOnce "/usr/local/bin/emacs --daemon &"
           setWMName "LG3D"
@@ -252,15 +254,18 @@ myKeys =
 
        -- Open my preferred terminal
      , ("M-<Return>", spawn (myTerminal))
+     , ("M-t", spawn "st")
   
        -- Run Prompt
      , ("M-S-<Return>", shellPrompt myXPConfig')   -- Shell Prompt
+     , ("<XF86Explorer> r t", prompt ("alacritty" ++ " -e") myXPConfig) -- for cli
+     , ("<XF86Explorer> r g", runOrRaisePrompt            myXPConfig)   -- for gui
 
        -- Dmenu
      , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86MenuKB> d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86MenuKB> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
-     , ("<XF86MenuKB> q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
+     , ("<XF86Explorer> d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
+     , ("<XF86Explorer> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
+     , ("<XF86Explorer> q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
 
        -- Windows
      , ("M-q", kill1)      -- Kill the currently focused client
@@ -273,27 +278,33 @@ myKeys =
     
        -- Windows navigation
      , ("M-m", windows W.focusMaster)     -- Move focus to the master window
-     , ("M-c", windows copyToAll)         -- Move focus to the master window
      , ("M-j", windows W.focusDown)       -- Move focus to the next window
      , ("M-k", windows W.focusUp)         -- Move focus to the prev window
      , ("M-S-m", windows W.swapMaster)    -- Swap the focused window and the master window
      , ("M-S-j", windows W.swapDown)      -- Swap focused window with next window
      , ("M-S-k", windows W.swapUp)        -- Swap focused window with prev window
      , ("M-<Backspace>", promote)         -- Moves focused window to master, others maintain order
-     , ("C-S-<Tab>", rotSlavesDown)      -- Rotate all windows except master and keep focus in place
+     , ("C-S-<Tab>", rotSlavesDown)       -- Rotate all windows except master and keep focus in place
      , ("M1-S-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
-     , ("M-C-c", killAllOtherCopies)      -- 
+     , ("M-S-c", windows copyToAll)       -- copy focused window to all workspaces
+     , ("M-C-c", killAllOtherCopies)      -- Kill all copies of window on all workspaces but the current one
+     , ("<XF86Explorer> w b", windowPrompt myXPConfig Bring allWindows)
+     , ("<XF86Explorer> w g", windowPrompt myXPConfig Goto allWindows)
     
        -- Layouts
      , ("M-<Tab>", sendMessage NextLayout)                -- Switch to next layout
      , ("M-<Space>", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
-     , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts
+     -- , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts
      , ("M-S-n", sendMessage $ MT.Toggle NOBORDERS)      -- Toggles noborder
      , ("M-<KP_Multiply>", sendMessage (IncMasterN 1))   -- Increase number of clients in master pane
      , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in master pane
      , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows
      , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows
-    
+
+     -- Workspace navigation
+     , ("M-<End>", WS.nextWS)             -- Move to the next workspace
+     , ("M-<Home>", WS.prevWS)            -- Move to the previous workspace
+
        -- Resize windows
      , ("M-h", sendMessage Shrink)                       -- Shrink horiz window width
      , ("M-l", sendMessage Expand)                       -- Expand horiz window width
@@ -301,15 +312,17 @@ myKeys =
      , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizable layouts)
     
        -- Applications (Super(+Ctrl)+Key)
-     , ("M-e", spawn "emacsclient -c -a ''")         -- Editor (emacs)
-     , ("M-r", runInTerm "" "ranger")                -- File manager
-     , ("M-C-a", spawn ("pavucontrol"))              -- Audio control
-     , ("M-C-b", spawn "firefox duckduckgo.com")     -- Browser
-     , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
-     , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
-     , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
-     , ("M-C-t", spawn ("teams"))                    -- MS teams (thanks work!!!)
-     , ("M-C-d", spawn ("discord"))                  -- MS teams (thanks work!!!)
+     , ("M-e", spawn "emacsclient -c -a ''")           -- Editor (emacs)
+     , ("M-r", spawn ("alacritty" ++  " -e ranger"))   -- File manager
+     , ("M-w", spawn ("alacritty" ++ " -e whatscli"))  -- Whatsapp cli
+     , ("M-C-a", spawn ("pavucontrol"))                -- Audio control
+     , ("M-C-b", spawn "firefox")                      -- Browser
+     , ("M-C-S-b", spawn "brave-browser")              -- Browser
+     , ("M-C-e", spawn ("alacritty" ++ " -e neomutt")) -- Email
+     , ("M-C-v", spawn ("alacritty" ++ " -e vis"))     -- Audio visualiser
+     , ("M-C-m", spawn ("alacritty" ++ " -e ncmpcpp")) -- Music player
+     , ("M-C-d", spawn ("discord"))                    -- Because sometimes you wanna talk about keyboards and emacs
+     -- , ("M-C-t", spawn ("teams"))                     -- MS teams (thanks work!!!)
     
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "amixer set Master 1%- unmute")
@@ -320,24 +333,21 @@ myKeys =
        -- Print screen. Requires scrot.
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
 
-       -- Print screen. Requires scrot.
+       -- Scratchpads
      , ("M-s t", namedScratchpadAction myScratchPads "term")
      , ("M-s m", namedScratchpadAction myScratchPads "music")
      , ("M-s e", namedScratchpadAction myScratchPads "mail")
      , ("M-s b", namedScratchpadAction myScratchPads "bt")
      , ("M-s p", namedScratchpadAction myScratchPads "audio")
-
-     , ("<XF86MenuKB> r t", prompt ("termite" ++ " -e") myXPConfig)   -- for cli
-     , ("<XF86MenuKB> r g", runOrRaisePrompt            myXPConfig)   -- for gui
-     , ("<XF86MenuKB> w b", windowPrompt myXPConfig Bring allWindows)
-     , ("<XF86MenuKB> w g", windowPrompt myXPConfig Goto allWindows)
+     , ("M-s w", namedScratchpadAction myScratchPads "wapp")
+     , ("M-s h", namedScratchpadAction myScratchPads "htop")
      ]
          
   -- Appending search engines to keybindings list
-  ++ [("<XF86MenuKB> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
+  ++ [("<XF86Explorer> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
   ++ [("M-S-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
-  ++ [("<XF86MenuKB> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
-  ++ [("<XF86MenuKB> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
+  ++ [("<XF86Explorer> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
+  ++ [("<XF86Explorer> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
 
 ------------------------------------------------------------------------
 -- WORKSPACES
@@ -373,13 +383,14 @@ myWorkspaces = clickable . map xmobarEscape
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
      [ className =? "vlc"       --> doShift ( myWorkspaces !! 8) -- 'watch'
-     , className =? "ParaView"  --> doShift ( myWorkspaces !! 3) -- 'dev3'
+     , className =? "ParaView"  --> doShift ( myWorkspaces !! 2) -- 'dev2'
      , className =? "Gimp"      --> doShift ( myWorkspaces !! 7) -- 'edit'
      , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
      , className =? "discord"   --> doFloat
-     , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
-     , className =? "Microsoft Teams - Preview" --> doFloat
-     , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
+     -- , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
+     -- , className =? "Microsoft Teams - Preview" --> doFloat
+     , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat        -- Float Firefox Dialog
+     , (className =? "brave-browser" <&&> resource =? "Dialog") --> doFloat  -- Float Brave Dialog
      ] <+> namedScratchpadManageHook myScratchPads -- add named sctachpads hook to myManageHook
 
 
@@ -399,18 +410,23 @@ mySpacing' i = spacingRaw True (Border i i i i) True (Border i i i i) True
 -- Defining some layouts.
 threeCol = renamed [Replace "threeCol"]
            $ limitWindows 9
-           $ mySpacing' 8
-           $ ResizableThreeColMid 1 (4/100) (3/8) []
+           $ mySpacing' 4
+           $ ResizableThreeColMid 1 (4/100) (5/12) []
 grid     = renamed [Replace "grid"]
            $ limitWindows 12
-           $ mySpacing 8
+           $ mySpacing 4
            $ mkToggle (single MIRROR)
            $ Grid (16/10)
+tall     = renamed [Replace "tall"]
+           $ reflectHoriz
+           $ limitWindows 12
+           $ mySpacing 4
+           $ ResizableTall 1 (3/100) (1/2) []
 floats   = renamed [Replace "floats"]
            $ limitWindows 20 simplestFloat
 threeColDev = renamed [Replace "threeColDev"]
            $ limitWindows 10
-           $ mySpacing' 8
+           $ mySpacing' 4
            $ ResizableThreeColMid 2 (1/100) (5/8) [(19/10)]
 -- tall     = renamed [Replace "tall"]
 --            $ limitWindows 12
@@ -429,7 +445,7 @@ myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2)]
                  mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDevLayout
                -- The layouts
                myDefaultLayout = threeCol ||| floats 
-               myDevLayout = threeColDev ||| threeCol
+               myDevLayout = threeColDev ||| threeCol ||| tall
 
 
 ------------------------------------------------------------------------
@@ -441,6 +457,9 @@ myScratchPads = [
                 , NS "mail"  spawnEmail findEmail manageScratch
                 , NS "bt"    spawnBT    findBT    manageScratch
                 , NS "audio" spawnPavu  findPavu  manageScratch
+                , NS "wapp"  spawnWapp  findWapp  manageScratch
+                , NS "htop"  spawnHtop  findHtop  manageScratch
+
                 ]
                 where
                   -- Terminal (st)
@@ -448,10 +467,10 @@ myScratchPads = [
                   findTerm   = resource =? "scratchpad"
                   -- Music player (ncmpcpp)
                   -- Note that using termite requires to define the title with --title manually
-                  spawnNcmp  = "termite -e ncmpcpp --title scramusic"
+                  spawnNcmp  = "alacritty -t scramusic -e ncmpcpp"
                   findNcmp   = title =? "scramusic"
                   -- Email (neomutt) 
-                  spawnEmail  = "termite -e neomutt --title scramail"
+                  spawnEmail  = "alacritty -t scramail -e neomutt"
                   findEmail   = title =? "scramail"
                   -- Bluetooth manager (blueman)
                   spawnBT  = "blueman-manager"
@@ -459,6 +478,12 @@ myScratchPads = [
                   -- Audio mixer (pulseaudio)
                   spawnPavu  = "pavucontrol"
                   findPavu   = className =? "Pavucontrol"
+                  -- WhatsAPP (whatscli)
+                  spawnWapp  = "alacritty -t scrawapp -e whatscli"
+                  findWapp   = title =? "scrawapp"
+                  -- htop
+                  spawnHtop  = "alacritty -t scrahtop -e htop"
+                  findHtop   = title =? "scrahtop"
                   manageScratch = customFloating $ center 0.3 0.5
                     where center w h = W.RationalRect ((1 - w) / 2) ((1 - h) / 2) w h
 
@@ -468,7 +493,7 @@ myScratchPads = [
 main :: IO ()
 main = do
     -- Launch xmobar
-    xmproc <- spawnPipe "xmobar /home/mashy/.config/xmonad/xmobar"
+    xmproc <- spawnPipe "xmobar /home/mashy/.xmonad/xmobar"
     -- Launch ewmh desktop
     xmonad $ ewmh def
         { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook <+> manageDocks

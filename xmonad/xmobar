@@ -49,7 +49,7 @@ Config { font    = "xft:Hack Nerd Font:pixelsize=12:antialias=true:hinting=true"
        , alignSep = "}{"
        , template = " <icon=haskell_20.xpm/> <fc=#666666>|</fc> %UnsafeStdinReader% }{ <fc=#b3afc2> %ker% </fc><fc=#666666>| </fc>\
                      \<fc=#ddbd94>gpu: %gpu%°C cpu: %ctemp%°C </fc><fc=#666666>| </fc>\
-                     \<fc=#c15c2e><action=`termite -e htop`>%cpu%</action> </fc><fc=#666666>| </fc>\
+                     \<fc=#c15c2e><action=`alacritty -e htop`>%cpu%</action> </fc><fc=#666666>| </fc>\
                      \<fc=#8b8f78>%memory% </fc><fc=#666666>| </fc><fc=#5a8c93>%disku% </fc><fc=#666666>| </fc>\
                      \<fc=#a679cf><action=`st`>  updates: %check%</action></fc><fc=#666666>| </fc>\
                      \<fc=#8d6947>%alsa:default:Master%</fc>\

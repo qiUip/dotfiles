@@ -33,10 +33,10 @@ Config { font    = "xft:Hack Nerd Font:pixelsize=12:antialias=true:hinting=true"
                     , Run Com "/bin/bash" ["-c", "~/.scripts/pacupdate"] "check"  30
 
                       -- Cpu temp in centigrade using a script
-                    , Run Com "/bin/bash" ["-c", "~/.scripts/ctemp"] "ctemp"  2
+                    , Run Com "/bin/bash" ["-c", "~/.scripts/ctemp"] "ctemp"  10
 
                       -- Nvidia gpu temp in centigrade using nvidia-smi
-                    , Run Com "nvidia-smi" ["--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"] "gpu" 2
+                    , Run Com "nvidia-smi" ["--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"] "gpu" 10
 
                       -- Runs a standard shell command 'uname -r' to get kernel version
                     , Run Com "uname" ["-r"] "ker" 0

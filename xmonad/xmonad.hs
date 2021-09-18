@@ -68,7 +68,7 @@ myModMask :: KeyMask
 myModMask = mod4Mask       -- Sets modkey to super/windows key
 
 myTerminal :: String
-myTerminal = "st"          -- Sets default terminal
+myTerminal = "alacritty"          -- Sets default terminal
 
 myBorderWidth :: Dimension
 myBorderWidth = 3          -- Sets border width for windows
@@ -220,7 +220,7 @@ myKeys =
 
        -- Open my preferred terminal
      , ("M-<Return>", spawn (myTerminal))
-     , ("M-t", spawn "termite")
+     , ("M-t", spawn "alacritty")
 
        -- Run Prompt
      , ("M-S-<Return>", shellPrompt myXPConfig')   --- Shell Prompt
@@ -231,6 +231,9 @@ myKeys =
      , ("<XF86Explorer> d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
      , ("<XF86Explorer> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
      , ("<XF86Explorer> q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
+     , ("M-S-d d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
+     , ("M-S-d c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
+     , ("M-S-d q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
 
        -- Windows
      , ("M-q", kill1)      -- Kill the currently focused client
@@ -273,16 +276,17 @@ myKeys =
      , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizable layouts)
 
        -- Applications (Super(+Ctrl)+Key)
-     , ("M-e", spawn "emacsclient -c -a ''")         -- Editor (emacs)
-     , ("M-r", runInTerm "" "ranger")                -- File manager
-     , ("M-C-a", spawn ("pavucontrol"))              -- Audio control
-     , ("M-C-b", spawn ("firefox"))                  -- Browser
-     , ("M-C-S-b", spawn ("brave"))                  -- Browser
-     , ("M-C-e", spawn ("termite" ++ " -e neomutt")) -- Email
-     , ("M-C-v", spawn ("termite" ++ " -e vis"))     -- Audio visualiser
-     , ("M-C-m", spawn ("termite" ++ " -e ncmpcpp")) -- Music player
-     , ("M-C-t", spawn ("teams"))                    -- MS teams (thanks work!!!)
-     , ("M-C-d", spawn ("discord"))                  -- Because sometimes you wanna talk about keyboards and emacs
+     , ("M-e", spawn "emacsclient -c -a ''")           -- Editor (emacs)
+     , ("M-r", runInTerm "" "ranger")                  -- File manager
+     , ("M-w", spawn ("alacritty" ++ " -e whatscli"))  -- Whatsapp cli
+     , ("M-C-a", spawn ("pavucontrol"))                -- Audio control
+     , ("M-C-b", spawn ("firefox"))                    -- Browser
+     , ("M-C-S-b", spawn ("brave"))                    -- Browser
+     , ("M-C-e", spawn ("alacritty" ++ " -e neomutt")) -- Email
+     , ("M-C-v", spawn ("alacritty" ++ " -e vis"))     -- Audio visualiser
+     , ("M-C-m", spawn ("alacritty" ++ " -e ncmpcpp")) -- Music player
+     , ("M-C-d", spawn ("discord"))                    -- Because sometimes you wanna talk about keyboards and emacs
+     -- , ("M-C-t", spawn ("teams"))                      -- MS teams (thanks work!!!)
 
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")
@@ -299,8 +303,10 @@ myKeys =
      , ("M-s e", namedScratchpadAction myScratchPads "mail")
      , ("M-s b", namedScratchpadAction myScratchPads "bt")
      , ("M-s p", namedScratchpadAction myScratchPads "audio")
+     , ("M-s w", namedScratchpadAction myScratchPads "wapp")
+     , ("M-s h", namedScratchpadAction myScratchPads "htop")
 
-     , ("<XF86Explorer> r t", prompt ("termite" ++ " -e") myXPConfig)   -- for cli
+     , ("<XF86Explorer> r t", prompt ("alacritty" ++ " -e") myXPConfig)   -- for cli
      , ("<XF86Explorer> r g", runOrRaisePrompt            myXPConfig)   -- for gui
      , ("<XF86Explorer> w b", windowPrompt myXPConfig Bring allWindows)
      , ("<XF86Explorer> w g", windowPrompt myXPConfig Goto allWindows)
@@ -333,8 +339,8 @@ myManageHook = composeAll
                , className =? "Gimp"      --> doShift ( myWorkspaces !! 7)
                , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
                , className =? "discord"   --> doFloat
-               , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
-               , className =? "Microsoft Teams - Preview" --> doFloat
+               -- , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
+               -- , className =? "Microsoft Teams - Preview" --> doFloat
                , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
                ] <+> namedScratchpadManageHook myScratchPads
 
@@ -388,6 +394,8 @@ myScratchPads = [
                 , NS "mail"  spawnEmail findEmail manageScratch
                 , NS "bt"    spawnBT    findBT    manageScratch
                 , NS "audio" spawnPavu  findPavu  manageScratch
+                , NS "wapp"  spawnWapp  findWapp  manageScratch
+                , NS "htop"  spawnHtop  findHtop  manageScratch
                 ]
                 where
                   -- Terminal (st)
@@ -395,10 +403,10 @@ myScratchPads = [
                   findTerm   = resource =? "scratchpad"
                   -- Music player (ncmpcpp)
                   -- Note that using termite requires to define the title with --title manually
-                  spawnNcmp  = "termite -e ncmpcpp --title scramusic"
+                  spawnNcmp  = "alacritty -t scramusic -e ncmpcpp"
                   findNcmp   = title =? "scramusic"
                   -- Email (neomutt)
-                  spawnEmail  = "termite -e neomutt --title scramail"
+                  spawnEmail  = "alacritty -t scramail -e neomutt"
                   findEmail   = title =? "scramail"
                   -- Bluetooth manager (blueman)
                   spawnBT  = "blueman-manager"
@@ -406,6 +414,12 @@ myScratchPads = [
                   -- Audio mixer (pulseaudio)
                   spawnPavu  = "pavucontrol"
                   findPavu   = className =? "Pavucontrol"
+                  -- WhatsAPP (whatscli)
+                  spawnWapp  = "alacritty -t scrawapp -e whatscli"
+                  findWapp   = title =? "scrawapp"
+                  -- htop
+                  spawnHtop  = "alacritty -t scrahtop -e htop"
+                  findHtop   = title =? "scrahtop"
                   manageScratch = customFloating $ center 0.3 0.5
                     where center w h = W.RationalRect ((1 - w) / 2) ((1 - h) / 2) w h
 

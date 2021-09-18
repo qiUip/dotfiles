@@ -49,3 +49,4 @@
 
 (package! org-ref)
 (package! org-roam)
+(package! org-cv :recipe (:host gitlab :repo "Titan-C/org-cv"))

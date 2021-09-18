@@ -5,6 +5,8 @@
 # $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
 # to find path to desired file
 
-value=$(</sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input)
+
+# value=$(</sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input)
+value=$(<$hwmon_id)
 value=$((value/1000))
 printf "$value\n"

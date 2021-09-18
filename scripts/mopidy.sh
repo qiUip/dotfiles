@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pw=$(pass music-mopidy)
+pw=$(pass Personal/mopidy)
 
 killall -q mopidy
 while pgrep -u $UID -x mopidy >/dev/null; do sleep 1; done

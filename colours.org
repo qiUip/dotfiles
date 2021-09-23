@@ -1,22 +1,28 @@
 #+TITLE: Colours
 
+* Dracula colour scheme
 The list of colours used in various places throughout the setup.
 There are some exceptions, but generally I tried to be consistent with them.
+Taken from the Dracula colour scheme and the Dracula alacritty theme
 
-- color0 (black)           : #252525
-- color1 (red)             : #ff5252
-- color2 (green)           : #118a71
-- color3 (yellow)          : #f57900
-- color4 (blue)            : #42a5f5
-- color5 (magenta)         : #ff5c79
-- color6 (cyne)            : #00acc1
-- color7 (white)           : #f5f5f5
 
-- color8 (bright black)    : #708284
-- color9 (bright red)      : #d81b5f
-- color10 (bright green)   : #097f7f
-- color11 (bright yellow)  : #ffc135
-- color12 (bright blue)    : #1078da
-- color13 (bright magenta) : #d81b5f
-- color14 (bright cyan)    : #16a085
-- color15 (bright white)   : #f5f5f5
+- background               : #282a36
+- foreground               : #f8f8f2
+
+- color0 (black)           : #000000
+- color1 (red)             : #ff5555
+- color2 (green)           : #50fa7b
+- color3 (yellow)          : #f1fa8c
+- color4 (blue)            : #bd93f9
+- color5 (magenta)         : #ff79c6
+- color6 (cyne)            : #8be9fd
+- color7 (white)           : #bfbfbf
+
+- color8 (bright black)    : #4d4d4d
+- color9 (bright red)      : #ffb86c
+- color10 (bright green)   : #5af78e
+- color11 (bright yellow)  : #f4f99d
+- color12 (bright blue)    : #caa9fa
+- color13 (bright magenta) : #ff92d0
+- color14 (bright cyan)    : #9aedfe
+- color15 (bright white)   : #e6e6e6

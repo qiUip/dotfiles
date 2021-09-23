@@ -24,7 +24,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-molokai)
+(setq doom-theme 'doom-dracula)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -116,7 +116,7 @@
 ;;         (:hlines . "no")
 ;;         (:tangle . "no")
 ;;         (:comments . "link")))
-(setq org-roam-directory (file-truename "~/.local/share/org-roam"))
+(setq org-roam-directory (file-truename "~/Orgs/roam"))
 (remove-hook 'text-mode-hook #'visual-line-mode)
 (add-hook 'text-mode-hook #'auto-fill-mode)
 (setq org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+") ("1." . "a.")))

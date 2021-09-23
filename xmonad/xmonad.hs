@@ -1,3 +1,9 @@
+-- My configuration file for Xmonad.
+-- This version uses the Dracula theme https://draculatheme.com/.
+
+------------------------------------
+------------- Modules --------------
+------------------------------------
 -- Base
 import XMonad
 import System.Exit (exitSuccess)
@@ -61,6 +67,9 @@ import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 
+------------------------------------
+------- Basic configuration --------
+------------------------------------
 myFont :: String
 myFont = "xft:Hack Nerd Font:bold:pixelsize=13"
 
@@ -68,16 +77,16 @@ myModMask :: KeyMask
 myModMask = mod4Mask       -- Sets modkey to super/windows key
 
 myTerminal :: String
-myTerminal = "alacritty"          -- Sets default terminal
+myTerminal = "alacritty"   -- Sets default terminal
 
 myBorderWidth :: Dimension
 myBorderWidth = 3          -- Sets border width for windows
 
 myNormColor :: String
-myNormColor   = "#2c2c2e"  -- Border color of normal windows
+myNormColor   = "#44475a"  -- Border color of normal windows
 
 myFocusColor :: String
-myFocusColor  = "#008080"  -- Border color of focused windows
+myFocusColor  = "#6272a4"  -- Border color of focused windows
 
 altMask :: KeyMask
 altMask = mod1Mask         -- Setting this for use in xprompts
@@ -85,6 +94,9 @@ altMask = mod1Mask         -- Setting this for use in xprompts
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 
+------------------------------------
+---------- Startup items -----------
+------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
           spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/solar2.jpg"
@@ -93,12 +105,15 @@ myStartupHook = do
           spawnOnce "/usr/sbin/emacs --daemon &"
           setWMName "LG3D"
 
+------------------------------------
+------ Prompts configuration -------
+------------------------------------
 -- Prompt parameters (fonts, colours, soze, location, features etc.)
 myXPConfig :: XPConfig
 myXPConfig = def
      { font                = "xft:Hack Nerd Font:size=9"
-     , bgColor             = "#292d3e"
-     , fgColor             = "#d0d0d0"
+     , bgColor             = "#282a36"
+     , fgColor             = "#f8f8f2"
      , bgHLight            = "#c792ea"
      , fgHLight            = "#000000"
      , borderColor         = "#535974"
@@ -133,57 +148,17 @@ promptList = [ ("m", manPrompt)          -- manpages prompt
              , ("x", xmonadPrompt)       -- xmonad prompt
              ]
 
+-- TODO add link
+-- Calculator -- Example of a custom prompt from xmonad documentaion
 promptList' :: [(String, XPConfig -> String -> X (), String)]
-promptList' = [ ("c", calcPrompt, "qalc")         -- requires qalculate-gtk
+promptList' = [ ("c", calcPrompt, "qalc")  -- requires qalculate-gtk
               ]
-
 calcPrompt c ans =
     inputPrompt c (trim ans) ?+ \input ->
         liftIO(runProcessWithInput "qalc" [input] "") >>= calcPrompt c
     where
         trim  = f . f
             where f = reverse . dropWhile isSpace
-
-
--- Keymaps (emacs-like key bindings)
-myXPKeymap :: M.Map (KeyMask,KeySym) (XP ())
-myXPKeymap = M.fromList $
-     map (first $ (,) controlMask)   -- control + <key>
-     [ (xK_z, killBefore)            -- kill line backwards
-     , (xK_k, killAfter)             -- kill line fowards
-     , (xK_a, startOfLine)           -- move to the beginning of the line
-     , (xK_e, endOfLine)             -- move to the end of the line
-     , (xK_m, deleteString Next)     -- delete a character foward
-     , (xK_b, moveCursor Prev)       -- move cursor forward
-     , (xK_f, moveCursor Next)       -- move cursor backward
-     , (xK_BackSpace, killWord Prev) -- kill the previous word
-     , (xK_y, pasteString)           -- paste a string
-     , (xK_g, quit)                  -- quit out of prompt
-     , (xK_bracketleft, quit)
-     ]
-     ++
-     map (first $ (,) altMask)       -- meta key + <key>
-     [ (xK_BackSpace, killWord Prev) -- kill the prev word
-     , (xK_f, moveWord Next)         -- move a word forward
-     , (xK_b, moveWord Prev)         -- move a word backward
-     , (xK_d, killWord Next)         -- kill the next word
-     , (xK_n, moveHistory W.focusUp')   -- move up thru history
-     , (xK_p, moveHistory W.focusDown') -- move down thru history
-     ]
-     ++
-     map (first $ (,) 0) -- <key>
-     [ (xK_Return, setSuccess True >> setDone True)
-     , (xK_KP_Enter, setSuccess True >> setDone True)
-     , (xK_BackSpace, deleteString Prev)
-     , (xK_Delete, deleteString Next)
-     , (xK_Left, moveCursor Prev)
-     , (xK_Right, moveCursor Next)
-     , (xK_Home, startOfLine)
-     , (xK_End, endOfLine)
-     , (xK_Down, moveHistory W.focusUp')
-     , (xK_Up, moveHistory W.focusDown')
-     , (xK_Escape, quit)
-     ]
 
 -- Add additional search engines.
 archwiki, ebay, news, reddit, amazon, scholar :: S.SearchEngine
@@ -211,6 +186,84 @@ searchList = [ ("a", archwiki)
              , ("z", amazon)
              ]
 
+-- Keymaps for prompt (only)
+myXPKeymap :: M.Map (KeyMask,KeySym) (XP ())
+myXPKeymap = M.fromList $
+     map (first $ (,) controlMask)         -- control + <key>
+     [ (xK_a, startOfLine)                 -- move to the beginning of the line
+     , (xK_e, endOfLine)                   -- move to the end of the line
+     , (xK_w, moveCursor Prev)             -- move cursor forward
+     , (xK_b, moveCursor Next)             -- move cursor backward
+     , (xK_BackSpace, killWord Prev)       -- kill the previous word
+     , (xK_c, pasteString)                 -- paste a string
+     , (xK_q, quit)                        -- quit out of prompt
+     ]
+     ++
+     map (first $ (,) altMask)             -- meta key + <key>
+     [ (xK_BackSpace, killWord Prev)       -- kill the previous word
+     , (xK_Up, moveHistory W.focusUp')     -- move up thru history
+     , (xK_Down, moveHistory W.focusDown') -- move down thru history
+     ]
+     ++
+     map (first $ (,) 0) -- <key>
+     [ (xK_Return, setSuccess True >> setDone True)
+     , (xK_KP_Enter, setSuccess True >> setDone True)
+     , (xK_BackSpace, deleteString Prev)
+     , (xK_Delete, deleteString Next)
+     , (xK_Left, moveCursor Prev)
+     , (xK_Right, moveCursor Next)
+     , (xK_Home, startOfLine)
+     , (xK_End, endOfLine)
+     , (xK_Down, moveHistory W.focusUp')
+     , (xK_Up, moveHistory W.focusDown')
+     , (xK_Escape, quit)
+     ]
+
+------------------------------------
+------------ Scratchpads -----------
+------------------------------------
+-- Note that alacritty requires the title to be defined manually with -t
+myScratchPads = [
+                  NS "term"  spawnTerm  findTerm  manageScratch
+                , NS "file"  spawnFile  findFile  manageScratch
+                , NS "music" spawnMusc  findMusc  manageScratch
+                , NS "mail"  spawnEmail findEmail manageScratch
+                , NS "bt"    spawnBT    findBT    manageScratch
+                , NS "audio" spawnAudi  findAudi  manageScratch
+                , NS "hmon"  spawnMon   findMon   manageScratch
+                , NS "wapp"  spawnWapp  findWapp  manageScratch
+                ]
+                where
+                  -- term: Terminal (st)
+                  spawnTerm  = "st" ++ " -n scratchpad"
+                  findTerm   = resource =? "scratchpad"
+                  -- file: File Manager (ranger)
+                  spawnFile  = "alacritty -t scrafile -e ranger"
+                  findFile   = title =? "scrafile"
+                  -- music: Music player (ncmpcpp)
+                  spawnMusc  = "alacritty -t scramusic -e ncmpcpp"
+                  findMusc   = title =? "scramusic"
+                  -- mail: Email client (neomutt)
+                  spawnEmail  = "alacritty -t scramail -e neomutt"
+                  findEmail   = title =? "scramail"
+                  -- bt: Bluetooth manager (blueman)
+                  spawnBT  = "blueman-manager"
+                  findBT   = className =? "Blueman-manager"
+                  -- audio: Audio mixer (pulseaudio)
+                  spawnAudi  = "pavucontrol"
+                  findAudi   = className =? "Pavucontrol"
+                  -- hmon: Hardware monitor (htop)
+                  spawnMon  = "alacritty -t scrahtop -e htop"
+                  findMon   = title =? "scrahtop"
+                  -- wapp: WhatsApp client (whatscli)
+                  spawnWapp  = "alacritty -t scrawapp -e whatscli"
+                  findWapp   = title =? "scrawapp"
+                  manageScratch = customFloating $ center 0.3 0.5
+                    where center w h = W.RationalRect ((1 - w) / 2) ((1 - h) / 2) w h
+
+------------------------------------
+---- Keybindings configuration -----
+------------------------------------
 myKeys :: [(String, X ())]
 myKeys =
      [ -- Xmonad
@@ -218,22 +271,21 @@ myKeys =
      , ("M-S-r", spawn "xmonad --restart")                       -- Restarts xmonad
      , ("M-C-S-q", io exitSuccess)                               -- Quits xmonad
 
-       -- Open my preferred terminal
+       -- Open 'my' preferred terminal
      , ("M-<Return>", spawn (myTerminal))
-     , ("M-t", spawn "alacritty")
+     , ("M-t", spawn "st")
 
-       -- Run Prompt
-     , ("M-S-<Return>", shellPrompt myXPConfig')   --- Shell Prompt
-     -- , ("<XF86MenuKB> r", shellPrompt myXPConfig')  -- Shell Prompt
+       -- Run applications from a prompt
+     , ("<XF86Explorer> r t", prompt ("alacritty" ++ " -e") myXPConfig) -- Run a terminal application
+     , ("<XF86Explorer> r g", runOrRaisePrompt            myXPConfig)   -- Run or go to a gui application
 
        -- Dmenu
-     , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86Explorer> d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86Explorer> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
-     , ("<XF86Explorer> q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
-     , ("M-S-d d", spawn "/home/mashy/.scripts/dmenu_recency.sh")   -- Demenu recency (adapted from Manjaro i3)
-     , ("M-S-d c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")   -- Dmenu launch scripts
-     , ("M-S-d q", spawn "/home/mashy/.scripts/dmenu_power.sh")     -- Dmenu power menu
+     , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")              -- Demenu recency (adapted from Manjaro i3)
+     , ("<XF86Explorer> d", spawn "/home/mashy/.scripts/dmenu_recency.sh") -- Demenu recency (adapted from Manjaro i3)
+     , ("<XF86Explorer> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh") -- Dmenu launch scripts
+     , ("<XF86Explorer> q", spawn "/home/mashy/.scripts/dmenu_power.sh")   -- Dmenu power menu
+     , ("M-S-d c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")          -- Dmenu launch scripts
+     , ("M-S-d q", spawn "/home/mashy/.scripts/dmenu_power.sh")            -- Dmenu power menu
 
        -- Windows
      , ("M-q", kill1)      -- Kill the currently focused client
@@ -256,32 +308,34 @@ myKeys =
      , ("C-S-<Tab>", rotSlavesDown)       -- Rotate all windows except master and keep focus in place
      , ("M1-S-<Tab>", rotAllDown)         -- Rotate all the windows in the current stack
      , ("M-C-c", killAllOtherCopies)      -- Delete all copies of window
+     , ("M-<End>", WS.nextWS)             -- Move to the next workspace
+     , ("M-<Home>", WS.prevWS)            -- Move to the previous workspace
+     , ("<XF86Explorer> w b", windowPrompt myXPConfig Bring allWindows) -- bring windows to this workspace
+     , ("<XF86Explorer> w g", windowPrompt myXPConfig Goto allWindows)  -- go to a window in its current workspace
 
        -- Layouts
      , ("M-<Tab>", sendMessage NextLayout)               -- Switch to next layout
      , ("M-<Space>", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
-     , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts
+     , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts (only when not using a status bar)
      , ("M-S-n", sendMessage $ MT.Toggle NOBORDERS)      -- Toggles noborder
      , ("M-<KP_Multiply>", sendMessage (IncMasterN 1))   -- Increase number of clients in master pane
      , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in master pane
-     , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows
-     , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows
-     , ("M-<End>", WS.nextWS)                            -- Increase number of windows
-     , ("M-<Home>", WS.prevWS)                           -- Decrease number of windows
+     , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase total number of windows
+     , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease total number of windows
 
        -- Resize windows
-     , ("M-h", sendMessage Shrink)                       -- Shrink horiz window width
-     , ("M-l", sendMessage Expand)                       -- Expand horiz window width
-     , ("M-S-h", sendMessage MirrorShrink)               -- Shrink vert window width (only works with resizable layouts)
-     , ("M-S-l", sendMessage MirrorExpand)               -- Expand vert window width (only works with resizable layouts)
+     , ("M-h", sendMessage Shrink)                       -- Shrink horizontal window width
+     , ("M-l", sendMessage Expand)                       -- Expand horizontal window width
+     , ("M-S-h", sendMessage MirrorShrink)               -- Shrink vertical window width (only works with resizable layouts)
+     , ("M-S-l", sendMessage MirrorExpand)               -- Expand vertcal window width (only works with resizable layouts)
 
-       -- Applications (Super(+Ctrl)+Key)
+       -- Applications
      , ("M-e", spawn "emacsclient -c -a ''")           -- Editor (emacs)
      , ("M-r", runInTerm "" "ranger")                  -- File manager
      , ("M-w", spawn ("alacritty" ++ " -e whatscli"))  -- Whatsapp cli
-     , ("M-C-a", spawn ("pavucontrol"))                -- Audio control
      , ("M-C-b", spawn ("firefox"))                    -- Browser
      , ("M-C-S-b", spawn ("brave"))                    -- Browser
+     , ("M-C-a", spawn ("pavucontrol"))                -- Audio control
      , ("M-C-e", spawn ("alacritty" ++ " -e neomutt")) -- Email
      , ("M-C-v", spawn ("alacritty" ++ " -e vis"))     -- Audio visualiser
      , ("M-C-m", spawn ("alacritty" ++ " -e ncmpcpp")) -- Music player
@@ -289,41 +343,38 @@ myKeys =
      -- , ("M-C-t", spawn ("teams"))                      -- MS teams (thanks work!!!)
 
        -- Multimedia Keys
-     , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")
-     , ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +1%")
-     , ("S-<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%")
-     , ("S-<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%")
+     , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")   -- Volume -1%
+     , ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +1%")   -- Volume +1%
+     , ("S-<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%") -- Volume -5%
+     , ("S-<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%") -- Volume +5%
 
        -- Print screen. Requires scrot.
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
 
-       -- Scratchpads
+       -- Scratchpads (Super+s Key) -- These are defined in the scratchpad section
      , ("M-s t", namedScratchpadAction myScratchPads "term")
+     , ("M-s r", namedScratchpadAction myScratchPads "file")
      , ("M-s m", namedScratchpadAction myScratchPads "music")
      , ("M-s e", namedScratchpadAction myScratchPads "mail")
      , ("M-s b", namedScratchpadAction myScratchPads "bt")
      , ("M-s p", namedScratchpadAction myScratchPads "audio")
+     , ("M-s h", namedScratchpadAction myScratchPads "hmon")
      , ("M-s w", namedScratchpadAction myScratchPads "wapp")
-     , ("M-s h", namedScratchpadAction myScratchPads "htop")
-
-     , ("<XF86Explorer> r t", prompt ("alacritty" ++ " -e") myXPConfig)   -- for cli
-     , ("<XF86Explorer> r g", runOrRaisePrompt            myXPConfig)   -- for gui
-     , ("<XF86Explorer> w b", windowPrompt myXPConfig Bring allWindows)
-     , ("<XF86Explorer> w g", windowPrompt myXPConfig Goto allWindows)
      ]
 
-  -- Appending search engines to keybindings list
-  ++ [("<XF86Explorer> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ]
-  ++ [("M-S-s "            ++ k, S.selectSearch f) | (k,f) <- searchList ]
+  -- Appending search engine lists to keybindings list -- the search engines and their keys are in the prompts section
+  ++ [("<XF86Explorer> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ] -- Search from a prompt
+  ++ [("M-S-s "            ++ k, S.selectSearch f) | (k,f) <- searchList ]             -- Search from the browser
+
+  -- Appending prompt list to keybindings list -- the prompts and their keys for are in the prompts section
   ++ [("<XF86Explorer> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
   ++ [("<XF86Explorer> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
 
-xmobarEscape :: String -> String
-xmobarEscape = concatMap doubleLts
-  where
-        doubleLts '<' = "<<"
-        doubleLts x   = [x]
 
+------------------------------------
+----- Workspace configuration ------
+------------------------------------
+-- Make workspaces in xmobar clickable
 myWorkspaces :: [String]
 myWorkspaces = clickable . map xmobarEscape
                $ ["main", "dev1", "dev2", "dev3", "files", "chat", "write", "edit", "watch"]
@@ -332,28 +383,42 @@ myWorkspaces = clickable . map xmobarEscape
                       (i,ws) <- zip [1..9] l,
                       let n = i ]
 
+xmobarEscape :: String -> String
+xmobarEscape = concatMap doubleLts
+  where
+        doubleLts '<' = "<<"
+        doubleLts x   = [x]
+
+-- Application default workspaces
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-               [ className =? "vlc"       --> doShift ( myWorkspaces !! 8)
-               , className =? "ParaView"  --> doShift ( myWorkspaces !! 2)
-               , className =? "Gimp"      --> doShift ( myWorkspaces !! 7)
+               [ className =? "ParaView"  --> doShift ( myWorkspaces !! 2) -- 'dev2'
+               , className =? "vlc"       --> doShift ( myWorkspaces !! 8) -- 'watch'
+               , className =? "Gimp"      --> doShift ( myWorkspaces !! 7) -- 'edit'
                , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
                , className =? "discord"   --> doFloat
+               , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
                -- , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
                -- , className =? "Microsoft Teams - Preview" --> doFloat
-               , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
-               ] <+> namedScratchpadManageHook myScratchPads
+               ]
 
+  -- Scratchpad workspace
+  <+> namedScratchpadManageHook myScratchPads
+
+
+------------------------------------
+------- Layout configuration -------
+------------------------------------
 -- The spacingRaw module adds a configurable amount of space around windows.
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
 
--- A variation of the above except no borders are applied if fewer than two
--- windows, so that a single window has no gaps.
+-- A variation of the above except no borders are applied if fewer than two windows,
+-- so that a single window has no gaps
 mySpacing' :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing' i = spacingRaw True (Border i i i i) True (Border i i i i) True
 
--- Defining some layouts.
+-- Defining layouts.
 threeCol = renamed [Replace "threeCol"]
            $ limitWindows 9
            $ mySpacing' 6
@@ -374,8 +439,8 @@ threeColDev = renamed [Replace "threeColDev"]
 --            $ mySpacing 6
 --            $ ResizableTall 1 (3/100) (1/2) []
 
--- The layout hook. onWorkspace spcifies the workspaces from the first
--- layout hook, myDevLHook, while all other workspaces use myDefaultLHook
+-- onWorkspace spcifies the workspaces for selected layouts while all other workspaces use
+-- myDefaultLHook
 myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2)]
                 myDevLHook myDefaultLHook
              where
@@ -388,41 +453,9 @@ myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2)]
                myDefaultLayout = threeCol ||| floats
                myDevLayout = threeColDev ||| threeCol
 
-myScratchPads = [
-                  NS "term"  spawnTerm  findTerm  manageScratch
-                , NS "music" spawnNcmp  findNcmp  manageScratch
-                , NS "mail"  spawnEmail findEmail manageScratch
-                , NS "bt"    spawnBT    findBT    manageScratch
-                , NS "audio" spawnPavu  findPavu  manageScratch
-                , NS "wapp"  spawnWapp  findWapp  manageScratch
-                , NS "htop"  spawnHtop  findHtop  manageScratch
-                ]
-                where
-                  -- Terminal (st)
-                  spawnTerm  = "st" ++ " -n scratchpad"
-                  findTerm   = resource =? "scratchpad"
-                  -- Music player (ncmpcpp)
-                  -- Note that using termite requires to define the title with --title manually
-                  spawnNcmp  = "alacritty -t scramusic -e ncmpcpp"
-                  findNcmp   = title =? "scramusic"
-                  -- Email (neomutt)
-                  spawnEmail  = "alacritty -t scramail -e neomutt"
-                  findEmail   = title =? "scramail"
-                  -- Bluetooth manager (blueman)
-                  spawnBT  = "blueman-manager"
-                  findBT   = className =? "Blueman-manager"
-                  -- Audio mixer (pulseaudio)
-                  spawnPavu  = "pavucontrol"
-                  findPavu   = className =? "Pavucontrol"
-                  -- WhatsAPP (whatscli)
-                  spawnWapp  = "alacritty -t scrawapp -e whatscli"
-                  findWapp   = title =? "scrawapp"
-                  -- htop
-                  spawnHtop  = "alacritty -t scrahtop -e htop"
-                  findHtop   = title =? "scrahtop"
-                  manageScratch = customFloating $ center 0.3 0.5
-                    where center w h = W.RationalRect ((1 - w) / 2) ((1 - h) / 2) w h
-
+------------------------------------
+---- Main configuration & Xmobar ---
+------------------------------------
 main :: IO ()
 main = do
     -- Launch xmobar
@@ -441,13 +474,13 @@ main = do
         , focusedBorderColor = myFocusColor
         , logHook            = dynamicLogWithPP xmobarPP
                                { ppOutput          = hPutStrLn xmproc
-                               , ppCurrent         = xmobarColor "#f57900" "" . wrap "[" "]"  -- Current workspace in xmobar
-                               , ppVisible         = xmobarColor "#f57900" ""                 -- Visible but not current workspace
-                               , ppHidden          = xmobarColor "#ffc135" "" . wrap "*" ""   -- Hidden workspaces in xmobar
-                               , ppHiddenNoWindows = xmobarColor "#16a085" ""                 -- Hidden workspaces (no windows)
-                               , ppTitle           = xmobarColor "#b3afc2" "" . shorten 80    -- Title of active window in xmobar
-                               , ppSep             =  "<fc=#666666> | </fc>"                  -- Separators in xmobar
-                               , ppUrgent          = xmobarColor "#d81b5f" "" . wrap "!" "!"  -- Urgent workspace
+                               , ppCurrent         = xmobarColor "#bd93f9" "" . wrap "[" "]"  -- Current workspace in xmobar
+                               , ppVisible         = xmobarColor "#bd93f9" ""                 -- Visible but not current workspace
+                               , ppHidden          = xmobarColor "#f4f99d" "" . wrap "*" ""   -- Hidden workspaces in xmobar
+                               , ppHiddenNoWindows = xmobarColor "#8be9fd" ""                 -- Hidden workspaces (no windows)
+                               , ppTitle           = xmobarColor "#e6e6e6" "" . shorten 80    -- Title of active window in xmobar
+                               , ppSep             =  "<fc=#bfbfbf> | </fc>"                  -- Separators in xmobar
+                               , ppUrgent          = xmobarColor "#bfbfbf" "" . wrap "!" "!"  -- Urgent workspace
                                , ppExtras          = [windowCount]                            -- # of windows current workspace
                                , ppOrder           = \(ws:l:t:ex) -> [ws,l]++ex++[t]
                                }

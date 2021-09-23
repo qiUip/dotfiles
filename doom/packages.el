@@ -46,7 +46,18 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-
+;; References in org
 (package! org-ref)
-(package! org-roam)
+
+;; org-mode CV exporter
 (package! org-cv :recipe (:host gitlab :repo "Titan-C/org-cv"))
+
+;; Bibtex in org-mode with roam
+(package! org-roam-bibtex
+  :recipe (:host github :repo "org-roam/org-roam-bibtex"))
+
+;; When using org-roam via the `+roam` flag
+(unpin! org-roam)
+
+;; When using bibtex-completion via the `biblio` module
+(unpin! bibtex-completion helm-bibtex ivy-bibtex)

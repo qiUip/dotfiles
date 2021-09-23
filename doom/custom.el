@@ -5,6 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(org-agenda-files
    '("/home/mashy/Orgs/archive.org" "/home/mashy/Orgs/code_snippets.org" "/home/mashy/Orgs/notes.org" "/home/mashy/Orgs/personal.org" "/home/mashy/Orgs/quick_latex.org" "/home/mashy/Orgs/tasks.org" "/home/mashy/Orgs/temp.org" "/home/mashy/Orgs/tips.org"))
+ '(send-mail-function 'mailclient-send-it)
  '(warning-suppress-log-types '((org-roam) (org-roam) (org-roam) (:warning)))
  '(warning-suppress-types '((org-roam) (org-roam) (:warning))))
 (custom-set-faces

@@ -329,18 +329,18 @@ myKeys =
      , ("M-S-h", sendMessage MirrorShrink)               -- Shrink vertical window width (only works with resizable layouts)
      , ("M-S-l", sendMessage MirrorExpand)               -- Expand vertcal window width (only works with resizable layouts)
 
-       -- Applications
-     , ("M-e", spawn "emacsclient -c -a ''")           -- Editor (emacs)
-     , ("M-r", runInTerm "" "ranger")                  -- File manager
-     , ("M-w", spawn ("alacritty" ++ " -e whatscli"))  -- Whatsapp cli
-     , ("M-C-b", spawn ("firefox"))                    -- Browser
-     , ("M-C-S-b", spawn ("brave"))                    -- Browser
-     , ("M-C-a", spawn ("pavucontrol"))                -- Audio control
-     , ("M-C-e", spawn ("alacritty" ++ " -e neomutt")) -- Email
-     , ("M-C-v", spawn ("alacritty" ++ " -e vis"))     -- Audio visualiser
-     , ("M-C-m", spawn ("alacritty" ++ " -e ncmpcpp")) -- Music player
-     , ("M-C-d", spawn ("discord"))                    -- Because sometimes you wanna talk about keyboards and emacs
-     -- , ("M-C-t", spawn ("teams"))                      -- MS teams (thanks work!!!)
+       -- Applications (teminal apps use a manual title with -t for better use with window grab and goto)
+     , ("M-e", spawn "emacsclient -c -a ''")                          -- Editor (emacs)
+     , ("M-r", spawn ("alacritty" ++ " -t ranger -e ranger"))         -- File manager
+     , ("M-w", spawn ("alacritty" ++ " -t whatscli -e whatscli"))     -- Whatsapp cli
+     , ("M-C-b", spawn ("firefox"))                                   -- Browser
+     , ("M-C-S-b", spawn ("brave"))                                   -- Browser
+     , ("M-C-a", spawn ("pavucontrol"))                               -- Audio control
+     , ("M-C-e", spawn ("alacritty" ++ " -t neomutt -e neomutt"))     -- Email
+     , ("M-C-v", spawn ("TERM=rxvt-256color alacritty" ++ " -e vis")) -- Audio visualiser
+     , ("M-C-m", spawn ("alacritty" ++ " -e ncmpcpp"))                -- Music player
+     , ("M-C-d", spawn ("discord"))                                   -- Because sometimes you wanna talk about keyboards and emacs
+     -- , ("M-C-t", spawn ("teams"))                                     -- MS teams (thanks work!!!)
 
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")   -- Volume -1%

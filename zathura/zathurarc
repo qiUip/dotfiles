@@ -48,6 +48,9 @@ set render-loading-bg           "#f8f8f2" # Foreground
 
 set recolor-lightcolor          "#282a36" # Background
 set recolor-darkcolor           "#f8f8f2" # Foreground
+# setting recolor-keep true will keep any color your pdf has.
+# if it is false, it'll just be black and white
+set recolor-keephue "true"
 
 #
 # Startup options

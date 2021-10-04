@@ -30,7 +30,7 @@ Config { font    = "xft:Hack Nerd Font:pixelsize=12:antialias=true:hinting=true"
 
                       -- Runs custom script to check for zypper updates.
                       -- Needs changing based on the package manager in use.
-                    , Run Com "/bin/bash" ["-c", "~/.scripts/pacupdate"] "check"  30
+                    , Run Com "/bin/bash" ["-c", "~/.scripts/pacupdate"] "check"  300
 
                       -- Cpu temp in centigrade using a script
                     , Run Com "/bin/bash" ["-c", "~/.scripts/ctemp"] "ctemp"  10

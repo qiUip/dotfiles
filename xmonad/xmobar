@@ -11,7 +11,7 @@ Config { font    = "xft:Hack Nerd Font:pixelsize=12:antialias=true:hinting=true"
        , hideOnStart = False
        , allDesktops = True
        , persistent = True
-       , iconRoot = "/home/mashy/.config/xmonad/xpm/"  -- default: "."
+       , iconRoot = "$HOME/.config/xmonad/xpm/"  -- default: "."
        , commands = [
                       -- Time and date
                       Run Date "\xf133 %b %d %Y (%H:%M)" "date" 50
@@ -30,10 +30,10 @@ Config { font    = "xft:Hack Nerd Font:pixelsize=12:antialias=true:hinting=true"
 
                       -- Runs custom script to check for distro updates.
                       -- Might need changing based on the package/distro manager in use.
-                    , Run Com "/bin/bash" ["-c", "~/.scripts/checkupdates"] "check"  300
+                    , Run Com "/bin/bash" ["-c", "$HOME/.scripts/checkupdates"] "check"  300
 
                       -- Cpu temp in centigrade using a script
-                    , Run Com "/bin/bash" ["-c", "~/.scripts/ctemp"] "ctemp"  10
+                    , Run Com "/bin/bash" ["-c", "$HOME/.scripts/ctemp"] "ctemp"  10
 
                       -- Nvidia gpu temp in centigrade using nvidia-smi
                     , Run Com "nvidia-smi" ["--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"] "gpu" 10

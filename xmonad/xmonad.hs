@@ -99,9 +99,9 @@ windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace
 ------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
-          spawnOnce "nitrogen --set-zoom-fill /home/mashy/Pictures/solar2.jpg"
+          spawnOnce "nitrogen --set-zoom-fill $HOME/Pictures/solar2.jpg"
           spawnOnce "picom -b"
-          spawnOnce "xmodmap /home/mashy/.Xmodmap"
+          spawnOnce "xmodmap $HOME/.Xmodmap"
           spawnOnce "/usr/sbin/emacs --daemon &"
           setWMName "LG3D"
 
@@ -280,12 +280,12 @@ myKeys =
      , ("<XF86Explorer> r g", runOrRaisePrompt            myXPConfig)   -- Run or go to a gui application
 
        -- Dmenu
-     , ("M-d", spawn "/home/mashy/.scripts/dmenu_recency.sh")              -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86Explorer> d", spawn "/home/mashy/.scripts/dmenu_recency.sh") -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86Explorer> c", spawn "/home/mashy/.scripts/dmenu_scripts.sh") -- Dmenu launch scripts
-     , ("<XF86Explorer> q", spawn "/home/mashy/.scripts/dmenu_power.sh")   -- Dmenu power menu
-     , ("M-S-d c", spawn "/home/mashy/.scripts/dmenu_scripts.sh")          -- Dmenu launch scripts
-     , ("M-S-d q", spawn "/home/mashy/.scripts/dmenu_power.sh")            -- Dmenu power menu
+     , ("M-d", spawn "$HOME/.scripts/dmenu_recency.sh")              -- Demenu recency (adapted from Manjaro i3)
+     , ("<XF86Explorer> d", spawn "$HOME/.scripts/dmenu_recency.sh") -- Demenu recency (adapted from Manjaro i3)
+     , ("<XF86Explorer> c", spawn "$HOME/.scripts/dmenu_scripts.sh") -- Dmenu launch scripts
+     , ("<XF86Explorer> q", spawn "$HOME/.scripts/dmenu_power.sh")   -- Dmenu power menu
+     , ("M-S-d c", spawn "$HOME/.scripts/dmenu_scripts.sh")          -- Dmenu launch scripts
+     , ("M-S-d q", spawn "$HOME/.scripts/dmenu_power.sh")            -- Dmenu power menu
 
        -- Windows
      , ("M-q", kill1)      -- Kill the currently focused client
@@ -459,7 +459,7 @@ myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2)]
 main :: IO ()
 main = do
     -- Launch xmobar
-    xmproc <- spawnPipe "xmobar ~/.config/xmonad/xmobar"
+    xmproc <- spawnPipe "xmobar $HOME/.config/xmonad/xmobar"
     -- Launch ewmh desktop
     xmonad $ ewmh def
         { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook

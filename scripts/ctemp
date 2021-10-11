@@ -7,10 +7,9 @@
 
 # Option for setting the location of the sensor in a static manner.
 # value=$(</sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input)
-#
+
 # Option for obtaining the location of the sensor dynamically. The command to find the location of hwmon_id will be called every time the script is executed.
 # The selected sensor is "Package id" - change it to the desired sensor you wish to use as needed.
-#
 # hwmon_id=$(for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done | awk '/Package id/{print $NF}')
 # value=$(<$hwmon_id)
 

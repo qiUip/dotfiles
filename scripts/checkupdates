@@ -1,11 +1,11 @@
 #!/bin/bash
 
-if /home/mashy/.scripts/distro_ident on_classic_linux ; then
+if ~/.scripts/distro_ident on_classic_linux ; then
     if ~/.scripts/distro_ident on_manjaro ; then
         cupd=$(checkupdates | wc -l)
         printf "$cupd \n"
 
-    elif ~/.scripts/distro_ident on_tumbelweed ; then
+    elif ~/.scripts/distro_ident on_tumbleweed ; then
          if ! updates=$(zypper --no-refresh lu --best-effort | grep -c 'v |') ; then
              updates=0
          fi

@@ -459,7 +459,7 @@ myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2)]
 main :: IO ()
 main = do
     -- Launch xmobar
-    xmproc <- spawnPipe "xmobar /home/mashy/.config/xmonad/xmobar"
+    xmproc <- spawnPipe "xmobar ~/.config/xmonad/xmobar"
     -- Launch ewmh desktop
     xmonad $ ewmh def
         { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook

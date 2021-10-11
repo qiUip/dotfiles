@@ -1,19 +1,19 @@
 #+OPTIONS: toc:nil
 #+TITLE: A collection of my personal dotfiles.
 
-I use these files more as templates due to running them on several machines with
-some specific settings I need or like for each. This version of the dotfiles are
-compatible with both my OpenSUSE Tumbelweed and Manjaro Linux installations. An
-experimental WSL2 setup used in Debian under WSL2 is also available in the WSL
-branch, but has not been updated in a while and there is no grantee it will work.
+This is my collection of dotfiles for most of the programs I use on a daily
+basis between my various machines. The current version of the dotfiles should be
+mostly distro agnostic and compatible at least with both my OpenSUSE Tumbelweed
+and Manjaro Linux installations. Some things, like the CPU temperature sensor is
+still system specific and will likely not work on your system out of the box.
 
-There is a chance that some things I haven't actually used in a while might be
-broken. Please don't hesitate to contact me if you encounter any such issues.
+There is a good chance that some things haven't been used in a while and might be
+broken. If so, I would love to know about it so please either file an issue here
+or contact me directly if you find any such things.
 
-I'm currently using Xmonad as my main window manager, and hence some things in
-the i3 settings might not be updated. For instance, some changes in the scripts
-might not be compatible with how i3 calls them. These should all be easy to fix,
-but might not currently work as intended out of the box.
+An experimental WSL2 branch is also available, but has not been updated in a
+while and there is no grantee it will work at all! It has not been updated to be
+distro agnostic and some features will only work in Debian.
 
 * How to use these files
 All the folders here, with the exception of /scripts/ and /.doom/, should be
@@ -45,3 +45,9 @@ where. Chances are, if it's anything that's particularly impressive then it
 wasn't writen by me and credit is due elsewhere! However there is no line of
 code that I haven't gone over and made sure to understand so if you encounter
 anything problematic please get in touch!
+
+** Where is i3?
+I've been using Xmonad as my main window manager for the past few years, and
+hence some things in the i3 settings might not be updated and/or are broken. For
+this reason I have removed i3 and polybar from the =master= branch, but you can
+find them in older branches if you so wish.

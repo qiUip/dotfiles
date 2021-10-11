@@ -28,9 +28,9 @@ Config { font    = "xft:Hack Nerd Font:pixelsize=12:antialias=true:hinting=true"
                       -- Disk space free
                     , Run DiskU [("/home", "\xf0c7 hdd: <free> free")] [] 60
 
-                      -- Runs custom script to check for zypper updates.
-                      -- Needs changing based on the package manager in use.
-                    , Run Com "/bin/bash" ["-c", "~/.scripts/pacupdate"] "check"  300
+                      -- Runs custom script to check for distro updates.
+                      -- Might need changing based on the package/distro manager in use.
+                    , Run Com "/bin/bash" ["-c", "~/.scripts/checkupdates"] "check"  300
 
                       -- Cpu temp in centigrade using a script
                     , Run Com "/bin/bash" ["-c", "~/.scripts/ctemp"] "ctemp"  10

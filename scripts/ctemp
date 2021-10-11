@@ -1,12 +1,23 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 # Prints an integer value of the temperature value directly from the sysfs path
 # Use `sensors` to find preferred temperature source, then run
 # $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
-# to find path to desired file
+# to find path to desired file.
 
-
+# Option for setting the location of the sensor in a static manner.
 # value=$(</sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input)
+#
+# Option for obtaining the location of the sensor dynamically. The command to find the location of hwmon_id will be called every time the script is executed.
+# The selected sensor is "Package id" - change it to the desired sensor you wish to use as needed.
+#
+# hwmon_id=$(for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done | awk '/Package id/{print $NF}')
+# value=$(<$hwmon_id)
+
+# Option for using an enviroment variable set at startup.  This avoids having to re-run the command to obtain the location of hwmon_id.
+# Requires adding the sctipt "gethwmon.sh" to /etc/profile.d
 value=$(<$hwmon_id)
+
+# Normalises the degrees to be an int in celcious
 value=$((value/1000))
 printf "$value\n"

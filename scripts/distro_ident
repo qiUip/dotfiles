@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# This script should be symlinked into /usr/sbin so it can be used by other
+# scripts which have distro specific functionality. Only some distros which I
+# sometimes use are included - however adding your own should be very
+# straightforward.
+
+# Functions for identifying distribution
+function on_classic_linux() {
+    if [[ -f "/etc/os-release" ]] ; then
+        if [[ `cat /etc/os-release | grep \^NAME` == *"$1"* ]] ; then
+            return 0
+        else
+            return 1
+        fi
+    else
+        echo "/etc/os-release not found. This is not classic GNU/Linux."
+        return 1
+    fi
+}
+
+function on_tumbleweed() {
+    on_classic_linux "openSUSE Tumbleweed"
+}
+
+function on_leap() {
+    on_classic_linux "openSUSE Leap"
+}
+
+function on_manjaro() {
+    on_classic_linux "Manjaro Linux"
+}
+
+function on_fedora() {
+    on_classic_linux "Fedora"
+}
+
+function on_debian() {
+    on_classic_linux "Debian GNU/Linux"
+}
+
+"$@"

@@ -64,6 +64,7 @@ import Control.Arrow (first)
 -- Utilities
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.NamedScratchpad
+import XMonad.Util.DynamicScratchpads
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 
@@ -232,11 +233,15 @@ myScratchPads = [
                 , NS "audio" spawnAudi  findAudi  manageScratch
                 , NS "hmon"  spawnMon   findMon   manageScratch
                 , NS "wapp"  spawnWapp  findWapp  manageScratch
+                , NS "term2"  spawnTerm2  findTerm2  manageScratch
                 ]
                 where
-                  -- term: Terminal (st)
-                  spawnTerm  = "st" ++ " -n scratchpad"
-                  findTerm   = resource =? "scratchpad"
+                  -- -- term: Terminal (alacritty)
+                  spawnTerm  = "alacritty" ++ " -t scratchpad"
+                  findTerm   = title =? "scratchpad"
+                  -- term alt: Terminal (st)
+                  spawnTerm2 = "st" ++ " -n term"
+                  findTerm2 = resource =? "term"
                   -- file: File Manager (ranger)
                   spawnFile  = "alacritty -t scrafile -e ranger"
                   findFile   = title =? "scrafile"
@@ -340,7 +345,7 @@ myKeys =
      , ("M-C-v", spawn ("TERM=rxvt-256color alacritty" ++ " -e vis")) -- Audio visualiser
      , ("M-C-m", spawn ("alacritty" ++ " -e ncmpcpp"))                -- Music player
      , ("M-C-d", spawn ("discord"))                                   -- Because sometimes you wanna talk about keyboards and emacs
-     -- , ("M-C-t", spawn ("teams"))                                     -- MS teams (thanks work!!!)
+     , ("M-C-t", spawn ("teams"))                                     -- MS teams (thanks work!!!)
 
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")   -- Volume -1%
@@ -353,6 +358,7 @@ myKeys =
 
        -- Scratchpads (Super+s Key) -- These are defined in the scratchpad section
      , ("M-s t", namedScratchpadAction myScratchPads "term")
+     , ("M-s S-t", namedScratchpadAction myScratchPads "term2")
      , ("M-s r", namedScratchpadAction myScratchPads "file")
      , ("M-s m", namedScratchpadAction myScratchPads "music")
      , ("M-s e", namedScratchpadAction myScratchPads "mail")
@@ -360,6 +366,10 @@ myKeys =
      , ("M-s p", namedScratchpadAction myScratchPads "audio")
      , ("M-s h", namedScratchpadAction myScratchPads "hmon")
      , ("M-s w", namedScratchpadAction myScratchPads "wapp")
+
+       -- Dynamic Scratchpads *external module* (Super+s S makes a window into a scartchpad; Super+s s hides/shows the scratchpad)
+     , ("M-s S-s", withFocused $ makeDynamicSP "scr1")
+     , ("M-s s", spawnDynamicSP "scr1")
      ]
 
   -- Appending search engine lists to keybindings list -- the search engines and their keys are in the prompts section
@@ -392,14 +402,14 @@ xmobarEscape = concatMap doubleLts
 -- Application default workspaces
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-               [ className =? "ParaView"  --> doShift ( myWorkspaces !! 2) -- 'dev2'
-               , className =? "vlc"       --> doShift ( myWorkspaces !! 8) -- 'watch'
+               [ className =? "vlc"       --> doShift ( myWorkspaces !! 8) -- 'watch'
                , className =? "Gimp"      --> doShift ( myWorkspaces !! 7) -- 'edit'
                , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
                , className =? "discord"   --> doFloat
                , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
-               -- , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
-               -- , className =? "Microsoft Teams - Preview" --> doFloat
+               , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
+               , className =? "Microsoft Teams - Preview" --> doFloat
+               -- , className =? "ParaView"  --> doShift ( myWorkspaces !! 2) -- 'dev2'
                ]
 
   -- Scratchpad workspace
@@ -430,6 +440,10 @@ grid     = renamed [Replace "grid"]
            $ Grid (16/10)
 floats   = renamed [Replace "floats"]
            $ limitWindows 20 simplestFloat
+threeColMain = renamed [Replace "threeColMain"]
+           $ limitWindows 10
+           $ mySpacing' 6
+           $ ResizableThreeColMid 2 (1/100) (5/8) [(19/10)]
 threeColDev = renamed [Replace "threeColDev"]
            $ limitWindows 10
            $ mySpacing' 6
@@ -476,7 +490,7 @@ main = do
                                { ppOutput          = hPutStrLn xmproc
                                , ppCurrent         = xmobarColor "#bd93f9" "" . wrap "[" "]"  -- Current workspace in xmobar
                                , ppVisible         = xmobarColor "#bd93f9" ""                 -- Visible but not current workspace
-                               , ppHidden          = xmobarColor "#f4f99d" "" . wrap "*" ""   -- Hidden workspaces in xmobar
+                               , ppHidden          = xmobarColor "#ffb86c" "" . wrap "*" ""   -- Hidden workspaces in xmobar
                                , ppHiddenNoWindows = xmobarColor "#8be9fd" ""                 -- Hidden workspaces (no windows)
                                , ppTitle           = xmobarColor "#e6e6e6" "" . shorten 80    -- Title of active window in xmobar
                                , ppSep             =  "<fc=#bfbfbf> | </fc>"                  -- Separators in xmobar

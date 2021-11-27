@@ -57,16 +57,12 @@ mouse_support = "yes"
 autocenter_mode = "yes"
 
 ####songs####
-#([cyan,date],[cyan, length], [cyan,title] | [cyan,date],[blue,title],[cyan])
 song_list_format = "{$7%a $7%l $7%t}|{$7%a $5%t $7}"
-#([red,artist],[magenta],[red,length])
 song_status_format = "$2%a $7• $4%t $7• $3%b {}$7• $5%y$7"
-#([cyan,length],[blue,title],[end current color])
 song_library_format = "$7%l $5%t$9"
-#([magenta,blue,magenta]|[blue]
 now_playing_prefix = "$b$8»$2»$4»$3»"
 now_playing_suffix = "$/b"
-#([blue],[cyan,artist],[blue,title],[yellow,album],[magenta,length] 
+browser_playlist_prefix = "$5playlist $7"
 song_columns_list_format = "(4)[]{} (15)[cyan]{a} (30)[yellow]{t} (46)[green]{b} (5)[magenta]{l}"
 
 ####colors####
@@ -76,7 +72,7 @@ volume_color = "cyan"
 state_line_color = "yellow"
 state_flags_color = "magenta"
 main_window_color = "yellow"
-color1 = "default"
+color1 = "blue"
 color2 = "green"
 current_item_prefix = "$(blue)$r"
 current_item_suffix = "$/r$(end)"

@@ -398,7 +398,7 @@ myKeys =
        -- Layouts
      , ("M-<Tab>", sendMessage NextLayout)               -- Switch to next layout
      , ("M-<Space>", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
-     , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts (only when not using a status bar)
+     -- , ("M-S-<Space>", sendMessage ToggleStruts)         -- Toggles struts (only when not using a status bar)
      , ("M-S-n", sendMessage $ MT.Toggle NOBORDERS)      -- Toggles noborder
      , ("M-<KP_Multiply>", sendMessage (IncMasterN 1))   -- Increase number of clients in master pane
      , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in master pane
@@ -416,7 +416,7 @@ myKeys =
      , ("M-r", spawn "alacritty -t ranger -e ranger")         -- File manager
      , ("M-w", spawn "alacritty -t whatscli -e whatscli")     -- Whatsapp cli
      , ("M-b", spawn "firefox")                               -- Browser
-     , ("M-S-b", spawn "brave")                               -- Browser
+     , ("M-C-b", spawn "brave")                               -- Browser
      , ("M-C-a", spawn "pavucontrol")                         -- Audio control
      , ("M-C-e", spawn "alacritty -t neomutt -e neomutt")     -- Email
      , ("M-C-v", spawn "TERM=rxvt-256color alacritty -e vis") -- Audio visualiser

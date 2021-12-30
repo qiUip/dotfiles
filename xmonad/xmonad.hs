@@ -17,6 +17,7 @@ import XMonad.Actions.RotSlaves (rotSlavesDown, rotAllDown)
 import XMonad.Actions.WindowGo (runOrRaise)
 import XMonad.Actions.WithAll (sinkAll, killAll)
 import qualified XMonad.Actions.Search as S
+import XMonad.Actions.SpawnOn
 
 -- Data
 import Data.Char (isSpace)
@@ -25,11 +26,11 @@ import Data.Monoid
 import qualified Data.Map as M
 
 -- Hooks
-import XMonad.Hooks.DynamicLog (dynamicLogWithPP, wrap, xmobarPP, xmobarColor, shorten, PP(..))
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook, manageDocks, ToggleStruts(..))
-import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat)
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.SetWMName
+import XMonad.Hooks.EwmhDesktops
 
 -- Layouts
 import XMonad.Layout.GridVariants (Grid(Grid))
@@ -120,7 +121,6 @@ myXPConfig = def
      , borderColor         = "#535974"
      , promptBorderWidth   = 0
      , promptKeymap        = myXPKeymap
-       -- , position            = Top
      , position            = CenteredAt { xpCenterY = 0.3, xpWidth = 0.3 }
      , height              = 20
      , historySize         = 256
@@ -149,7 +149,6 @@ promptList = [ ("m", manPrompt)          -- manpages prompt
              , ("x", xmonadPrompt)       -- xmonad prompt
              ]
 
--- TODO add link
 -- Calculator -- Example of a custom prompt from xmonad documentaion
 promptList' :: [(String, XPConfig -> String -> X (), String)]
 promptList' = [ ("c", calcPrompt, "qalc")  -- requires qalculate-gtk
@@ -233,7 +232,7 @@ myScratchPads = [
                 , NS "audio" spawnAudi  findAudi  manageScratch
                 , NS "hmon"  spawnMon   findMon   manageScratch
                 , NS "wapp"  spawnWapp  findWapp  manageScratch
-                , NS "term2"  spawnTerm2  findTerm2  manageScratch
+                , NS "term2" spawnTerm2 findTerm2 manageScratch
                 ]
                 where
                   -- -- term: Terminal (alacritty)
@@ -265,6 +264,84 @@ myScratchPads = [
                   findWapp   = title =? "scrawapp"
                   manageScratch = customFloating $ center 0.3 0.5
                     where center w h = W.RationalRect ((1 - w) / 2) ((1 - h) / 2) w h
+
+------------------------------------
+----- Workspace configuration ------
+------------------------------------
+-- Make workspaces in xmobar clickable
+myWorkspaces :: [String]
+myWorkspaces = clickable . map xmobarEscape
+               $ ["main", "dev1", "dev2", "dev3", "files", "chat", "write", "edit", "watch"]
+  where
+        clickable l = [ "<action=xdotool key super+" ++ show n ++ ">" ++ ws ++ "</action>" |
+                      (i,ws) <- zip [1..9] l,
+                      let n = i ]
+
+xmobarEscape :: String -> String
+xmobarEscape = concatMap doubleLts
+  where
+        doubleLts '<' = "<<"
+        doubleLts x   = [x]
+
+-- Application default workspaces
+myManageHook = composeAll
+               [ namedScratchpadManageHook myScratchPads
+               , className =? "vlc"       --> doShift ( myWorkspaces !! 8) -- 'watch'
+               , className =? "Gimp"      --> doShift ( myWorkspaces !! 7) -- 'edit'
+               , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
+               -- , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
+               -- , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
+               -- , title ~? "Emacs Everywhere" --> doCenterFloat
+               -- , className =? "ParaView"  --> doShift ( myWorkspaces !! 2) -- 'dev2'
+               ]
+
+
+------------------------------------
+------- Layout configuration -------
+------------------------------------
+-- The spacingRaw module adds a configurable amount of space around windows.
+mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
+mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
+
+-- A variation of the above except no borders are applied if fewer than two windows,
+-- so that a single window has no gaps
+mySpacing' :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
+mySpacing' i = spacingRaw True (Border i i i i) True (Border i i i i) True
+
+-- Defining layouts.
+threeCol = renamed [Replace "threeCol"]
+           $ limitWindows 12
+           $ mySpacing' 6
+           $ ResizableThreeColMid 1 (4/100) (5/12) []
+grid     = renamed [Replace "grid"]
+           $ limitWindows 12
+           $ mySpacing' 6
+           $ mkToggle (single MIRROR)
+           $ Grid (16/10)
+floats   = renamed [Replace "floats"]
+           $ limitWindows 20 simplestFloat
+threeColDev = renamed [Replace "threeColDev"]
+           $ limitWindows 20
+           $ mySpacing' 6
+           $ ResizableThreeColMid 2 (1/100) (5/8) [(19/10)]
+tall     = renamed [Replace "tall"]
+           $ limitWindows 12
+           $ mySpacing' 6
+           $ ResizableTall 1 (3/100) (1/2) []
+
+-- onWorkspace spcifies the workspaces for selected layouts while all other workspaces use
+-- myDefaultLHook
+myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2)]
+                myDevLHook myDefaultLHook
+             where
+               -- The layout hooks
+               myDefaultLHook = avoidStruts $ T.toggleLayouts floats $
+                 mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDefaultLayout
+               myDevLHook = avoidStruts $
+                 mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDevLayout
+               -- The layouts
+               myDefaultLayout = threeCol ||| tall ||| floats
+               myDevLayout = threeColDev ||| threeCol ||| tall
 
 ------------------------------------
 ---- Keybindings configuration -----
@@ -335,17 +412,22 @@ myKeys =
      , ("M-S-l", sendMessage MirrorExpand)               -- Expand vertcal window width (only works with resizable layouts)
 
        -- Applications (teminal apps use a manual title with -t for better use with window grab and goto)
-     , ("M-e", spawn "emacsclient -c -a ''")                          -- Editor (emacs)
-     , ("M-r", spawn ("alacritty" ++ " -t ranger -e ranger"))         -- File manager
-     , ("M-w", spawn ("alacritty" ++ " -t whatscli -e whatscli"))     -- Whatsapp cli
-     , ("M-C-b", spawn ("firefox"))                                   -- Browser
-     , ("M-C-S-b", spawn ("brave"))                                   -- Browser
-     , ("M-C-a", spawn ("pavucontrol"))                               -- Audio control
-     , ("M-C-e", spawn ("alacritty" ++ " -t neomutt -e neomutt"))     -- Email
-     , ("M-C-v", spawn ("TERM=rxvt-256color alacritty" ++ " -e vis")) -- Audio visualiser
-     , ("M-C-m", spawn ("alacritty" ++ " -e ncmpcpp"))                -- Music player
-     , ("M-C-d", spawn ("discord"))                                   -- Because sometimes you wanna talk about keyboards and emacs
-     , ("M-C-t", spawn ("teams"))                                     -- MS teams (thanks work!!!)
+     , ("M-e", spawn "emacsclient -c -a ''")                    -- Editor (emacs)
+     , ("M-r", spawn "alacritty -t ranger -e ranger")         -- File manager
+     , ("M-w", spawn "alacritty -t whatscli -e whatscli")     -- Whatsapp cli
+     , ("M-b", spawn "firefox")                               -- Browser
+     , ("M-S-b", spawn "brave")                               -- Browser
+     , ("M-C-a", spawn "pavucontrol")                         -- Audio control
+     , ("M-C-e", spawn "alacritty -t neomutt -e neomutt")     -- Email
+     , ("M-C-v", spawn "TERM=rxvt-256color alacritty -e vis") -- Audio visualiser
+     , ("M-C-m", spawn "alacritty -e ncmpcpp")                -- Music player
+     , ("M-C-d", spawnAndDo (doShift (myWorkspaces !! 5)) "discord") -- Because sometimes you wanna talk about keyboards and emacs
+     , ("M-C-t", spawnAndDo (doShift (myWorkspaces !! 5)) "teams")   -- MS teams (thanks work!!!)
+     , ("M-C-p", spawnAndDo (doShift (myWorkspaces !! 3)) "paraview")
+     , ("M-C-S-t", spawnAndDo doCenterFloat "alacritty")
+     , ("M-S-C-r", spawnAndDo doCenterFloat "alacritty -t ranger -e ranger") -- File manager
+     , ("M-C-S-b", spawnAndDo (doShift (myWorkspaces !! 8)) "chromium")
+     , ("M-C-S-e", spawnAndDo doCenterFloat "emacs")
 
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")   -- Volume -1%
@@ -355,6 +437,8 @@ myKeys =
 
        -- Print screen. Requires scrot.
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
+
+     , ("M-S-e", spawn "emacsclient -e \"(emacs-everywhere)\"")
 
        -- Scratchpads (Super+s Key) -- These are defined in the scratchpad section
      , ("M-s t", namedScratchpadAction myScratchPads "term")
@@ -368,8 +452,14 @@ myKeys =
      , ("M-s w", namedScratchpadAction myScratchPads "wapp")
 
        -- Dynamic Scratchpads *external module* (Super+s S makes a window into a scartchpad; Super+s s hides/shows the scratchpad)
-     , ("M-s S-s", withFocused $ makeDynamicSP "scr1")
-     , ("M-s s", spawnDynamicSP "scr1")
+     , ("M-s S-1", withFocused $ makeDynamicSP "scr1")
+     , ("M-s 1", spawnDynamicSP "scr1")
+     , ("M-s S-2", withFocused $ makeDynamicSP "scr2")
+     , ("M-s 2", spawnDynamicSP "scr2")
+     , ("M-s S-3", withFocused $ makeDynamicSP "scr3")
+     , ("M-s 3", spawnDynamicSP "scr3")
+     , ("M-s S-4", withFocused $ makeDynamicSP "scr4")
+     , ("M-s 4", spawnDynamicSP "scr4")
      ]
 
   -- Appending search engine lists to keybindings list -- the search engines and their keys are in the prompts section
@@ -382,92 +472,6 @@ myKeys =
 
 
 ------------------------------------
------ Workspace configuration ------
-------------------------------------
--- Make workspaces in xmobar clickable
-myWorkspaces :: [String]
-myWorkspaces = clickable . map xmobarEscape
-               $ ["main", "dev1", "dev2", "dev3", "files", "chat", "write", "edit", "watch"]
-  where
-        clickable l = [ "<action=xdotool key super+" ++ show n ++ ">" ++ ws ++ "</action>" |
-                      (i,ws) <- zip [1..9] l,
-                      let n = i ]
-
-xmobarEscape :: String -> String
-xmobarEscape = concatMap doubleLts
-  where
-        doubleLts '<' = "<<"
-        doubleLts x   = [x]
-
--- Application default workspaces
-myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
-myManageHook = composeAll
-               [ className =? "vlc"       --> doShift ( myWorkspaces !! 8) -- 'watch'
-               , className =? "Gimp"      --> doShift ( myWorkspaces !! 7) -- 'edit'
-               , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
-               , className =? "discord"   --> doFloat
-               , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
-               , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
-               , className =? "Microsoft Teams - Preview" --> doFloat
-               -- , className =? "ParaView"  --> doShift ( myWorkspaces !! 2) -- 'dev2'
-               ]
-
-  -- Scratchpad workspace
-  <+> namedScratchpadManageHook myScratchPads
-
-
-------------------------------------
-------- Layout configuration -------
-------------------------------------
--- The spacingRaw module adds a configurable amount of space around windows.
-mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
-mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
-
--- A variation of the above except no borders are applied if fewer than two windows,
--- so that a single window has no gaps
-mySpacing' :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
-mySpacing' i = spacingRaw True (Border i i i i) True (Border i i i i) True
-
--- Defining layouts.
-threeCol = renamed [Replace "threeCol"]
-           $ limitWindows 9
-           $ mySpacing' 6
-           $ ResizableThreeColMid 1 (4/100) (5/12) []
-grid     = renamed [Replace "grid"]
-           $ limitWindows 12
-           $ mySpacing 6
-           $ mkToggle (single MIRROR)
-           $ Grid (16/10)
-floats   = renamed [Replace "floats"]
-           $ limitWindows 20 simplestFloat
-threeColMain = renamed [Replace "threeColMain"]
-           $ limitWindows 10
-           $ mySpacing' 6
-           $ ResizableThreeColMid 2 (1/100) (5/8) [(19/10)]
-threeColDev = renamed [Replace "threeColDev"]
-           $ limitWindows 10
-           $ mySpacing' 6
-           $ ResizableThreeColMid 2 (1/100) (5/8) [(19/10)]
--- tall     = renamed [Replace "tall"]
---            $ limitWindows 12
---            $ mySpacing 6
---            $ ResizableTall 1 (3/100) (1/2) []
-
--- onWorkspace spcifies the workspaces for selected layouts while all other workspaces use
--- myDefaultLHook
-myLayoutHook =  onWorkspaces [(myWorkspaces !! 1),(myWorkspaces !! 2)]
-                myDevLHook myDefaultLHook
-             where
-               -- The layout hooks
-               myDefaultLHook = avoidStruts $ T.toggleLayouts floats $
-                 mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDefaultLayout
-               myDevLHook = avoidStruts $
-                 mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDevLayout
-               -- The layouts
-               myDefaultLayout = threeCol ||| floats
-               myDevLayout = threeColDev ||| threeCol
-
-------------------------------------
 ---- Main configuration & Xmobar ---
 ------------------------------------
 main :: IO ()
@@ -475,9 +479,8 @@ main = do
     -- Launch xmobar
     xmproc <- spawnPipe "xmobar $HOME/.config/xmonad/xmobar"
     -- Launch ewmh desktop
-    xmonad $ ewmh def
-        { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook
-        , handleEventHook    = docksEventHook
+    xmonad $ docks . ewmh $ def
+        { manageHook         = manageSpawn <+> myManageHook
         , modMask            = myModMask
         , terminal           = myTerminal
         , startupHook        = myStartupHook

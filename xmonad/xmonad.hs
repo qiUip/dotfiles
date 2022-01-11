@@ -233,6 +233,7 @@ myScratchPads = [
                 , NS "hmon"  spawnMon   findMon   manageScratch
                 , NS "wapp"  spawnWapp  findWapp  manageScratch
                 , NS "term2" spawnTerm2 findTerm2 manageScratch
+                , NS "emacs" spawnEmacs findEmacs manageScratch
                 ]
                 where
                   -- -- term: Terminal (alacritty)
@@ -262,6 +263,9 @@ myScratchPads = [
                   -- wapp: WhatsApp client (whatscli)
                   spawnWapp  = "alacritty -t scrawapp -e whatscli"
                   findWapp   = title =? "scrawapp"
+                  -- emacs: scratchpad text editor (emacsclient)
+                  spawnEmacs = "emacsclient --alternate-editor='' --no-wait --create-frame --frame-parameters='(quote (name . \"scremacs\"))'"
+                  findEmacs  = title =? "scremacs"
                   manageScratch = customFloating $ center 0.3 0.5
                     where center w h = W.RationalRect ((1 - w) / 2) ((1 - h) / 2) w h
 
@@ -291,7 +295,7 @@ myManageHook = composeAll
                , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
                -- , className =? "discord"   --> doShift ( myWorkspaces !! 5) -- 'chat'
                -- , className =? "Microsoft Teams - Preview" --> doShift ( myWorkspaces !! 5) -- 'chat'
-               -- , title ~? "Emacs Everywhere" --> doCenterFloat
+               , title ~? "everywhere" --> doCenterFloat
                -- , className =? "ParaView"  --> doShift ( myWorkspaces !! 2) -- 'dev2'
                ]
 
@@ -427,7 +431,7 @@ myKeys =
      , ("M-C-S-t", spawnAndDo doCenterFloat "alacritty")
      , ("M-S-C-r", spawnAndDo doCenterFloat "alacritty -t ranger -e ranger") -- File manager
      , ("M-C-S-b", spawnAndDo (doShift (myWorkspaces !! 8)) "chromium")
-     , ("M-C-S-e", spawnAndDo doCenterFloat "emacs")
+     , ("M-S-e", spawn "emacsclient --eval '(emacs-everywhere)' --frame-parameters='(quote (name . \"everywhere\"))'")
 
        -- Multimedia Keys
      , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -1%")   -- Volume -1%
@@ -438,7 +442,6 @@ myKeys =
        -- Print screen. Requires scrot.
      , ("<Print>", spawn "scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' ")
 
-     , ("M-S-e", spawn "emacsclient -e \"(emacs-everywhere)\"")
 
        -- Scratchpads (Super+s Key) -- These are defined in the scratchpad section
      , ("M-s t", namedScratchpadAction myScratchPads "term")
@@ -450,6 +453,7 @@ myKeys =
      , ("M-s p", namedScratchpadAction myScratchPads "audio")
      , ("M-s h", namedScratchpadAction myScratchPads "hmon")
      , ("M-s w", namedScratchpadAction myScratchPads "wapp")
+     , ("M-s S-e", namedScratchpadAction myScratchPads "emacs")
 
        -- Dynamic Scratchpads *external module* (Super+s S makes a window into a scartchpad; Super+s s hides/shows the scratchpad)
      , ("M-s S-1", withFocused $ makeDynamicSP "scr1")

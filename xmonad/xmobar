@@ -47,5 +47,5 @@ Config { font    = "xft:Hack Nerd Font:pixelsize=12:antialias=true:hinting=true"
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "<icon=haskell_20.xpm/> <fc=#bfbfbf>|</fc> %UnsafeStdinReader% }{ <fc=#e6e6e6> %ker% </fc><fc=#bfbfbf>| </fc><fc=#bd93f9>gpu: %gpu%°C cpu: %ctemp%°C </fc><fc=#bfbfbf>| </fc><fc=#50fa7b>%cpu% </fc><fc=#bfbfbf>| </fc><fc=#ff79c6>%memory% </fc><fc=#bfbfbf>| </fc><fc=#f1fa8c>%disku% </fc><fc=#bfbfbf>| </fc><fc=#ff5555> updates: %check%</fc><fc=#bfbfbf>| </fc><fc=#8be9fd>%alsa:pulse:Master%</fc><fc=#bfbfbf>| </fc><fc=#ffb86c>%date%</fc> "
+       , template = "<icon=haskell_20.xpm/>  %UnsafeStdinReader% }{ <fc=#e6e6e6> %ker% </fc><fc=#bfbfbf>| </fc><fc=#bd93f9>gpu: %gpu%°C cpu: %ctemp%°C </fc><fc=#bfbfbf>| </fc><fc=#50fa7b>%cpu% </fc><fc=#bfbfbf>| </fc><fc=#ff79c6>%memory% </fc><fc=#bfbfbf>| </fc><fc=#f1fa8c>%disku% </fc><fc=#bfbfbf>| </fc><fc=#ff5555> updates: %check%</fc><fc=#bfbfbf>| </fc><fc=#8be9fd>%alsa:pulse:Master%</fc><fc=#bfbfbf>| </fc><fc=#ffb86c>%date%</fc> "
        }

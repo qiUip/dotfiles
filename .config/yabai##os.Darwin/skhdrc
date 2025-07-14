@@ -1,9 +1,11 @@
-# opens iTerm2
-# cmd - return : "${HOME}"/.config/yabai/scripts/open_iterm2.sh
+# Applications
 cmd - return : kitty -1 ${HOME}
 cmd + shift - e : "${HOME}"/.config/yabai/scripts/open_emacs.sh
+cmd + lctrl - e : emacsclient --eval '(emacs-everywhere)'
 cmd + lctrl - return : "${HOME}"/.config/yabai/scripts/scratchpad.sh
 cmd - b : /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome
+cmd + lctrl - m : kitty -e spotify_player
+cmd + lctrl - y : kitty -e yazi ~
 
 # Show system statistics
 ralt + lalt - 1 : "${HOME}"/.config/yabai/scripts/show_cpu.sh

@@ -2,17 +2,11 @@
 
 if $HOME/.scripts/distro_ident on_classic_linux ; then
     if $HOME/.scripts/distro_ident on_manjaro ; then
-        cupd=$(checkupdates | wc -l)
-        printf "$cupd \n"
+        updates=$(checkupdates | wc -l)
+        printf "%d\n" "$updates"
 
     elif $HOME/.scripts/distro_ident on_tumbleweed ; then
-         if ! updates=$(zypper --no-refresh lu --best-effort | grep -c 'v |') ; then
-             updates=0
-         fi
-         if [ "$updates" -gt 0 ]; then
-             printf " $updates \n"
-         else
-             printf "0 \n"
-         fi
+        updates=$(($(zypper --no-refresh lu --best-effort | wc -l) - 3))
+        printf "%d\n" "$updates"
     fi
 fi

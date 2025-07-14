@@ -242,7 +242,7 @@ myScratchPads = [
                   spawnTerm2 = "kitty --title term"
                   findTerm2  = title =? "term"
                   -- file: File Manager (ranger)
-                  spawnFile  = "alacritty -t scrafile -e ranger"
+                  spawnFile  = "kitty --title scrafile -e yazi"
                   findFile   = title =? "scrafile"
                   -- music: Music player (spotify-player)
                   spawnMusc  = "kitty --title scramusic -e spotify_player"

@@ -1,4 +1,5 @@
 .config/aliases/mount_aliases.sh
+.config/aliases/api_keys
 .config/msmtp/config
 .mbsyncrc
 .config/mutt/accounts

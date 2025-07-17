@@ -13,7 +13,7 @@ alias zshconf="lvim ~/.zshrc"
 alias ohmyzsh="lvim ~/.oh-my-zsh"
 # curl
 alias getip="curl https://ipinfo.io/ip"
-alias getwe="curl wttr.in"
+alias getwe="curl wttr.in/London"
 # ls delux
 alias ls="lsd"
 alias l="ls -l"
@@ -26,3 +26,5 @@ alias lst="l -t --total-size"
 alias c="clear"
 # batgrep
 alias bgr="batgrep"
+alias vim="lvim"
+alias matlab="/Applications/MATLAB_R2024b.app/bin/matlab -nojvm -nodesktop"

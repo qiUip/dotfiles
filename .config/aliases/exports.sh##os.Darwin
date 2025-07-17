@@ -1,3 +1,11 @@
 # Paths macOS
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
+# Paths for julia
+path=('/Users/mashy/.juliaup/bin' $path)
+export PATH
+# GPG fix
+GPG_TTY=$(tty)
+export GPG_TTY
+# TERMINFO for kitty support
+export TERMINFO_DIRS=/usr/local/share/terminfo:/usr/share/terminfo

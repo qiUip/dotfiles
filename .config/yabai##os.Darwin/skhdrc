@@ -4,8 +4,8 @@ cmd + shift - e : "${HOME}"/.config/yabai/scripts/open_emacs.sh
 cmd + lctrl - e : emacsclient --eval '(emacs-everywhere)'
 cmd + lctrl - return : "${HOME}"/.config/yabai/scripts/scratchpad.sh
 cmd - b : /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome
-cmd + lctrl - m : kitty -e spotify_player
-cmd + lctrl - y : kitty -e yazi ~
+cmd + lctrl - m : kitty -1 -e spotify_player
+cmd + lctrl - y : kitty -1 -e yazi ~
 
 # Show system statistics
 ralt + lalt - 1 : "${HOME}"/.config/yabai/scripts/show_cpu.sh

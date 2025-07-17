@@ -75,5 +75,11 @@
 (package! copilot
   :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 
+(package! aidermacs
+  :recipe (:host github :repo "MatthewZMD/aidermacs"))
+
+;; (package! lsp-julia
+;;   :recipe (:host github :repo "gdkrmr/lsp-julia" :files (:defaults "languageserver")))
+
 ;; Ollama / ChatGPT
 ;; (package! gptel)

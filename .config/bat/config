@@ -1,8 +1,0 @@
-# Set the theme to "TwoDark"
---theme="Nord"
-
-# Show line numbers, Git modifications and file header (but no grid)
---style="numbers,changes,header"
-
-# Use C++ syntax for CUDA .cu files
---map-syntax "*.cu:C++"

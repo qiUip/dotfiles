@@ -11,8 +11,10 @@ create_icons() {
   QUERY=$(yabai -m query --windows --space "$SID")
 
   IFS=$'\n'
-  local APPS=($(echo "$QUERY" | jq -r '.[].app' | sort -u))
-  local CURRENT_APP=$(echo "$QUERY" | jq -r '.[] | select(.["has-focus"] == true) | .app')
+  local APPS=($(echo "$QUERY" | jq -r 'map(select((.title | length) > 0)) | .[].app' | sort -u))
+  local CURRENT_APP=$(echo "$QUERY" | jq -r 'map(select((.title | length) > 0)) | .[] | select(.["has-focus"] == true) | .app')
+  # local APPS=($(echo "$QUERY" | jq -r '.[].app' | sort -u))
+  # local CURRENT_APP=$(echo "$QUERY" | jq -r '.[] | select(.["has-focus"] == true) | .app')
   local LABEL ICON BADGE
 
   debug $FUNCNAME
@@ -79,8 +81,10 @@ update_icons() {
     QUERY=$(yabai -m query --windows --space "$SID")
 
     IFS=$'\n'
-    local APPS=($(echo "$QUERY" | jq -r '.[].app' | sort -u))
-    local CURRENT_APP=$(echo "$QUERY" | jq -r '.[] | select(.["has-focus"] == true) | .app')
+    local APPS=($(echo "$QUERY" | jq -r 'map(select((.title | length) > 0)) | .[].app' | sort -u))
+    local CURRENT_APP=$(echo "$QUERY" | jq -r 'map(select((.title | length) > 0)) | .[] | select(.["has-focus"] == true) | .app')
+    # local APPS=($(echo "$QUERY" | jq -r '.[].app' | sort -u))
+    # local CURRENT_APP=$(echo "$QUERY" | jq -r '.[] | select(.["has-focus"] == true) | .app')
     local LABEL ICON BADGE
 
     debug $FUNCNAME

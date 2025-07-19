@@ -44,6 +44,13 @@ yabai -m config mouse_modifier              alt
 yabai -m config mouse_action1               move
 yabai -m config mouse_action2               resize
 
+yabai -m space 1 --label main
+yabai -m space 2 --label dev1
+yabai -m space 3 --label dev2
+yabai -m space 4 --label edit
+yabai -m space 5 --label view
+yabai -m space 6 --label play
+
 yabai -m config external_bar                all:28:0
 
 yabai -m window --toggle float
@@ -62,6 +69,8 @@ yabai -m rule --add label="Dictionary" app="^Dictionary$" manage=off
 yabai -m rule --add label="Software Update" title="Software Update" manage=off
 yabai -m rule --add label="About This Mac" app="System Information" title="About This Mac" manage=off
 yabai -m rule --add label="Steam" app="^Steam$" manage=off
+yabai -m rule --add app="^Floorp$" title="^Library" manage=off
+yabai -m signal --add event=window_created app="^Floorp$" title="^Library" action="yabai -m window --resize abs:800:600; yabai -m window --move abs:1600:200"
 
 set +x
 printf "yabai: configuration loaded...\\n"

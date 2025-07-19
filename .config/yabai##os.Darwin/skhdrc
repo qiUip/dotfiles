@@ -1,11 +1,14 @@
 # Applications
-cmd - return : kitty -1 ${HOME}
+cmd - return : kitty --single-instance ${HOME}
 cmd + shift - e : "${HOME}"/.config/yabai/scripts/open_emacs.sh
 cmd + lctrl - e : emacsclient --eval '(emacs-everywhere)'
 cmd + lctrl - return : "${HOME}"/.config/yabai/scripts/scratchpad.sh
-cmd - b : /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome
-cmd + lctrl - m : kitty -1 -e spotify_player
-cmd + lctrl - y : kitty -1 -e yazi ~
+cmd - b : /Applications/Floorp.app/Contents/MacOS/floorp
+cmd + lctrl - m : kitty --single-instance -T music -e sh -c 'tmux attach-session -t musics || tmux new-session -s musics /opt/homebrew/bin/spotify_player'
+cmd + lctrl - y : kitty --single-instance -T files -e sh -c 'tmux attach-session -t files || tmux new-session -s files /opt/homebrew/bin/yazi ~'
+cmd - g : "${HOME}"/.config/yabai/scripts/choose_focus.sh
+cmd + shift - g : "${HOME}"/.config/yabai/scripts/choose_bring.sh
+alt - space : "${HOME}"/.config/yabai/scripts/choose_launcher.sh
 
 # Show system statistics
 ralt + lalt - 1 : "${HOME}"/.config/yabai/scripts/show_cpu.sh
@@ -35,26 +38,29 @@ shift + cmd - j : yabai -m window --warp south
 shift + cmd - k : yabai -m window --warp north
 shift + cmd - l : yabai -m window --warp east
 
-# Move focus container to workspace
-shift + alt - m : yabai -m window --space last; yabai -m space --focus last
-shift + alt - p : yabai -m window --space prev; yabai -m space --focus prev
-shift + alt - n : yabai -m window --space next; yabai -m space --focus next
-shift + cmd - 1 : yabai -m window --space 1; yabai -m space --focus 1
+# Move focus container to workspace and focus
+shift + cmd - 1 : yabai -m window --space main; yabai -m space --focus main
 shift + cmd - 2 : yabai -m window --space 2; yabai -m space --focus 2
 shift + cmd - 3 : yabai -m window --space 3; yabai -m space --focus 3
 shift + cmd - 4 : yabai -m window --space 4; yabai -m space --focus 4
 shift + cmd - 5 : yabai -m window --space 5; yabai -m space --focus 5
-shift + cmd - 6 : yabai -m window --space 6; yabai -m space --focus 6
-shift + cmd - 7 : yabai -m window --space 7; yabai -m space --focus 7
-shift + cmd - 5 : yabai -m window --space 8; yabai -m space --focus 8
-cmd - 1 : yabai -m space --focus 1
+shift + cmd - 6 : yabai -m window --space 6; yabai -m space --focus 5
+
+# Move focus container to workspace and focus
+lctrl + cmd - 1 : yabai -m window --space main
+lctrl + cmd - 2 : yabai -m window --space 2
+lctrl + cmd - 3 : yabai -m window --space 3
+lctrl + cmd - 4 : yabai -m window --space 4
+lctrl + cmd - 5 : yabai -m window --space 5
+lctrl + cmd - 6 : yabai -m window --space 6
+
+# Focus on workspace
+cmd - 1 : yabai -m space --focus main
 cmd - 2 : yabai -m space --focus 2
 cmd - 3 : yabai -m space --focus 3
 cmd - 4 : yabai -m space --focus 4
 cmd - 5 : yabai -m space --focus 5
 cmd - 6 : yabai -m space --focus 6
-cmd - 7 : yabai -m space --focus 7
-cmd - 8 : yabai -m space --focus 8
 
 # Resize windows
 lctrl + cmd - left  : yabai -m window --resize left:-50:0; \
@@ -103,6 +109,9 @@ shift + alt - space : \
 lctrl + alt - b : yabai -m space --layout bsp
 lctrl + alt - f : yabai -m space --layout float
 lctrl + alt - s : yabai -m space --layout stack
+
+# Focus on first window (useful when nothing is focused)
+alt - r : yabai -m window --focus first
 
 # Restart Yabai
 shift + lctrl + alt - r : \

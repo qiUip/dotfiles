@@ -78,8 +78,5 @@
 (package! aidermacs
   :recipe (:host github :repo "MatthewZMD/aidermacs"))
 
-;; (package! lsp-julia
-;;   :recipe (:host github :repo "gdkrmr/lsp-julia" :files (:defaults "languageserver")))
-
-;; Ollama / ChatGPT
-;; (package! gptel)
+;; GPT
+(package! gptel :recipe (:nonrecursive t))

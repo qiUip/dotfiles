@@ -10,7 +10,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 HIST_STAMPS="dd/mm/yyyy"
 setopt  HIST_IGNORE_ALL_DUPS
 
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions zsh-vi-mode)
 autoload -U compinit && compinit
 _comp_options+=(globaldots);
 
@@ -19,6 +19,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Aliases:
 source $HOME/.config/aliases/command_aliases.sh
+source $HOME/.config/aliases/api_keys
 
 # Functions:
 source $HOME/.scripts/fzf_bat.sh

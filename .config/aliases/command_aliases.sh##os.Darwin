@@ -24,7 +24,9 @@ alias lss="l -S --total-size"
 alias lst="l -t --total-size"
 # clear
 alias c="clear"
-# batgrep
+# quality of life stuff
 alias bgr="batgrep"
-alias vim="lvim"
+alias kd="kitten diff"
+alias tmac="tmux -A -s"
+alias vim="nvim"
 alias matlab="/Applications/MATLAB_R2024b.app/bin/matlab -nojvm -nodesktop"

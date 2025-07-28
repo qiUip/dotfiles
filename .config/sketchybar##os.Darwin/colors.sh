@@ -28,15 +28,25 @@ getcolor() {
     local o10=0x1a
     local o0=0x00
 
-    local blue=#6272A4
-    local teal=#F1FA8C
-    local cyan=#8BE9FD
-    local grey=#3b4252
-    local green=#50FA7B
-    local yellow=#FFB86C
-    local red=#FF5555
-    local black=#282A36
-    local white=#F8F8F2
+    local blue=#5E81AC
+    local teal=#EBCB8B
+    local cyan=#88C0D0
+    local grey=#3B4252
+    local green=#A3BE8C
+    local yellow=#D08770
+    local red=#BF616A
+    local black=#2E3440
+    local white=#ECEFF4
+
+    # local blue=#6272A4
+    # local teal=#F1FA8C
+    # local cyan=#8BE9FD
+    # local grey=#3b4252
+    # local green=#50FA7B
+    # local yellow=#FFB86C
+    # local red=#FF5555
+    # local black=#282A36
+    # local white=#F8F8F2
 
     case $opacity in
         75) local opacity=$o75 ;;
@@ -74,10 +84,10 @@ getcolor() {
 export BAR_COLOR=$(getcolor black 25)
 export BAR_BORDER_COLOR=$(getcolor black 50)
 export HIGHLIGHT=$(getcolor white)
-export HIGHLIGHT_75=$(getcolor grey 75)
-export HIGHLIGHT_50=$(getcolor grey 50)
-export HIGHLIGHT_25=$(getcolor grey 25)
-export HIGHLIGHT_10=$(getcolor grey 10)
+export HIGHLIGHT_75=$(getcolor cyan 75)
+export HIGHLIGHT_50=$(getcolor cyan 50)
+export HIGHLIGHT_25=$(getcolor cyan 25)
+export HIGHLIGHT_10=$(getcolor cyan 10)
 export ICON_COLOR=$(getcolor white)
 export ICON_COLOR_INACTIVE=$(getcolor white 50)
 export LABEL_COLOR=$(getcolor white 75)

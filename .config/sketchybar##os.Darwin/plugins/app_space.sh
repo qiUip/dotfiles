@@ -7,56 +7,34 @@ SID=$1
 DEBUG=0
 
 create_icons() {
-
-  QUERY=$(yabai -m query --windows --space "$SID")
-
+  QUERY=$(yabai -m query --windows --space "$SID" | jq '[.[] | select(.scratchpad == "")]')
   IFS=$'\n'
   local APPS=($(echo "$QUERY" | jq -r 'map(select((.title | length) > 0)) | .[].app' | sort -u))
   local CURRENT_APP=$(echo "$QUERY" | jq -r 'map(select((.title | length) > 0)) | .[] | select(.["has-focus"] == true) | .app')
-  # local APPS=($(echo "$QUERY" | jq -r '.[].app' | sort -u))
-  # local CURRENT_APP=$(echo "$QUERY" | jq -r '.[] | select(.["has-focus"] == true) | .app')
-  local LABEL ICON BADGE
+  local LABEL ICON
+
+  # Get space label for this index
+  SPACE_LABEL=$(yabai -m query --spaces | jq -r --argjson sid "$SID" '.[] | select(.index == $sid) | .label // ""')
+  [[ -z "$SPACE_LABEL" ]] && SPACE_LABEL="$SID"
 
   debug $FUNCNAME
 
   for APP in "${APPS[@]}"; do
+    local TITLE=$(echo "$QUERY" | jq -r 'map(select((.title | length) > 0 and .app == "'"$APP"'")) | .[0].title')
+    ICON=$("$HOME/.config/sketchybar/plugins/app_icon.sh" "$APP" "$TITLE")
 
-    ICON=$("$HOME/.config/sketchybar/plugins/app_icon.sh" "$APP")
-
-    if [[ "$APP" == "Messages" ]]; then
-      BADGE=$(sqlite3 ~/Library/Messages/chat.db "SELECT text FROM message WHERE is_read=0 AND is_from_me=0 AND text!='' AND date_read=0" | wc -l | awk '{$1=$1};1')
-    else
-      BADGE=$(lsappinfo -all info -only StatusLabel "$APP" | sed -nr 's/\"StatusLabel\"=\{ \"label\"=\"(.+)\" \}$/\1/p')
-    fi
-
-    if [[ "$APP" == "$CURRENT_APP" ]]; then
-      ICON+=" $APP"
-      if [[ -n "$BADGE" ]]; then
-        ICON+="$(set_badge $BADGE)"
-      fi
-    elif [[ -n "$BADGE" ]]; then
-      ICON+=" $(set_badge $BADGE)"
-    fi
+    # Append app name only if it's the currently focused one
+    [[ "$APP" == "$CURRENT_APP" ]] && ICON+=" $APP"
 
     LABEL+="$ICON"
-
-    if ((${#APPS[@]} > 1)); then
-      LABEL+=" "
-    fi
-
+    [[ ${#APPS[@]} -gt 1 ]] && LABEL+=" "
   done
-
   unset IFS
 
-  sketchybar --set $NAME label="$LABEL"
+  sketchybar --set "$NAME" label="$SPACE_LABEL $LABEL"
 }
 
 update_icons() {
-
-# The $SELECTED variable is available for space components and indicates if
-# the space invoking this script (with name: $NAME) is currently selected:
-# https://felixkratz.github.io/SketchyBar/config/components#space----associate-mission-control-spaces-with-an-item
-
   if [ "$SELECTED" = "true" ]; then
     BACKGROUND_COLOR=$HIGHLIGHT_25
     PADDING=$PADDINGS
@@ -64,70 +42,41 @@ update_icons() {
     PADDING=0
   fi
 
-    sketchybar --animate tanh 10                              \
-               --set $NAME icon.highlight=$SELECTED           \
-                           label.highlight=$SELECTED          \
-                           background.color=$BACKGROUND_COLOR \
-                           icon.padding_left=$PADDING         \
-                           label.padding_right=$PADDING
+  sketchybar --animate tanh 10 \
+             --set "$NAME" icon.highlight="$SELECTED" \
+                            label.highlight="$SELECTED" \
+                            background.color="$BACKGROUND_COLOR" \
+                            icon.padding_left="$PADDING" \
+                            label.padding_right="$PADDING"
 
   CURRENT_SID=$(yabai -m query --spaces --space | jq -r '.index')
-  # PREV_SID=$(yabai -m query --spaces --space prev | jq -r '.index')
 
   if [[ $SID = $CURRENT_SID ]]; then
-
-    SID=$CURRENT_SID
-
-    QUERY=$(yabai -m query --windows --space "$SID")
-
+    QUERY=$(yabai -m query --windows --space "$SID" | jq '[.[] | select(.scratchpad == "")]')
     IFS=$'\n'
     local APPS=($(echo "$QUERY" | jq -r 'map(select((.title | length) > 0)) | .[].app' | sort -u))
     local CURRENT_APP=$(echo "$QUERY" | jq -r 'map(select((.title | length) > 0)) | .[] | select(.["has-focus"] == true) | .app')
-    # local APPS=($(echo "$QUERY" | jq -r '.[].app' | sort -u))
-    # local CURRENT_APP=$(echo "$QUERY" | jq -r '.[] | select(.["has-focus"] == true) | .app')
-    local LABEL ICON BADGE
+    local LABEL ICON
+
+    # Get space label
+    SPACE_LABEL=$(yabai -m query --spaces | jq -r --argjson sid "$SID" '.[] | select(.index == $sid) | .label // ""')
+    [[ -z "$SPACE_LABEL" ]] && SPACE_LABEL="$SID"
 
     debug $FUNCNAME
 
     for APP in "${APPS[@]}"; do
-
-      ICON=$("$HOME/.config/sketchybar/plugins/app_icon.sh" "$APP")
-
-      if [[ "$APP" == "Messages" ]]; then
-        BADGE=$(sqlite3 ~/Library/Messages/chat.db "SELECT text FROM message WHERE is_read=0 AND is_from_me=0 AND text!='' AND date_read=0" | wc -l | awk '{$1=$1};1')
-      else
-        BADGE=$(lsappinfo -all info -only StatusLabel "$APP" | sed -nr 's/\"StatusLabel\"=\{ \"label\"=\"(.+)\" \}$/\1/p')
-      fi
-
-      if [[ "$APP" == "$CURRENT_APP" ]]; then
-        ICON+=" $APP"
-        if [[ -n "$BADGE" ]]; then
-          ICON+="$(set_badge $BADGE)"
-        fi
-      elif [[ -n "$BADGE" ]]; then
-        ICON+=" $(set_badge $BADGE)"
-      fi
-
+      local TITLE=$(echo "$QUERY" | jq -r 'map(select((.title | length) > 0 and .app == "'"$APP"'")) | .[0].title')
+      ICON=$("$HOME/.config/sketchybar/plugins/app_icon.sh" "$APP" "$TITLE")
+      [[ "$APP" == "$CURRENT_APP" ]] && ICON+=" $APP"
       LABEL+="$ICON"
-
-      if ((${#APPS[@]} > 1)); then
-        LABEL+=" "
-      fi
-
+      [[ ${#APPS[@]} -gt 1 ]] && LABEL+=" "
     done
-    sketchybar --set space.$SID label="$LABEL"
     unset IFS
+
+    sketchybar --set "space.$SID" label="$SPACE_LABEL $LABEL"
   fi
 }
 
-set_badge() {
-  if (($1 < 10)); then
-    ICONS=(􀀻 􀀽 􀀿 􀁁 􀁃 􀁅 􀁇 􀁉 􀁋)
-    echo "${ICONS[$1 - 1]}"
-  else
-    echo "􀍢"
-  fi
-}
 
 mouse_clicked() {
   if [ "$BUTTON" = "right" ] || [ "$MODIFIER" = "shift" ]; then

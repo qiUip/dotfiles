@@ -35,6 +35,7 @@ yabai -m config focus_follows_mouse         on
 yabai -m config window_topmost              off
 yabai -m config window_opacity              off
 yabai -m config window_shadow               float
+yabai -m config window_animation_duration   0.0
 
 yabai -m config split_ratio                 0.50
 yabai -m config split_type                  auto
@@ -47,31 +48,41 @@ yabai -m config mouse_action2               resize
 yabai -m space 1 --label main
 yabai -m space 2 --label dev1
 yabai -m space 3 --label dev2
-yabai -m space 4 --label edit
-yabai -m space 5 --label view
-yabai -m space 6 --label play
+yabai -m space 4 --label files
+yabai -m space 5 --label chat
+yabai -m space 6 --label write
+yabai -m space 7 --label edit
+yabai -m space 8 --label watch
+yabai -m space 9 --label play
 
 yabai -m config external_bar                all:28:0
 
 yabai -m window --toggle float
 yabai -m window --toggle sticky
 yabai -m window --toggle level above
-
 # ===== Rules ==================================
 
+# MacOS Apps - yabai doesn't seem to be able to identify these anymore?
 yabai -m rule --add label="Finder" app="^Finder$" title="(Co(py|nnect)|Move|Info|Pref)" manage=off
-yabai -m rule --add label="Safari" app="^Safari$" title="^(General|(Tab|Password|Website|Extension)s|AutoFill|Se(arch|curity)|Privacy|Advance)$" manage=off
 yabai -m rule --add label="App Store" app="^App Store$" manage=off
 yabai -m rule --add label="Activity Monitor" app="^Activity Monitor$" manage=off
 yabai -m rule --add label="Calculator" app="^Calculator$" manage=off
 yabai -m rule --add label="Dictionary" app="^Dictionary$" manage=off
 yabai -m rule --add label="Software Update" title="Software Update" manage=off
 yabai -m rule --add label="About This Mac" app="System Information" title="About This Mac" manage=off
-yabai -m rule --add label="Steam" app="^Steam$" manage=off
+yabai -m rule --add label="System Preferences" app="^System Preferences$" title=".*" manage=off
+# Other apps / windows
 yabai -m rule --add app="^Floorp$" title="^Library" manage=off
-yabai -m signal --add event=window_created app="^Floorp$" title="^Library" action="yabai -m window --resize abs:800:600; yabai -m window --move abs:1600:200"
-# yabai doesn't seem able to see System Settings so this line dose nothing
-# yabai -m rule --add label="System Preferences" app="^System Preferences$" title=".*" manage=off
+yabai -m signal --add event=window_created app="^Floorp$" title="^Library" action="yabai -m window --grid 11:11:3:2:5:7"
+yabai -m rule --add app="^Emacs$" title="^doom-capture" manage=off
+yabai -m signal --add event=window_created app="^Emacs" title="^doom-capture" action="yabai -m window --grid 11:11:3:2:5:7"
+# Scratchpads
+yabai -m rule --add title="scrterm" scratchpad=scrterm grid=11:11:2:2:7:7
+yabai -m rule --add title="music" scratchpad=music grid=11:11:2:2:7:7
+yabai -m rule --add title="yazi" scratchpad=yazi grid=11:11:2:2:7:7
+
+# ===== Multi-displays hook ====================
+yabai -m signal --add event=display_changed action="$HOME/.config/yabai/scripts/display_update.sh"
 
 
 set +x

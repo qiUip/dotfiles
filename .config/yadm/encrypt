@@ -5,3 +5,5 @@
 .config/mutt/accounts
 .config/mutt/signatures
 .config/doom/email.el
+.config/imapnotify/ucl/notify.yaml
+.config/imapnotify/icloud/notify.yaml

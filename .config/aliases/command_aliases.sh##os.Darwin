@@ -2,15 +2,15 @@
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
-  export EDITOR='lvim'
+  export EDITOR='nvim'
 fi
 
 bindkey -s '^[3]' \#
 # emacs
 alias e="emacsclient -t"
 # zsh
-alias zshconf="lvim ~/.zshrc"
-alias ohmyzsh="lvim ~/.oh-my-zsh"
+alias zshconf="nvim ~/.zshrc"
+alias ohmyzsh="nvim ~/.oh-my-zsh"
 # curl
 alias getip="curl https://ipinfo.io/ip"
 alias getwe="curl wttr.in/London"
@@ -27,6 +27,8 @@ alias c="clear"
 # quality of life stuff
 alias bgr="batgrep"
 alias kd="kitten diff"
-alias tmac="tmux -A -s"
+alias tmac="tmux new -A -s"
 alias vim="nvim"
 alias matlab="/Applications/MATLAB_R2024b.app/bin/matlab -nojvm -nodesktop"
+alias mount_DS="$HOME/.scripts/mount_synology.sh -m"
+alias umount_DS="$HOME/.scripts/mount_synology.sh -u"

@@ -11,5 +11,6 @@ return {
   { import = "astrocommunity.colorscheme.catppuccin" },
   { import = "astrocommunity.colorscheme.nord-nvim" },
   { import = "astrocommunity.colorscheme.nordic-nvim" },
+  { import = "astrocommunity.completion.copilot-lua-cmp" },
   -- { import = "astrocommunity.recipes.disable-tabline" },
 }

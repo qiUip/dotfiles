@@ -27,6 +27,7 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Orgs/")
+(setq +org-capture-todo-file "~/Orgs/tasks.org")
 
 (setq projectile-ignored-projects '("~/" "/tmp" "~/.config/emacs/.local/straight/repos/"))
 
@@ -62,8 +63,11 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+;; GUI
 (add-to-list 'default-frame-alist '(undecorated-round . t))
 
+;; org-mode and org-roam
+;; Settings
 (after! org
  (setq org-latex-pdf-process (list "pdflatex -shell-escape %f")))
 
@@ -81,16 +85,95 @@
                             org-agenda-files)))
       (add-to-list 'org-agenda-files (buffer-file-name)))))
 
+;; Capture templates
+(defun my/org-goto-proj-heading ()
+  "Prompt for a PROJ heading in `+org-capture-todo-file` and return the marker to it."
+  (let ((file +org-capture-todo-file)
+        proj-headings)
+    (with-current-buffer (find-file-noselect file)
+      (org-element-map (org-element-parse-buffer 'headline)
+          'headline
+        (lambda (hl)
+          (let ((todo (org-element-property :todo-keyword hl))
+                (title (org-element-property :raw-value hl))
+                (begin (org-element-property :begin hl)))
+            (when (string= todo "PROJ")
+              (push (cons title begin) proj-headings)))))
+      (let* ((choices (reverse proj-headings))
+             (selection (completing-read "Select Project: " (mapcar #'car choices)))
+             (pos (cdr (assoc selection choices))))
+        (goto-char pos)
+        (org-show-context)
+        (org-show-entry)
+        (org-show-subtree)
+        (point-marker)))))
+
+(after! org
+  (add-to-list 'org-capture-templates
+               `("pp" "Project Task"
+                 entry
+                 (file+function ,+org-capture-todo-file my/org-goto-proj-heading)
+                 "* TODO %?\n%U\n"
+                 :empty-lines 1)))
+
+(after! org-roam
+  (add-to-list 'org-roam-capture-templates
+               '("r" "Create a note from marked region" plain
+                 (file "~/Orgs/roam/templates/region.org")
+                 :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                 :unnarrowed t)))
+
+(after! org-roam
+  (add-to-list 'org-roam-capture-templates
+               '("e" "Create a note from email" plain
+                 (file "~/Orgs/roam/templates/email.org")
+                 :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                 :unnarrowed t)))
+
+(defun my/clipboard-contents ()
+  "Return the current contents of the macOS clipboard using pbpaste."
+  (string-trim (shell-command-to-string "pbpaste")))
+
+(defun my/org-roam-clipboard-template ()
+  "Return a dynamic org-roam capture template that includes clipboard text."
+  (concat "%T\n\n* Source\n%?\n\n* Captured context\n"
+          (my/clipboard-contents)
+          "\n\n* Notes"))
+
+(after! org-roam
+  (add-to-list 'org-roam-capture-templates
+               `("c" "Create a note from the clipboard" plain
+                 (function my/org-roam-clipboard-template)
+                 :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                    "#+title: ${title}\n")
+                 :unnarrowed t)))
+
+;; Support for additional language features
+(defun org-babel-execute:yaml (body params) body)
+
 (after! ein
   (setq ein:output-area-inlined-images t))
 
-(defun org-babel-execute:yaml (body params) body)
+(setq lsp-julia-package-dir nil)
+(setq lsp-julia-default-environment "~/.julia/environments/v1.11")
 
 (after! f90
   (set-formatter! 'fortitude '("fortitude" "check") :modes '(f90-mode fortran-mode)))
 
-(setq lsp-julia-package-dir nil)
-(setq lsp-julia-default-environment "~/.julia/environments/v1.11")
+;; Fix for yadm dotfile manegment - strip '##...' suffix from files for mode detection.
+(defun +yadm/set-mode-based-on-suffix ()
+  "Set mode for files with '##' suffix by guessing based on base name."
+  (let* ((filename (buffer-file-name))
+         (base-name (when (string-match "\\(.*\\)##" filename)
+                      (match-string 1 filename))))
+    (when base-name
+      (let ((mode (assoc-default base-name auto-mode-alist #'string-match)))
+        (when mode
+          (funcall mode))))))
+(add-hook! 'find-file-hook
+  (when (and buffer-file-name (string-match "##" buffer-file-name))
+    (+yadm/set-mode-based-on-suffix)))
+
 
 ;; AI assistants
 ;; Aidermacs setup
@@ -104,9 +187,6 @@
   (setq aidermacs-backend 'vterm)
   (add-to-list 'aidermacs-extra-args "--code-theme nord")
   )
-;; (map! :leader
-;;       :desc "Aidermac menu"
-;;       "e a" #'aidermacs-transient-menu)
 
 ;; GPTs
 (use-package! gptel
@@ -116,12 +196,9 @@
 
   (setq gptel-backend-anthropic
         (gptel-make-anthropic "Anthropic" :stream t :key gptel-api-key))
-
   (setq gptel-backend-gemini
         (gptel-make-gemini "Gemini" :stream t :key (getenv "GEMINI_API_KEY")))
-
   (setq gptel-backend-copilot (gptel-make-gh-copilot "Copilot"))
-
   (setq gptel-backend-ollama
         (gptel-make-ollama "Ollama"
                            :host "localhost:11434"
@@ -152,31 +229,9 @@
 ;;               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
 ;; Email
-(set-email-account! "ucl"
-  '((+mu4e-personal-addresses "mashy.green@ucl.ac.uk")
-    (mu4e-sent-folder       . "/ucl/Sent Items")
-    (mu4e-drafts-folder     . "/ucl/Drafts")
-    (mu4e-trash-folder      . "/ucl/Deleted Items")
-    (mu4e-refile-folder     . "/ucl/Archive")
-    (+maildir-shortcuts     . ((:maildir "/ucl/INBOX"         :key ?i)
-                               (:maildir "/ucl/Sent Items"    :key ?s)
-                               (:maildir "/ucl/Drafts"        :key ?d)
-                               (:maildir "/ucl/Archive"       :key ?a)
-                               (:maildir "/ucl/Deleted Items" :key ?t))))
-  t)
-
-(set-email-account! "icloud"
-  '((+mu4e-personal-addresses "mashy@me.com")
-    (mu4e-sent-folder       . "/icloud/Sent Messages")
-    (mu4e-drafts-folder     . "/icloud/Drafts")
-    (mu4e-trash-folder      . "/icloud/Deleted Messages")
-    (mu4e-refile-folder     . "/icloud/Archive")
-    (+maildir-shortcuts     . ((:maildir "/icloud/INBOX"            :key ?i)
-                               (:maildir "/icloud/Sent Messages"    :key ?s)
-                               (:maildir "/icloud/Drafts"           :key ?d)
-                               (:maildir "/icloud/Archive"          :key ?a)
-                               (:maildir "/icloud/Deleted Messages" :key ?t))))
-  t)
+(let ((private-email "~/.config/doom/email.el"))
+  (when (file-exists-p private-email)
+    (load private-email)))
 
 (after! mu4e
   (defun apply-maildir-shortcuts ()
@@ -210,12 +265,10 @@
         mu4e-headers-folded-default t
         mu4e-sent-messages-behavior 'delete)
 
-  (run-at-time "1 min" 60 #'mu4e-update-index)
-
   ;; Force close buffer with draft email
   (add-hook 'mu4e-compose-mode-hook
             (lambda ()
-              ;; Disable auto-save and Fcc
+              ;; Try to disable auto-save and Fcc
               (setq-local message-auto-save-directory nil)
               (setq-local message-auto-save-buffer-name nil)
               (setq-local message-do-fcc nil)
@@ -227,7 +280,7 @@
                           (set-buffer-modified-p nil))
                         nil t)
 
-              ;; Workaround: kill the buffer if still around after send
+              ;; Kill the buffer if still around after send
               (add-hook 'message-sent-hook
                         (lambda ()
                           (let ((buf (current-buffer)))
@@ -240,28 +293,75 @@
                                  (kill-buffer buf)))))
                         nil t)))))
 
+;; Rebuild mail index while using mu4e - adapted from https://tecosaur.github.io/emacs-config/config.html#fetching
+(defvar mu4e-reindex-request-dir "/tmp/mu"
+    "Location of the directory containing the reindex request file.")
+(defvar mu4e-reindex-request-file "mu_reindex_now"
+    "Filename that triggers reindex request, signaled by existance.")
 
-;; signature that works with org-msg
-(defvar +mu4e-signature
-  (cons
-   ;; Plain text version
-   (string-join
-    '("--"
-      "Dr Mashy Green"
-      "Senior Research Software Engineer"
-      "Centre for Advanced Research Computing"
-      "University College London")
-    "\n")
-   ;; Org/HTML version (org markup with HTML support via org-msg)
-   (string-join
-    '("--\\\\"
-      "Dr Mashy Green\\\\"
-      "Senior Research Software Engineer\\\\"
-      "Centre for Advanced Research Computing\\\\"
-      "University College London")
-    "\n")))
-(after! org-msg
-  (setq org-msg-signature
-        (concat "\n\n#+begin_signature\n"
-                (cdr +mu4e-signature)
-                "\n#+end_signature")))
+(defvar mu4e-reindex-request-min-seperation 5.0
+  "Don't refresh again until this many seconds have elapsed.
+Prevents a series of redisplays from being called (when set to an appropriate value).")
+
+(defvar mu4e-reindex-request--file-watcher nil)
+(defvar mu4e-reindex-request--file-just-deleted nil)
+(defvar mu4e-reindex-request--last-time 0)
+
+(defun mu4e-reindex-request--file-path ()
+  (expand-file-name mu4e-reindex-request-file mu4e-reindex-request-dir))
+
+(defun mu4e-reindex-request--add-watcher ()
+  (setq mu4e-reindex-request--file-just-deleted nil)
+  (unless (file-directory-p mu4e-reindex-request-dir)
+    (make-directory mu4e-reindex-request-dir t))
+  (setq mu4e-reindex-request--file-watcher
+        (file-notify-add-watch mu4e-reindex-request-dir
+                               '(change)
+                               #'mu4e-file-reindex-request)))
+
+(defadvice! mu4e-stop-watching-for-reindex-request ()
+  :after #'mu4e--server-kill
+  (when mu4e-reindex-request--file-watcher
+    (file-notify-rm-watch mu4e-reindex-request--file-watcher)))
+
+(defadvice! mu4e-watch-for-reindex-request ()
+  :after #'mu4e--server-start
+  (mu4e-stop-watching-for-reindex-request)
+  (let ((file (mu4e-reindex-request--file-path)))
+    (when (file-exists-p file)
+      (delete-file file)))
+  (mu4e-reindex-request--add-watcher))
+
+(defun mu4e-file-reindex-request (event)
+  "Act based on the existance of `mu4e-reindex-request-file`."
+  (let ((action (nth 1 event))
+        (path (nth 2 event)))
+    (if mu4e-reindex-request--file-just-deleted
+        (mu4e-reindex-request--add-watcher)
+      (when (and (eq action 'created)
+                 (string= (file-name-nondirectory path) mu4e-reindex-request-file))
+        (delete-file (mu4e-reindex-request--file-path))
+        (setq mu4e-reindex-request--file-just-deleted t)
+        (mu4e-reindex-maybe t)))))
+
+(defun mu4e-reindex-maybe (&optional new-request)
+  "Run `mu4e--server-index' if it's been more than
+`mu4e-reindex-request-min-seperation' seconds since the last request."
+  (let ((time-since-last-request (- (float-time)
+                                    mu4e-reindex-request--last-time)))
+    (when new-request
+      (setq mu4e-reindex-request--last-time (float-time)))
+    (if (> time-since-last-request mu4e-reindex-request-min-seperation)
+        (mu4e--server-index nil t)
+      (when new-request
+        (run-at-time (* 1.1 mu4e-reindex-request-min-seperation) nil
+                     #'mu4e-reindex-maybe)))))
+
+
+(after! mu4e
+    (custom-theme-set-faces!
+      'user
+      `(mu4e-header-from-face :foreground ,(doom-color 'magenta))
+      `(mu4e-header-subject-face :foreground ,(doom-color 'cyne))
+      `(mu4e-header-date-face :foreground ,(doom-color 'green))
+      `(mu4e-header-highlight-face :foreground ,(doom-color 'yellow))))

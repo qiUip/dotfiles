@@ -3,43 +3,35 @@
 source "$CONFIG_DIR/icons.sh"
 
 case "$1" in
-"Terminal" | "Warp" | "iTerm2")
+"Terminal" | "Warp" | "iTerm2" | "Ghostty" | "kitty")
   RESULT=$ICON_TERM
 	if grep -q "btop" <<< $2;
   then
 	 RESULT=$ICON_CHART
 	fi
-	if grep -q "brew" <<< $2;
+	if grep -qi "brew" <<< $2;
   then
 	 RESULT=$ICON_PACKAGE
 	fi
-	if grep -q "nvim" <<< $2;
+	if grep -qi "nvim" <<< $2;
   then
 	 RESULT=$ICON_DEV
 	fi
-	if grep -q "ranger" <<< $2;
+	if grep -qi "yazi" <<< $2;
   then
 	 RESULT=$ICON_FILE
 	fi
-	if grep -q "lazygit" <<< $2;
+	if grep -qi "lazygit" <<< $2;
   then
 	 RESULT=$ICON_GIT
 	fi
-	if grep -q "taskwarrior-tui" <<< $2;
-  then
-	 RESULT=$ICON_LIST
-	fi
-	if grep -q "unimatrix\|pipes.sh" <<< $2;
-  then
-	 RESULT=$ICON_SCREENSAVOR
-	fi
-	if grep -q "bat" <<< $2;
+	if grep -qi "bat" <<< $2;
   then
 	 RESULT=$ICON_NOTE
 	fi
-	if grep -q "tty-clock" <<< $2;
+	if grep -qi "spotify_player" <<< $2;
   then
-	 RESULT=$ICON_CLOCK
+	 RESULT=$ICON_MUSIC
 	fi
 	;;
 "Finder")
@@ -87,7 +79,7 @@ case "$1" in
 "Photo Booth")
 	RESULT=$ICON_CAMERA
 	;;
-"Safari" | "Beam" | "DuckDuckGo" | "Arc" | "Microsoft Edge" | "Google Chrome" | "Firefox")
+"Safari" | "Beam" | "DuckDuckGo" | "Arc" | "Microsoft Edge" | "Google Chrome" | "Firefox" | "Floorp")
 	RESULT=$ICON_WEB
 	;;
 "System Settings" | "System Information" | "TinkerTool")
@@ -108,7 +100,7 @@ case "$1" in
 "Books")
 	RESULT=$ICON_BOOK
 	;;
-"Xcode" | "Code" | "Neovide")
+"Xcode" | "Code" | "Neovide" | "Emacs")
 	RESULT=$ICON_DEV
 	;;
 "VSCodium")

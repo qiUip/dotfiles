@@ -75,7 +75,44 @@
   :commands org-super-agenda-mode)
 
 (after! org-agenda
-  (org-super-agenda-mode))
+  (setq org-agenda-start-on-weekday t
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-deadlines t
+        org-super-agenda-header-map evil-org-agenda-mode-map
+        org-super-agenda-groups
+         '((:name "Today"
+            :time-grid t
+            :todo "TODAY"
+            :order 0)
+           (:name "Important"
+            :priority "A"
+            :order 1)
+           (:priority<= "B"
+            :order 2)
+           (:order-multi (4(:name "Personal"
+                            :discard (:todo "PROJ")
+                            :tag "personal")
+                           (:name "Work"
+                            :discard (:todo "PROJ")
+                            :tag "work")))
+           (:order-multi (5(:name "Meshing-related"
+            :tag "NekMesh"
+            :and (:regexp ("mesh" "meshing")))
+           (:name "SPH-related"
+            :tag "SPH"
+            :and (:regexp ("SPH" "sloshing")))))
+           (:name "Research"
+            :tag "Research"
+            :order 6)
+           (:name "Projects"
+            :todo "PROJ"
+            :order 8)
+           (:todo ("WAIT" "HOLD")
+            :order 8)
+           (:todo ("TO-READ" "CHECK")
+            :order 9))))
+
 
 (after! (org-roam org-agenda)
   (add-hook! 'org-after-todo-state-change-hook
@@ -357,11 +394,17 @@ Prevents a series of redisplays from being called (when set to an appropriate va
         (run-at-time (* 1.1 mu4e-reindex-request-min-seperation) nil
                      #'mu4e-reindex-maybe)))))
 
-
 (after! mu4e
+  (setq mu4e-headers-fields
+        '((:account . 7)
+          (:flags . 6)
+          (:human-date . 12)
+          (:from . 18)
+          (:subject)))
+  (use-package! mu4e-column-faces
+   :config (mu4e-column-faces-mode))
     (custom-theme-set-faces!
       'user
-      `(mu4e-header-from-face :foreground ,(doom-color 'magenta))
-      `(mu4e-header-subject-face :foreground ,(doom-color 'cyne))
-      `(mu4e-header-date-face :foreground ,(doom-color 'green))
-      `(mu4e-header-highlight-face :foreground ,(doom-color 'yellow))))
+      `(mu4e-column-faces-date :foreground ,(doom-color 'green))
+      `(mu4e-column-faces-to-from :foreground ,(doom-color 'magenta))
+      `(mu4e-column-faces-flags :foreground ,(doom-color 'yellow))))

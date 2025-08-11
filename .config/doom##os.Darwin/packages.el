@@ -80,3 +80,10 @@
 
 ;; GPT
 (package! gptel :recipe (:nonrecursive t))
+
+;; mu4e coloured column
+(package! aidermacs
+  :recipe (:host github :repo "MatthewZMD/aidermacs"))
+
+(package! mu4e-column-faces
+  :recipe (:host github :repo "Alexander-Miller/mu4e-column-faces"))

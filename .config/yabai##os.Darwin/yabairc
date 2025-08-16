@@ -80,6 +80,7 @@ yabai -m signal --add event=window_created app="^Emacs" title="^doom-capture" ac
 yabai -m rule --add title="scrterm" scratchpad=scrterm grid=11:11:2:2:7:7
 yabai -m rule --add title="music" scratchpad=music grid=11:11:2:2:7:7
 yabai -m rule --add title="yazi" scratchpad=yazi grid=11:11:2:2:7:7
+yabai -m rule --add title="mutt" scratchpad=mutt grid=11:11:2:2:7:7
 
 # ===== Multi-displays hook ====================
 yabai -m signal --add event=display_changed action="$HOME/.config/yabai/scripts/display_update.sh"

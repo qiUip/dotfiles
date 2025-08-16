@@ -43,7 +43,9 @@ done
 
 ALL_APPS=("${unique_apps[@]}")
 
-SELECTED=$(printf "%s\n" "${ALL_APPS[@]}" | choose -az -s 20 -w 20 -b 5E81AC -c A3BE8C -f "Hack Nerd Font Mono")
+# SELECTED=$(printf "%s\n" "${ALL_APPS[@]}" | choose -az -s 20 -w 20 -b 5E81AC -c A3BE8C -f "Hack Nerd Font Mono")
+SELECTED=$(printf "%s\n" "${ALL_APPS[@]}" | dmenu --bg-color 2E3440 --text-color ECEFF4 --highlight-color 81A1C1 -r 6 -s -i --font "Hack Nerd Font Mono")
+
 [[ -z "$SELECTED" ]] && exit 0
 
 # Function to resolve symlinks to real target
@@ -99,7 +101,8 @@ elif is_background_app "$SELECTED"; then
     "$app_path" &
   fi
 else
-  METHOD=$(printf "terminal\nbackground" | choose -az -s 20 -w 20 -b 5E81AC -c A3BE8C -f "Hack Nerd Font Mono")
+  # METHOD=$(printf "terminal\nbackground" | choose -az -s 20 -w 20 -b 5E81AC -c A3BE8C -f "Hack Nerd Font Mono")
+  METHOD=$(printf "terminal\nbackground" | dmenu --bg-color 2E3440 --text-color ECEFF4 --highlight-color 81A1C1 -r 3 -s -i --font "Hack Nerd Font Mono")
   [[ -z "$METHOD" ]] && exit 0
 
   if [[ "$METHOD" == "terminal" ]]; then

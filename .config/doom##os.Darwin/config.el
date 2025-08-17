@@ -95,76 +95,71 @@
 ;; org-mode and org-roam
 ;; Settings
 (after! org
-  (setq org-latex-pdf-process (list "pdflatex -shell-escape %f")))
+ (setq org-latex-pdf-process (list "pdflatex -shell-escape %f")))
+
+(use-package! org-super-agenda
+  :after org-agenda
+  :init (setq org-super-agenda-groups
+              '((:name "Today"
+                 :time-grid t
+                 :todo "TODAY")
+                (:name "Important"
+                 :priority "A"
+                 :order 1)
+                (:priority<= "B"
+                 :order 2)
+                (:order-multi (4(:name "Personal"
+                                 :and (:tag "personal"
+                                       :not (:todo "PROJ")))
+                                (:name "Work"
+                                 :and (:tag "work"
+                                       :not (:todo "PROJ")))))
+                (:order-multi (5(:name "Meshing-related"
+                                 :and (:tag "NekMesh"
+                                       :not (:todo "PROJ")
+                                       :and (:regexp ("mesh" "meshing"))))
+                                (:name "SPH-related"
+                                 :and (:tag "SPH"
+                                       :not (:todo "PROJ")
+                                       :and (:regexp ("SPH" "sloshing"))))))
+                (:name "Research"
+                 :and (:tag "Research"
+                       :not (:todo "PROJ"))
+                 :order 6)
+                (:name "Projects"
+                 :todo "PROJ"
+                 :order 7)
+                (:todo ("WAIT" "HOLD")
+                 :order 8)))
+  :config (org-super-agenda-mode)
+  (setq org-super-agenda-header-map (make-sparse-keymap)))
 
 (after! org-agenda
   (setq org-agenda-start-on-weekday t
         org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
-        org-agenda-include-deadlines t)
+        org-agenda-include-deadlines t
+        org-super-agenda-mode t)
   (set-face-attribute 'org-agenda-date nil
                       :foreground (doom-color 'magenta)
                       :weight 'bold
                       :height 1.5
                       :family "Tinos Nerd Font")
   (set-face-attribute 'org-agenda-date-weekend nil
-                      :foreground (doom-color 'orange)
+                      :foreground (doom-color 'yellow)
                       :weight 'bold
                       :height 1.5
                       :family "Tinos Nerd Font")
   (set-face-attribute 'org-agenda-date-today nil
-                      :foreground (doom-color 'yellow)
+                      :foreground (doom-color 'orange)
                       :weight 'bold
-                      :height 1.6
+                      :height 1.5
                       :family "Tinos Nerd Font")
   (set-face-attribute 'org-super-agenda-header nil
                       :foreground (doom-color 'cyan)
                       :weight 'bold
-                      :height 1.4
+                      :height 1.3
                       :family "Tinos Nerd Font"))
-
-(use-package! org-super-agenda
-  :after org-agenda
-  :init
-  (setq org-super-agenda-groups
-        '((:name "Today"
-           :time-grid t
-           :todo "TODAY"
-           :order 0)
-          (:name "Important"
-           :priority "A"
-           :order 1)
-          (:priority<= "B"
-           :order 2)
-          (:order-multi (4(:name "Personal"
-                           :and (:tag "personal"
-                                 :not (:todo "PROJ")))
-                          (:name "Work"
-                           :and (:tag "work"
-                                 :not (:todo "PROJ")))))
-          (:order-multi (5(:name "Meshing-related"
-                           :and (:tag "NekMesh"
-                                 :not (:todo "PROJ"))
-                           :and (:regexp ("mesh" "meshing")))
-                          (:name "SPH-related"
-                           :and (:tag "SPH"
-                                 :not (:todo "PROJ"))
-                           :and (:regexp ("SPH" "sloshing")))))
-          (:name "Research"
-           :and (:tag "Research"
-                 :not (:todo "PROJ"))
-           :order 6)
-          (:name "Projects"
-           :and (:todo "PROJ"
-                 :not (:tag "Family"))
-           :order 7)
-          (:todo ("WAIT" "HOLD")
-           :discard (:tag "Family")
-           :order 8)))
-  :config
-  (org-super-agenda-mode)
-  (setq org-super-agenda-header-map (make-sparse-keymap)))
-
 
 (after! (org-roam org-agenda)
   (add-hook! 'org-after-todo-state-change-hook
@@ -237,34 +232,6 @@
                                     "#+title: ${title}\n")
                  :unnarrowed t)))
 
-;; Org auto-commits
-(defun my/org-auto-git-commit ()
-  "Auto-commit and push changes in `org-directory` when saving Org files."
-  (when buffer-file-name
-    (let ((default-directory org-directory))
-      ;; Stage only the saved file
-      (magit-run-git-async "add" buffer-file-name)
-      ;; Commit if there are staged changes
-      (let ((status (magit-git-string "status" "--porcelain")))
-        (if (not (string-empty-p status))
-            (let ((commit-result (magit-git-string "commit" "-m" "MBP auto-commit")))
-              ;; Pull --rebase and check for conflicts
-              (let ((pull-result (magit-git-string "pull" "--rebase")))
-                (if (string-match "CONFLICT" pull-result)
-                    (message "Org auto-git: merge conflicts! Resolve manually.")
-                  ;; Push if no conflicts
-                  (magit-run-git-async "push")
-                  (message "Org auto-git: pushed successfully"))))
-          (message "Org auto-git: no changes to commit."))))))
-
-(defun my/setup-org-auto-git-hook ()
-  "Add auto-git commit hook for files in `org-directory`."
-  (when (and buffer-file-name
-             (string-prefix-p (file-truename org-directory)
-                              (file-truename buffer-file-name)))
-    (add-hook 'after-save-hook #'my/org-auto-git-commit nil t)))
-
-(add-hook 'find-file-hook #'my/setup-org-auto-git-hook)
 
 ;; AI assistants
 ;; Aidermacs setup

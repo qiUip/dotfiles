@@ -48,12 +48,12 @@ yabai -m config mouse_action2               resize
 yabai -m space 1 --label main
 yabai -m space 2 --label dev1
 yabai -m space 3 --label dev2
-yabai -m space 4 --label files
+yabai -m space 4 --label dev3
 yabai -m space 5 --label chat
-yabai -m space 6 --label write
-yabai -m space 7 --label edit
-yabai -m space 8 --label watch
-yabai -m space 9 --label play
+yabai -m space 6 --label files
+yabai -m space 7 --label write
+yabai -m space 8 --label edit
+yabai -m space 9 --label watch
 
 yabai -m config external_bar                all:28:0
 
@@ -83,7 +83,7 @@ yabai -m rule --add title="yazi" scratchpad=yazi grid=11:11:2:2:7:7
 yabai -m rule --add title="mutt" scratchpad=mutt grid=11:11:2:2:7:7
 
 # ===== Multi-displays hook ====================
-yabai -m signal --add event=display_changed action="$HOME/.config/yabai/scripts/display_update.sh"
+# yabai -m signal --add event=display_changed action="$HOME/.config/yabai/scripts/display_update.sh"
 
 
 set +x

@@ -12,10 +12,11 @@ shift - 0xa | shift - 0x32
 # Applications
 cmd - return : kitty --single-instance --instance-group yabai ${HOME}
 cmd + shift - e : "${HOME}"/.config/yabai/scripts/open_emacs.sh
-cmd + lctrl - e : emacsclient --eval '(emacs-everywhere)'
+cmd + lalt - e : emacsclient --eval '(emacs-everywhere)'
 cmd + shift - n : "${HOME}"/.config/emacs/bin/org-capture
 cmd - b : /Applications/Floorp.app/Contents/MacOS/floorp
 cmd + lctrl - s : /Applications/Slack.app/Contents/MacOS/Slack
+cmd + lctrl - d : /Applications/Discord.app/Contents/MacOS/Discord
 
 # Choose
 cmd - g : "${HOME}"/.config/yabai/scripts/choose_focus.sh
@@ -25,9 +26,14 @@ lalt - p : "${HOME}"/.config/yabai/scripts/choose_pass.sh
 lalt - s : "${HOME}"/.config/yabai/scripts/choose_ssh.sh
 
 # Scratchpads
+# lctrl + cmd - p : scratch
+# scratch < t : yabai -m window --toggle "scrterm" || kitty --single-instance --instance-group scratch -T scrterm ${HOME}; default
+# scratch < m : yabai -m window --toggle "music"   || kitty --single-instance --instance-group scratch -T music -e sh -c '${HOME}/.cargo/bin/spotify_player'; default
+
 lctrl + cmd - return : yabai -m window --toggle "scrterm"  || kitty --single-instance --instance-group scratch -T scrterm ${HOME}
-lctrl + cmd - m : yabai -m window --toggle "music" || kitty --single-instance --instance-group scratch -T music -e sh -c '/opt/homebrew/bin/spotify_player'
+lctrl + cmd - m : yabai -m window --toggle "music" || kitty --single-instance --instance-group scratch -T music -e sh -c '${HOME}/.cargo/bin/spotify_player'
 lctrl + cmd - y : yabai -m window --toggle "yazi"  || kitty --single-instance --instance-group scratch -T yazi -e sh -c '/opt/homebrew/bin/yazi ~'
+lctrl + cmd - e : yabai -m window --toggle "mutt"  || kitty --single-instance --instance-group scratch -T mutt -e sh -c '/opt/homebrew/bin/neomutt'
 
 # Show system statistics
 ralt + lalt - q : "${HOME}"/.config/yabai/scripts/show_cpu.sh
@@ -37,10 +43,16 @@ ralt + lalt - r : "${HOME}"/.config/yabai/scripts/show_disk.sh
 ralt + lalt - t : "${HOME}"/.config/yabai/scripts/show_song.sh
 
 # Window navigation
-cmd - h : yabai -m window --focus west
-cmd - j : yabai -m window --focus south
-cmd - k : yabai -m window --focus north
-cmd - l : yabai -m window --focus east
+cmd - left  : yabai -m window --focus west
+cmd - down  : yabai -m window --focus south
+cmd - up    : yabai -m window --focus north
+cmd - right : yabai -m window --focus east
+# cmd - h : yabai -m window --focus west
+# cmd - j : yabai -m window --focus south
+# cmd - k : yabai -m window --focus north
+# cmd - l : yabai -m window --focus east
+cmd - j : yabai -m window --focus next
+cmd - k : yabai -m window --focus prev
 cmd - p : yabai -m window --focus stack.prev
 cmd - n : yabai -m window --focus stack.next
 
@@ -49,57 +61,58 @@ shift + cmd - left  : yabai -m window --warp west
 shift + cmd - down  : yabai -m window --warp south
 shift + cmd - up    : yabai -m window --warp north
 shift + cmd - right : yabai -m window --warp east
-shift + cmd - h : yabai -m window --warp west
-shift + cmd - j : yabai -m window --warp south
-shift + cmd - k : yabai -m window --warp north
-shift + cmd - l : yabai -m window --warp east
+# shift + cmd - h : yabai -m window --warp west
+# shift + cmd - j : yabai -m window --warp south
+# shift + cmd - k : yabai -m window --warp north
+# shift + cmd - l : yabai -m window --warp east
+shift + cmd - j : yabai -m window --warp next
+shift + cmd - k : yabai -m window --warp prev
 
 # Space navigation
 cmd - 1 : yabai -m space --focus main
 cmd - 2 : yabai -m space --focus dev1
 cmd - 3 : yabai -m space --focus dev2
-cmd - 4 : yabai -m space --focus files
+cmd - 4 : yabai -m space --focus dev3
 cmd - 5 : yabai -m space --focus chat
-cmd - 6 : yabai -m space --focus write
-cmd - 7 : yabai -m space --focus edit
-cmd - 8 : yabai -m space --focus watch
-cmd - 9 : yabai -m space --focus play
+cmd - 6 : yabai -m space --focus files
+cmd - 7 : yabai -m space --focus write
+cmd - 8 : yabai -m space --focus edit
+cmd - 9 : yabai -m space --focus watch
 lctrl - l : yabai -m space --focus next
 lctrl - h : yabai -m space --focus prev
 cmd - 0 : yabai -m space --create
 cmd + shift - 0 : yabai -m space --destroy
 
-
 # Move window to space
 lctrl + cmd - 1 : yabai -m window --space main
 lctrl + cmd - 2 : yabai -m window --space dev1
 lctrl + cmd - 3 : yabai -m window --space dev2
-lctrl + cmd - 4 : yabai -m window --space files
+lctrl + cmd - 4 : yabai -m window --space dev3
 lctrl + cmd - 5 : yabai -m window --space chat
-lctrl + cmd - 6 : yabai -m window --space write
-lctrl + cmd - 7 : yabai -m window --space edit
-lctrl + cmd - 8 : yabai -m window --space watch
-lctrl + cmd - 9 : yabai -m window --space play
+lctrl + cmd - 6 : yabai -m window --space files
+lctrl + cmd - 7 : yabai -m window --space write
+lctrl + cmd - 8 : yabai -m window --space edit
+lctrl + cmd - 9 : yabai -m window --space watch
 
 # Move window to space and move to space
 shift + cmd - 1 : yabai -m window --space main;  yabai -m space --focus main
 shift + cmd - 2 : yabai -m window --space dev1;  yabai -m space --focus dev1
 shift + cmd - 3 : yabai -m window --space dev2;  yabai -m space --focus dev2
-shift + cmd - 4 : yabai -m window --space files; yabai -m space --focus files
+shift + cmd - 4 : yabai -m window --space dev3;  yabai -m space --focus dev3
 shift + cmd - 5 : yabai -m window --space chat;  yabai -m space --focus chat
-shift + cmd - 6 : yabai -m window --space write; yabai -m space --focus write
-shift + cmd - 7 : yabai -m window --space edit;  yabai -m space --focus edit 
-shift + cmd - 8 : yabai -m window --space watch; yabai -m space --focus watch
-shift + cmd - 9 : yabai -m window --space play;  yabai -m space --focus play
+shift + cmd - 6 : yabai -m window --space files; yabai -m space --focus files
+shift + cmd - 7 : yabai -m window --space write; yabai -m space --focus write
+shift + cmd - 8 : yabai -m window --space edit;  yabai -m space --focus edit
+shift + cmd - 9 : yabai -m window --space watch; yabai -m space --focus watch
 
 # Resize windows
-lctrl + cmd - h : yabai -m window --resize left:-50:0; \
+cmd - h : yabai -m window --resize left:-50:0; \
                   yabai -m window --resize right:-50:0
-lctrl + cmd - j : yabai -m window --resize bottom:0:50; \
-                  yabai -m window --resize top:0:50
-lctrl + cmd - k : yabai -m window --resize top:0:-50; \
-                  yabai -m window --resize bottom:0:-50
-lctrl + cmd - l : yabai -m window --resize right:50:0; \
+shift + cmd - h : yabai -m window --resize bottom:0:25; \
+                  yabai -m window --resize top:0:25
+shift + cmd - l : yabai -m window --resize top:0:-25; \
+                  yabai -m window --resize bottom:0:-25
+cmd - l : yabai -m window --resize right:50:0; \
                   yabai -m window --resize left:50:0
 
 # Equalize size of windows

@@ -9,3 +9,16 @@ GPG_TTY=$(tty)
 export GPG_TTY
 # TERMINFO for kitty support
 export TERMINFO_DIRS=/usr/local/share/terminfo:/usr/share/terminfo
+
+source $(brew --prefix)/opt/chruby/share/chruby/chruby.sh
+source $(brew --prefix)/opt/chruby/share/chruby/auto.sh
+chruby ruby-3.4.1
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+# bun
+[ -s "/Users/mashy/.bun/_bun" ] && source "/Users/mashy/.bun/_bun"
+

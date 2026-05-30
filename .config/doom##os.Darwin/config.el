@@ -66,6 +66,9 @@
 ;; GUI
 (add-to-list 'default-frame-alist '(undecorated-round . t))
 
+;; Mark flycheck mdl style variable as safe for dir-locals
+(put 'flycheck-markdown-mdl-style 'safe-local-variable #'stringp)
+
 ;; Support for additional language features
 (defun org-babel-execute:yaml (body params) body)
 
@@ -73,10 +76,35 @@
   (setq ein:output-area-inlined-images t))
 
 (setq lsp-julia-package-dir nil)
-(setq lsp-julia-default-environment "~/.julia/environments/v1.11")
+(defun +julia/latest-environment ()
+  "Return the newest ~/.julia/environments/vX.Y directory, or nil."
+  (let* ((root (expand-file-name "~/.julia/environments/"))
+         (dirs (and (file-directory-p root)
+                    (directory-files root nil "\\`v[0-9]+\\.[0-9]+\\'"))))
+    (when dirs
+      (concat root
+              (car (sort dirs
+                         (lambda (a b)
+                           (version< (substring b 1)
+                                     (substring a 1)))))))))
+(setq lsp-julia-default-environment
+      (or (+julia/latest-environment) "~/.julia/environments/v1.12"))
+
+;; Use homebrew clangd instead of system clangd
+(setq lsp-clients-clangd-executable
+      (concat (string-trim (shell-command-to-string "brew --prefix llvm"))
+              "/bin/clangd"))
 
 (after! f90
   (set-formatter! 'fortitude '("fortitude" "check") :modes '(f90-mode fortran-mode)))
+
+;; Render doxygen comments with the regular comment face.
+(add-hook! '(c-mode-hook c++-mode-hook cuda-mode-hook objc-mode-hook)
+  (face-remap-add-relative 'font-lock-doc-face 'font-lock-comment-face))
+
+;; Workaround for CUDA on macOS.
+(when (eq system-type 'darwin)
+  (add-to-list 'auto-mode-alist '("\\.cuh?\\'" . c++-mode)))
 
 ;; Fix for yadm dotfile manegment - strip '##...' suffix from files for mode detection.
 (defun +yadm/set-mode-based-on-suffix ()
@@ -94,8 +122,12 @@
 
 ;; org-mode and org-roam
 ;; Settings
-(after! org
- (setq org-latex-pdf-process (list "pdflatex -shell-escape %f")))
+(after! ox-latex
+  (setq org-latex-pdf-process (list "pdflatex -shell-escape %f"))
+  (add-to-list 'org-latex-classes
+               '("letter"
+                 "\\documentclass{letter}\n[NO-DEFAULT-PACKAGES]\n[NO-PACKAGES]\n[EXTRA]"
+                 ("\\section{%s}" . "\\section*{%s}"))))
 
 (use-package! org-super-agenda
   :after org-agenda
@@ -135,10 +167,10 @@
   (setq org-super-agenda-header-map (make-sparse-keymap)))
 
 (after! org-agenda
-  (setq org-agenda-start-on-weekday t
-        org-agenda-skip-scheduled-if-done t
+  (setq org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
         org-agenda-include-deadlines t
+        org-deadline-warning-days 0
         org-super-agenda-mode t)
   (set-face-attribute 'org-agenda-date nil
                       :foreground (doom-color 'magenta)
@@ -159,7 +191,19 @@
                       :foreground (doom-color 'cyan)
                       :weight 'bold
                       :height 1.3
-                      :family "Tinos Nerd Font"))
+                      :family "Tinos Nerd Font")
+
+  
+  (defun +todoist/agenda-skip-not-mine ()
+    "Skip todoist.org entries not explicitly assigned to me."
+    (when (and (buffer-file-name)
+               (string= (file-name-nondirectory (buffer-file-name)) "todoist.org")
+               (bound-and-true-p org-todoist-my-id)
+               (not (string-empty-p org-todoist-my-id)))
+      (let ((uid (org-entry-get nil "responsible_uid")))
+        (unless (and uid (equal uid org-todoist-my-id))
+          (or (outline-next-heading) (point-max))))))
+  (setq org-agenda-skip-function-global #'+todoist/agenda-skip-not-mine))
 
 (after! (org-roam org-agenda)
   (add-hook! 'org-after-todo-state-change-hook
@@ -233,6 +277,73 @@
                  :unnarrowed t)))
 
 
+;; On macOS `browse-url-xdg-open' is broken (xdg-open is Linux-only).
+;; Reroute it through `open' so org-todoist's "open in app/browser" works.
+(when (eq system-type 'darwin)
+  (advice-add 'browse-url-xdg-open :override
+              (lambda (url &rest _)
+                (call-process "open" nil 0 nil url))))
+
+;; Todoist integration via org-todoist (unified v1 sync API)
+(use-package! org-todoist
+  :commands (org-todoist-sync
+             org-todoist-background-sync
+             org-todoist-dispatch
+             org-todoist-capture-task
+             org-todoist-goto
+             org-todoist-jump-to-project
+             org-todoist-my-tasks
+             org-todoist-diagnose)
+  :init
+  ;; --- Required ---
+  (setq org-todoist-api-token (getenv "TODOIST_TOKEN")
+        org-todoist-file (expand-file-name "todoist.org" org-directory)
+        ;; --- Your Todoist user ID ---
+        ;; Normally auto-detected by (org-todoist-my-id) from the Collaborators
+        ;; heading, but that only runs lazily. Pin it explicitly so agenda
+        ;; filters that read the variable directly work at startup, before
+        ;; any org-todoist command has been invoked.
+        org-todoist-my-id "58306682")
+  :config
+  ;; --- TODO keyword alignment with Doom's default org-todo-keywords ---
+  ;; Doom uses TODO / DONE / KILL, so map the "deleted" keyword to KILL.
+  (setq org-todoist-todo-keyword    "TODO"
+        org-todoist-done-keyword    "DONE"
+        org-todoist-deleted-keyword "KILL")
+
+  ;; --- Priority mapping ---
+  ;; Todoist P1 (highest) → org A, P4 (lowest) → org D.
+  ;; org defaults only go A/B/C, so expand the range to match.
+  (setq org-todoist-p1 ?A
+        org-todoist-p2 ?B
+        org-todoist-p3 ?C
+        org-todoist-p4 ?D
+        org-todoist-priority-default ?D)
+
+  ;; --- Sync / display behaviour ---
+  (setq ;; Fold to show project+section headings after sync (1-4 | no-fold | todo-tree)
+        org-todoist-show-n-levels 2
+        ;; Show assignee overlays in task headings
+        org-todoist-assignees-overlay t
+        ;; Do NOT delete remote items when they're removed from the org file (safer)
+        org-todoist-delete-remote-items nil
+        ;; Strip deleted items from the local buffer rather than keep them as KILL
+        org-todoist-extract-deleted nil
+        ;; Apply Todoist's default reminders to new tasks created from org
+        org-todoist-use-auto-reminder t
+        ;; Use projectile project name when capturing from a project buffer
+        org-todoist-infer-project-for-capture t
+        ;; Format user mentions in comments as prettified org links
+        org-todoist-comment-tag-user-pretty t))
+
+
+(map! :leader
+      (:prefix ("o" . "open")
+       :desc "Todoist dispatch"    "t" #'org-todoist-dispatch
+       :desc "Todoist goto file"   "T" #'org-todoist-goto)
+      (:prefix ("t" . "toggle")
+       :desc "Toggle vterm"        "t" #'+vterm/toggle))
+
 ;; AI assistants
 ;; Aidermacs setup
 (use-package! aidermacs
@@ -245,6 +356,41 @@
   (setq aidermacs-backend 'vterm)
   (add-to-list 'aidermacs-extra-args "--code-theme nord")
   )
+
+;; pi-coding-agent
+(use-package! pi-coding-agent
+  :init
+  (defalias 'pi 'pi-coding-agent)
+  :custom
+  (pi-coding-agent-input-window-height 10)
+  (pi-coding-agent-tool-preview-lines 10)
+  (pi-coding-agent-bash-preview-lines 5)
+  (pi-coding-agent-context-warning-threshold 70)
+  (pi-coding-agent-context-error-threshold 90)
+  (pi-coding-agent-visit-file-other-window t)
+  (pi-coding-agent-hot-tail-turn-count 3))
+
+(after! pi-coding-agent
+  (defvar my/pi-coding-agent-prefix-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "s") #'pi-coding-agent-send)
+      (define-key map (kbd "k") #'pi-coding-agent-abort)
+      (define-key map (kbd "m") #'pi-coding-agent-menu)
+      (define-key map (kbd "r") #'pi-coding-agent-resume-session)
+      (define-key map (kbd "S") #'pi-coding-agent-queue-steering)
+      map))
+
+  ;; Bind prefix in both pi buffers
+  (define-key pi-coding-agent-input-mode-map (kbd "C-p") my/pi-coding-agent-prefix-map)
+  (define-key pi-coding-agent-chat-mode-map  (kbd "C-p") my/pi-coding-agent-prefix-map)
+
+  ;; Optional: disable old chords to avoid conflicts
+  (define-key pi-coding-agent-input-mode-map (kbd "C-c C-k") nil)
+  (define-key pi-coding-agent-input-mode-map (kbd "C-c C-c") nil)
+  (define-key pi-coding-agent-input-mode-map (kbd "C-c C-p") nil)
+  (define-key pi-coding-agent-input-mode-map (kbd "C-c C-r") nil)
+  (define-key pi-coding-agent-input-mode-map (kbd "C-c C-s") nil)
+  (define-key pi-coding-agent-chat-mode-map  (kbd "C-c C-p") nil))
 
 ;; GPTs
 (use-package! gptel
@@ -270,7 +416,13 @@
        :desc "GPTel" "g" #'gptel-menu
        :desc "Start GPTel" "s" #'gptel
        :desc "Aidermac menu"
-       "a" #'aidermacs-transient-menu))
+       "a" #'aidermacs-transient-menu
+       :desc "Claude Code"
+       "c" #'claude-code-ide-menu
+       :desc "pi-coding-agent"
+       "p" #'pi-coding-agent
+       :desc "pi toggle"
+       "t" #'pi-coding-agent-toggle))
 
 (map! :map gptel-mode-map
       :localleader
@@ -285,6 +437,12 @@
 ;;               ("TAB" . 'copilot-accept-completion)
 ;;               ("C-TAB" . 'copilot-accept-completion-by-word)
 ;;               ("C-<tab>" . 'copilot-accept-completion-by-word)))
+
+;; Claude Code IDE
+(use-package! claude-code-ide
+  :bind ("C-c C-'" . claude-code-ide-menu)
+  :config
+  (claude-code-ide-emacs-tools-setup))
 
 ;; Email
 (let ((private-email "~/.config/doom/email.el"))

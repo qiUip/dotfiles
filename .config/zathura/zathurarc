@@ -1,3 +1,5 @@
+set selection-clipboard clipboard
+
 set statusbar-fg "#B0B0B0" #04
 set statusbar-bg "#202020" #01
 
@@ -34,4 +36,3 @@ set recolor-keephue "true"
 # set recolor-darkcolor "#eeeeec"
 # set recolor "true"
 
-set selection-clipboard clipboard

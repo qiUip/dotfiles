@@ -144,7 +144,7 @@
        json                ; At least it ain't XML
        ;;(java +lsp)       ; the poster child for carpal tunnel syndrome
        ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
-       (julia +lsp +tree-sitter)            ; a better, faster MATLAB
+       (julia +lsp +tree-sitter +snail)            ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)
        (latex +latexmk +cdlatex +lsp +fold) ; writing papers in Emacs has never been so fun
        ;;lean              ; for folks with too much to prove
@@ -154,7 +154,7 @@
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +roam2 +gnuplot +jupyter +pandoc +pretty) ; organize your plain life in plain text
+       (org +roam +gnuplot +jupyter +pandoc +pretty) ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
@@ -175,7 +175,7 @@
        ;;terra             ; Earth and Moon in alignment for performance.
        ;;web               ; the tubes
        (yaml +lsp +tree-sitter)              ; JSON, but readable
-       ;;zig               ; C, but simpler
+       (zig +lsp)          ; C, but simpler
 
        :email
        (mu4e +org +mbsync)

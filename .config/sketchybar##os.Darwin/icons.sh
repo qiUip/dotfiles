@@ -33,6 +33,9 @@ YABAI_GRID=􀧍
 YABAI_SPLIT_VERTICAL=􀘜
 YABAI_SPLIT_HORIZONTAL=􀧋
 
+YABAI_MAIN_TWO_COLUMN="▐▐"
+YABAI_MAIN_THREE_COLUMN="▐▐▐"
+
 
 # Battery Icons
 BATTERY_100=􀛨
@@ -78,8 +81,10 @@ export ICON_MAIL=󰇮 # mail, outlook
 export ICON_CALC=󰪚 # calculator, numi
 export ICON_MAP=󰆋 # maps, find my
 export ICON_MICROPHONE=󰍬 # voice memos
-export ICON_CHAT=󰭻 # messages, slack, teams, discord, telegram
-export ICON_DISCORD= # messages, slack, teams, discord, telegram
+export ICON_CHAT=󰭻 # messages, teams
+export ICON_TEAMS=󰊻 # messages
+export ICON_SLACK= # slack
+export ICON_DISCORD= # discord
 export ICON_VIDEOCHAT=󰍫 # facetime, zoom, webex
 export ICON_NOTE=󱞎 # notes, textedit, stickies, word, bat
 export ICON_CAMERA=󰄀 # photo booth
@@ -100,7 +105,9 @@ export ICON_DOWNLOAD=􁾮 # Jdownloader2
 export ICON_ICON=􀼱 # SF Symbols
 export ICON_STEAM=󰓓 # Steam
 export ICON_HANDBRAKE=󱁆
-
+export ICON_EMACS= # emacs
+export ICON_SPOTIFY= # spotify
+export ICON_NVIM= # nvim
 
 export ICON_CLOCK=󰥔 # clock, timewarrior, tty-clock
 export ICON_CALENDAR=󰃭 # calendar

@@ -5,7 +5,6 @@ set -x
 # ====== Variables =============================
 
 declare -A gaps
-# declare -A color
 
 gaps["top"]="8"
 gaps["bottom"]="8"
@@ -21,7 +20,12 @@ sudo yabai --load-sa
 
 # ===== Tiling setting =========================
 
-yabai -m config layout                      bsp
+yabai -m config layout                      main-stack
+yabai -m config main_variant                main-center
+yabai -m config main_nmaster                1
+yabai -m config main_ratio                  0.41667  # 5/12
+
+yabai -m config window_insertion_point first
 
 yabai -m config top_padding                 "${gaps["top"]}"
 yabai -m config bottom_padding              "${gaps["bottom"]}"
@@ -57,9 +61,6 @@ yabai -m space 9 --label watch
 
 yabai -m config external_bar                all:28:0
 
-yabai -m window --toggle float
-yabai -m window --toggle sticky
-yabai -m window --toggle level above
 # ===== Rules ==================================
 
 # MacOS Apps - yabai doesn't seem to be able to identify these anymore?
@@ -76,6 +77,7 @@ yabai -m rule --add app="^Floorp$" title="^Library" manage=off
 yabai -m signal --add event=window_created app="^Floorp$" title="^Library" action="yabai -m window --grid 11:11:3:2:5:7"
 yabai -m rule --add app="^Emacs$" title="^doom-capture" manage=off
 yabai -m signal --add event=window_created app="^Emacs" title="^doom-capture" action="yabai -m window --grid 11:11:3:2:5:7"
+yabai -m rule --add label="Emacs Eveywhere" app="^Emacs$" title="^Emacs Everywhere ::" manage=off 
 # Scratchpads
 yabai -m rule --add title="scrterm" scratchpad=scrterm grid=11:11:2:2:7:7
 yabai -m rule --add title="music" scratchpad=music grid=11:11:2:2:7:7
@@ -84,7 +86,6 @@ yabai -m rule --add title="mutt" scratchpad=mutt grid=11:11:2:2:7:7
 
 # ===== Multi-displays hook ====================
 # yabai -m signal --add event=display_changed action="$HOME/.config/yabai/scripts/display_update.sh"
-
 
 set +x
 printf "yabai: configuration loaded...\\n"

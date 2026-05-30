@@ -6,10 +6,14 @@ set_icon() {
 
   COLOR=$LABEL_COLOR
 
+  SPACE=$(yabai -m query --spaces --space)
+  LAYOUT=$(echo "$SPACE" | jq -r '.type')
+  MAIN_VARIANT=$(echo "$SPACE" | jq -r '.["main-variant"]')
+
   WINDOW=$(yabai -m query --windows --window)
   read -r FLOATING SPLIT PARENT FULLSCREEN STICKY STACK_INDEX <<<$(echo "$WINDOW" | jq -rc '.["is-floating", "split-type", "has-parent-zoom", "has-fullscreen-zoom", "is-sticky", "stack-index"]')
 
-  if [[ $STACK_INDEX -gt 0 ]]; then
+  if [[ $LAYOUT == "bsp" ]] && [[ $STACK_INDEX -gt 0 ]]; then
     LAST_STACK_INDEX=$(yabai -m query --windows --window stack.last | jq '.["stack-index"]')
     ICON=$YABAI_STACK
     LABEL="$(printf "%s/%s  " "$STACK_INDEX" "$LAST_STACK_INDEX")"
@@ -20,6 +24,12 @@ set_icon() {
     ICON="􁈔"
   elif [[ $FULLSCREEN == "true" ]]; then
     ICON=$YABAI_FULLSCREEN_ZOOM
+  elif [[ $LAYOUT == "main-stack" ]]; then
+    if [[ $MAIN_VARIANT == "main-center" ]]; then
+      ICON=$YABAI_MAIN_THREE_COLUMN
+    else
+      ICON=$YABAI_MAIN_TWO_COLUMN
+    fi
   elif [[ $SPLIT == "vertical" ]]; then
     ICON=$YABAI_SPLIT_VERTICAL
   elif [[ $SPLIT == "horizontal" ]]; then
@@ -45,9 +55,9 @@ mouse_clicked() {
 
   case "$yabai_mode" in
   bsp)
-    yabai -m config layout stack
+    yabai -m config layout main-stack
     ;;
-  stack)
+  main-stack)
     yabai -m config layout float
     ;;
   float)

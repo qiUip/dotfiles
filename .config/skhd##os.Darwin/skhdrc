@@ -18,24 +18,51 @@ cmd - b : /Applications/Floorp.app/Contents/MacOS/floorp
 cmd + lctrl - s : /Applications/Slack.app/Contents/MacOS/Slack
 cmd + lctrl - d : /Applications/Discord.app/Contents/MacOS/Discord
 
-# Choose
-cmd - g : "${HOME}"/.config/yabai/scripts/choose_focus.sh
-cmd + shift - g : "${HOME}"/.config/yabai/scripts/choose_bring.sh
-cmd - space : "${HOME}"/.config/yabai/scripts/choose_launcher.sh
-lalt - p : "${HOME}"/.config/yabai/scripts/choose_pass.sh
-lalt - s : "${HOME}"/.config/yabai/scripts/choose_ssh.sh
+# Dmenu (same as Linux)
+f13 d : "${HOME}"/.config/yabai/scripts/dmenu_launcher.sh
+f13 w g : "${HOME}"/.config/yabai/scripts/dmenu_focus.sh
+f13 w b : "${HOME}"/.config/yabai/scripts/dmenu_bring.sh
+f13 p p : "${HOME}"/.config/yabai/scripts/dmenu_pass.sh
+f13 p s : "${HOME}"/.config/yabai/scripts/dmenu_ssh.sh
+# Dmenu (MBP keyboad fallbacks)
+cmd - d : "${HOME}"/.config/yabai/scripts/dmenu_launcher.sh
+cmd - g : "${HOME}"/.config/yabai/scripts/dmenu_focus.sh
+cmd + shift - g : "${HOME}"/.config/yabai/scripts/dmenu_bring.sh
+lalt - p : "${HOME}"/.config/yabai/scripts/dmenu_pass.sh
+lalt - s : "${HOME}"/.config/yabai/scripts/dmenu_ssh.sh
 
-# Scratchpads
-# lctrl + cmd - p : scratch
-# scratch < t : yabai -m window --toggle "scrterm" || kitty --single-instance --instance-group scratch -T scrterm ${HOME}; default
-# scratch < m : yabai -m window --toggle "music"   || kitty --single-instance --instance-group scratch -T music -e sh -c '${HOME}/.cargo/bin/spotify_player'; default
-
+# Scratchpads (same as Linux)
+cmd - s t : yabai -m window --toggle "scrterm"  || kitty --single-instance --instance-group scratch -T scrterm ${HOME}
+cmd - s m : yabai -m window --toggle "music" || kitty --single-instance --instance-group scratch -T music -e sh -c '${HOME}/.cargo/bin/spotify_player'
+cmd - s y : yabai -m window --toggle "yazi"  || kitty --single-instance --instance-group scratch -T yazi -e sh -c '/opt/homebrew/bin/yazi ~'
+cmd - s e : yabai -m window --toggle "mutt"  || kitty --single-instance --instance-group scratch -T mutt -e sh -c '/opt/homebrew/bin/neomutt'
+# Scratchpads (defualt SKHD fallbacks)
 lctrl + cmd - return : yabai -m window --toggle "scrterm"  || kitty --single-instance --instance-group scratch -T scrterm ${HOME}
 lctrl + cmd - m : yabai -m window --toggle "music" || kitty --single-instance --instance-group scratch -T music -e sh -c '${HOME}/.cargo/bin/spotify_player'
 lctrl + cmd - y : yabai -m window --toggle "yazi"  || kitty --single-instance --instance-group scratch -T yazi -e sh -c '/opt/homebrew/bin/yazi ~'
 lctrl + cmd - e : yabai -m window --toggle "mutt"  || kitty --single-instance --instance-group scratch -T mutt -e sh -c '/opt/homebrew/bin/neomutt'
 
+# Dynamic Scratchpads (capture any window)
+cmd - s shift - 1 : yabai -m window --scratchpad scr1
+cmd - s shift - 2 : yabai -m window --scratchpad scr2
+cmd - s shift - 3 : yabai -m window --scratchpad scr3
+cmd - s shift - 4 : yabai -m window --scratchpad scr4
+cmd - s shift - 5 : yabai -m window --scratchpad scr5
+
+# Toggle dynamic scratchpad visibility
+cmd - s 1 : yabai -m window --toggle scr1
+cmd - s 2 : yabai -m window --toggle scr2
+cmd - s 3 : yabai -m window --toggle scr3
+cmd - s 4 : yabai -m window --toggle scr4
+cmd - s 5 : yabai -m window --toggle scr5
+
 # Show system statistics
+f13 1 : "${HOME}"/.config/yabai/scripts/show_cpu.sh
+f13 2 : "${HOME}"/.config/yabai/scripts/show_mem.sh
+f13 3 : "${HOME}"/.config/yabai/scripts/show_bat.sh
+f13 4 : "${HOME}"/.config/yabai/scripts/show_disk.sh
+f13 5 : "${HOME}"/.config/yabai/scripts/show_song.sh
+# Show system statistics (default SKHD fallback)
 ralt + lalt - q : "${HOME}"/.config/yabai/scripts/show_cpu.sh
 ralt + lalt - w : "${HOME}"/.config/yabai/scripts/show_mem.sh
 ralt + lalt - e : "${HOME}"/.config/yabai/scripts/show_bat.sh
@@ -43,30 +70,29 @@ ralt + lalt - r : "${HOME}"/.config/yabai/scripts/show_disk.sh
 ralt + lalt - t : "${HOME}"/.config/yabai/scripts/show_song.sh
 
 # Window navigation
+cmd - j : yabai -m window --focus next
+cmd - k : yabai -m window --focus prev
+# Window navigation main-stack
+cmd - m : yabai -m window --focus first
+# Window navigation bsp
 cmd - left  : yabai -m window --focus west
 cmd - down  : yabai -m window --focus south
 cmd - up    : yabai -m window --focus north
 cmd - right : yabai -m window --focus east
-# cmd - h : yabai -m window --focus west
-# cmd - j : yabai -m window --focus south
-# cmd - k : yabai -m window --focus north
-# cmd - l : yabai -m window --focus east
-cmd - j : yabai -m window --focus next
-cmd - k : yabai -m window --focus prev
+# Window navigation stack
 cmd - p : yabai -m window --focus stack.prev
 cmd - n : yabai -m window --focus stack.next
 
 # Windows manegment
+shift + cmd - j : yabai -m window --warp next
+shift + cmd - k : yabai -m window --warp prev
+# Main window manegment (masin-stack)
+shift + cmd - m : yabai -m window --swap first && yabai -m window --focus first
+# Windows manegment (bsp)
 shift + cmd - left  : yabai -m window --warp west
 shift + cmd - down  : yabai -m window --warp south
 shift + cmd - up    : yabai -m window --warp north
 shift + cmd - right : yabai -m window --warp east
-# shift + cmd - h : yabai -m window --warp west
-# shift + cmd - j : yabai -m window --warp south
-# shift + cmd - k : yabai -m window --warp north
-# shift + cmd - l : yabai -m window --warp east
-shift + cmd - j : yabai -m window --warp next
-shift + cmd - k : yabai -m window --warp prev
 
 # Space navigation
 cmd - 1 : yabai -m space --focus main
@@ -131,13 +157,14 @@ shift + cmd - r : yabai -m space --rotate 90
 shift + alt - x : yabai -m space --mirror x-axis
 shift + alt - y : yabai -m space --mirror y-axis
 
-# Set insertion point for focused container
+# Set insertion point for focused container (bsp)
 meh - h : yabai -m window --insert west
 meh - j : yabai -m window --insert south
 meh - k : yabai -m window --insert north
 meh - l : yabai -m window --insert east
 
 # Float / Unfloat window
+
 shift + alt - space : \
     yabai -m window --toggle float; \
     yabai -m window --toggle topmost;
@@ -146,13 +173,20 @@ shift + alt - space : \
 lctrl + alt - b : yabai -m space --layout bsp
 lctrl + alt - f : yabai -m space --layout float
 lctrl + alt - s : yabai -m space --layout stack
+lctrl + alt - m : yabai -m space --layout main-stack
 
-# Focus on first window (useful when nothing is focused)
-cmd - 0x35 : yabai -m window --focus first
+# Cycle layouts
+cmd - tab : "${HOME}"/.config/yabai/scripts/cycle_layout.sh
+
+# Main count control (main-stack)
+alt - 0x43 : yabai -m window --promote
+alt - 0x4b : yabai -m window --demote
+
+alt - m : ~/.config/yabai/scripts/toggle_insertion_point.sh
 
 # Restart Yabai
 meh -r : yabai --restart-service
 
 # Make window native fullscreen
-alt - f         : yabai -m window --toggle zoom-fullscreen
+# alt - f         : yabai -m window --toggle zoom-fullscreen
 shift + alt - f : yabai -m window --toggle native-fullscreen

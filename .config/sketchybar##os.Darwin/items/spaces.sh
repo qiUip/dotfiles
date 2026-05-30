@@ -13,7 +13,7 @@ spaces=(
 # Register custom event - this will be used by sketchybar's space items
 sketchybar --add event yabai_window_created   \
            --add event yabai_window_destroyed \
-           --add event yabai_window_focused   \ki
+           --add event yabai_window_focused   \
            --add event yabai_application_terminated
 
 # Get all spaces

@@ -32,3 +32,4 @@ alias vim="nvim"
 alias matlab="/Applications/MATLAB_R2024b.app/bin/matlab -nojvm -nodesktop"
 alias mount_DS="$HOME/.scripts/mount_synology.sh -m"
 alias umount_DS="$HOME/.scripts/mount_synology.sh -u"
+

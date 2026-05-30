@@ -31,7 +31,7 @@ render_item() {
     ;;
   *)
     ICON="􀛪"
-    COLOR=$(getcolor orange)
+    COLOR=$(getcolor red)
     DRAWING="on"
     ;;
   esac

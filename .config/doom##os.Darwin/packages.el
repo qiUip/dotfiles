@@ -81,9 +81,24 @@
 ;; GPT
 (package! gptel :recipe (:nonrecursive t))
 
+;; pi coding agent
+(package! pi-coding-agent
+  :recipe (:host github :repo "dnouri/pi-coding-agent"))
+
 ;; mu4e coloured column
 (package! aidermacs
   :recipe (:host github :repo "MatthewZMD/aidermacs"))
 
 (package! mu4e-column-faces
   :recipe (:host github :repo "Alexander-Miller/mu4e-column-faces"))
+
+;; Claude Code IDE integration
+(package! claude-code-ide
+  :recipe (:host github :repo "manzaltu/claude-code-ide.el"
+           :files ("*.el")))
+
+;; Todoist integration (uses the unified v1 API)
+(package! org-todoist
+  :recipe (:host github :repo "Lillenne/org-todoist"
+           :branch "main"
+           :files ("org-todoist.el")))

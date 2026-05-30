@@ -15,7 +15,7 @@ case "$1" in
 	fi
 	if grep -qi "nvim" <<< $2;
   then
-	 RESULT=$ICON_DEV
+	 RESULT=$ICON_NVIM
 	fi
 	if grep -qi "yazi" <<< $2;
   then
@@ -31,7 +31,7 @@ case "$1" in
 	fi
 	if grep -qi "spotify_player" <<< $2;
   then
-	 RESULT=$ICON_MUSIC
+	 RESULT=$ICON_SPOTIFY
 	fi
 	;;
 "Finder")
@@ -58,8 +58,14 @@ case "$1" in
 "Voice Memos")
 	RESULT=$ICON_MICROPHONE
 	;;
-"Messages" | "Slack" | "Microsoft Teams" | "Telegram" | "WhatsApp")
+"Messages" | "Telegram" | "WhatsApp")
 	RESULT=$ICON_CHAT
+	;;
+"Slack")
+	RESULT=$ICON_SLACK
+	;;
+"Microsoft Teams")
+	RESULT=$ICON_TEAMS
 	;;
 "Discord")
 	RESULT=$ICON_DISCORD
@@ -89,7 +95,7 @@ case "$1" in
 	RESULT=$ICON_HOMEAUTOMATION
 	;;
 "Music" | "Spotify")
-	RESULT=$ICON_MUSIC
+	RESULT=$ICON_SPOTIFY
 	;;
 "Podcasts")
 	RESULT=$ICON_PODCAST
@@ -100,7 +106,10 @@ case "$1" in
 "Books")
 	RESULT=$ICON_BOOK
 	;;
-"Xcode" | "Code" | "Neovide" | "Emacs")
+ "Emacs")
+	RESULT=$ICON_EMACS
+	;;
+"Xcode" | "Code" | "Neovide")
 	RESULT=$ICON_DEV
 	;;
 "VSCodium")

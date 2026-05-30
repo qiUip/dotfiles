@@ -52,7 +52,7 @@ sketchybar                                      \
   --add item clock.next_event popup.clock          \
   --set clock.next_event "${menu_item_defaults[@]}" icon.drawing=off label.padding_left=0 label.max_chars=22 \
 
-IFS=$'\n' read -d '' -r -a lines <<< "$(gcal --starting-day=1 | tail -n +3 | sed 's/< \([0-9]*\)>/ [\1]/g')"
+# IFS=$'\n' read -d '' -r -a lines <<< "$(gcal --starting-day=1 | tail -n +3 | sed 's/< \([0-9]*\)>/ [\1]/g')"
 
 for ((index=0; index<${#lines[@]}-1; index++))
 do

@@ -1,15 +1,32 @@
 #!/bin/bash
 #
 # list of choices
-# choices="VPN connect\nVPN disconnect\nMopidy\nPicom"
-choices="Mopidy\nPicom"
+choices="Condenser connect\nCondenser disconnect\nMopidy\nPicom"
 DMENU="/usr/local/bin/dmenu -i -n -l 15"
 # launch dmenu
 chosen=$(echo -e "$choices" | $DMENU)
 # run the script
 case "$chosen" in
-    # "Dive connect") [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ] && $HOME/.scripts/some_vpn.sh -c ;;
-    # "Dive disconnect") [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ] && $HOME/.scripts/some_vpn.sh -d ;;
+    "Condenser connect")
+        if [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ]; then
+            output=$($HOME/.scripts/condenser-tunnel.sh start 2>&1)
+            if [ $? -eq 0 ]; then
+                notify-send "Condenser" "$output" -u low -t 5000
+            else
+                notify-send "Condenser" "Connection failed" -u critical -t 5000
+            fi
+        fi
+        ;;
+    "Condenser disconnect")
+        if [ $(echo -e "Yes\nNo" | $DMENU -p "Confirm?") == "Yes" ]; then
+            output=$($HOME/.scripts/condenser-tunnel.sh stop 2>&1)
+            if [ $? -eq 0 ]; then
+                notify-send "Condenser" "$output" -u low -t 5000
+            else
+                notify-send "Condenser" "Disconnection failed" -u critical -t 5000
+            fi
+        fi
+        ;;
     "Mopidy") $HOME/.scripts/mopidy.sh ;;
     "Picom") $HOME/.scripts/picom.sh ;;
 esac

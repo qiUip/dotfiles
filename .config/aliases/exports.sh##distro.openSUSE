@@ -14,7 +14,13 @@ export PYTHONPATH=/opt/ParaView-5.9.0-RC4-osmesa-MPI-Linux-Python3.8-64bit/lib/p
 # Nvidia-hpc-sdk
 export NVARCH=`uname -s`_`uname -m`
 export NVCOMPILERS=/opt/nvidia/hpc_sdk
-export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/23.5/compilers/man
-export PATH=$PATH:$NVCOMPILERS/$NVARCH/23.5/compilers/bin
-export PATH=$PATH:$NVCOMPILERS/$NVARCH/23.5/comm_libs/mpi/bin
-export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/23.5/comm_libs/mpi/man
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/25.7/compilers/man
+export PATH=$PATH:$NVCOMPILERS/$NVARCH/25.7/compilers/bin
+export PATH=$PATH:$NVCOMPILERS/$NVARCH/25.7/comm_libs/mpi/bin
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/25.7/comm_libs/mpi/man
+export LD_LIBRARY_PATH=$NVCOMPILERS/$NVARCH/25.7/cuda/lib64:$LD_LIBRARY_PATH
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+# bun completions
+[ -s "/home/mashy/.bun/_bun" ] && source "/home/mashy/.bun/_bun"

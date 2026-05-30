@@ -355,14 +355,14 @@ myKeys =
      , ("M-t", spawn "kitty")
 
        -- Run applications from a prompt
-     , ("<XF86Search> r t", prompt ("alacritty" ++ " -e") myXPConfig) -- Run a terminal application
-     , ("<XF86Search> r g", runOrRaisePrompt              myXPConfig) -- Run or go to a gui application
+     , ("<XF86Tools> r t", prompt ("alacritty" ++ " -e") myXPConfig) -- Run a terminal application
+     , ("<XF86Tools> r g", runOrRaisePrompt              myXPConfig) -- Run or go to a gui application
 
        -- Dmenu
      , ("M-d", spawn "$HOME/.scripts/dmenu_recency.sh")              -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86Search> d", spawn "$HOME/.scripts/dmenu_recency.sh") -- Demenu recency (adapted from Manjaro i3)
-     , ("<XF86Search> c", spawn "$HOME/.scripts/dmenu_scripts.sh") -- Dmenu launch scripts
-     , ("<XF86Search> q", spawn "$HOME/.scripts/dmenu_power.sh")   -- Dmenu power menu
+     , ("<XF86Tools> d", spawn "$HOME/.scripts/dmenu_recency.sh") -- Demenu recency (adapted from Manjaro i3)
+     , ("<XF86Tools> c", spawn "$HOME/.scripts/dmenu_scripts.sh") -- Dmenu launch scripts
+     , ("<XF86Tools> q", spawn "$HOME/.scripts/dmenu_power.sh")   -- Dmenu power menu
      , ("M-S-d c", spawn "$HOME/.scripts/dmenu_scripts.sh")          -- Dmenu launch scripts
      , ("M-S-d q", spawn "$HOME/.scripts/dmenu_power.sh")            -- Dmenu power menu
 
@@ -389,8 +389,8 @@ myKeys =
      , ("M-C-c", killAllOtherCopies)      -- Delete all copies of window
      , ("M-<End>", WS.nextWS)             -- Move to the next workspace
      , ("M-<Home>", WS.prevWS)            -- Move to the previous workspace
-     , ("<XF86Search> w b", windowPrompt myXPConfig Bring allWindows) -- bring windows to this workspace
-     , ("<XF86Search> w g", windowPrompt myXPConfig Goto allWindows)  -- go to a window in its current workspace
+     , ("<XF86Tools> w b", windowPrompt myXPConfig Bring allWindows) -- bring windows to this workspace
+     , ("<XF86Tools> w g", windowPrompt myXPConfig Goto allWindows)  -- go to a window in its current workspace
 
        -- Layouts
      , ("M-<Tab>", sendMessage NextLayout)               -- Switch to next layout
@@ -409,14 +409,14 @@ myKeys =
      , ("M-S-l", sendMessage MirrorExpand)               -- Expand vertcal window width (only works with resizable layouts)
 
        -- Applications (teminal apps use a manual title with -t for better use with window grab and goto)
-     , ("M-e", spawn "emacsclient -c -a ''")                    -- Editor (emacs)
-     , ("M-r", spawn "alacritty -t ranger -e ranger")         -- File manager
-     , ("M-b", spawn "firefox")                               -- Browser
+     , ("M-e", spawn "emacsclient -c -a ''")                  -- Editor (emacs)
+     , ("M-y", spawn "alacritty -t yazi -e yazi")             -- File manager
+     , ("M-b", spawn "floorp")                                -- Browser
      , ("M-C-b", spawn "brave")                               -- Browser
      , ("M-C-a", spawn "pavucontrol")                         -- Audio control
      , ("M-C-e", spawn "alacritty -t neomutt -e neomutt")     -- Email
      , ("M-C-v", spawn "TERM=rxvt-256color alacritty -e vis") -- Audio visualiser
-     , ("M-C-m", spawn "alacritty -e ncmpcpp")                -- Music player
+     , ("M-C-m", spawn "kitty --title spotify -e spotify_player")                -- Music player
      , ("M-C-d", spawnAndDo (doShift (myWorkspaces !! 5)) "discord --no-sandbox") -- Because sometimes you wanna talk about keyboards and emacs
      , ("M-C-t", spawnAndDo (doShift (myWorkspaces !! 5)) "teams")   -- MS teams (thanks work!!!)
      , ("M-C-s", spawnAndDo (doShift (myWorkspaces !! 5)) "slack --no-sandbox") -- Slack (nice work)
@@ -460,12 +460,12 @@ myKeys =
      ]
 
   -- Appending search engine lists to keybindings list -- the search engines and their keys are in the prompts section
-  ++ [("<XF86Search> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ] -- Search from a prompt
+  ++ [("<XF86Tools> s " ++ k, S.promptSearch myXPConfig' f) | (k,f) <- searchList ] -- Search from a prompt
   ++ [("M-S-s "            ++ k, S.selectSearch f) | (k,f) <- searchList ]             -- Search from the browser
 
   -- Appending prompt list to keybindings list -- the prompts and their keys for are in the prompts section
-  ++ [("<XF86Search> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
-  ++ [("<XF86Search> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
+  ++ [("<XF86Tools> p " ++ k, f myXPConfig') | (k,f) <- promptList ]
+  ++ [("<XF86Tools> p " ++ k, f myXPConfig' g) | (k,f,g) <- promptList' ]
 
 
 ------------------------------------

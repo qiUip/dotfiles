@@ -6,6 +6,36 @@ source "$CONFIG_DIR/globalstyles.sh"
 SID=$1
 DEBUG=0
 
+# Set this to the UUID of the built-in/notched display to suppress app-title
+# text there while preserving the current full icon/title layout elsewhere.
+# Find it with: yabai -m query --displays | jq -r '.[] | "\(.index) \(.uuid) \(.frame.w)x\(.frame.h)"'
+BUILTIN_DISPLAY_UUID="${BUILTIN_DISPLAY_UUID:-37D8832A-2D66-02CA-B9F7-8F30A301B230}"
+
+space_display_uuid() {
+  local space_display
+  space_display=$(yabai -m query --spaces | jq -r --argjson sid "$SID" '.[] | select(.index == $sid) | .display // empty')
+  [[ -z "$space_display" ]] && return 1
+
+  yabai -m query --displays | jq -r --argjson display "$space_display" '.[] | select(.index == $display) | .uuid // empty'
+}
+
+show_focused_app_title() {
+  local display_uuid
+
+  # If no built-in display UUID is configured, preserve current behavior.
+  [[ -z "$BUILTIN_DISPLAY_UUID" ]] && return 0
+
+  display_uuid=$(space_display_uuid)
+  [[ "$display_uuid" != "$BUILTIN_DISPLAY_UUID" ]]
+}
+
+append_focused_app_title() {
+  local app="$1"
+  local current_app="$2"
+
+  [[ "$app" == "$current_app" ]] && show_focused_app_title
+}
+
 create_icons() {
   QUERY=$(yabai -m query --windows --space "$SID" | jq '[.[] | select(.scratchpad == "")]')
   IFS=$'\n'
@@ -23,8 +53,8 @@ create_icons() {
     local TITLE=$(echo "$QUERY" | jq -r 'map(select((.title | length) > 0 and .app == "'"$APP"'")) | .[0].title')
     ICON=$("$HOME/.config/sketchybar/plugins/app_icon.sh" "$APP" "$TITLE")
 
-    # Append app name only if it's the currently focused one
-    [[ "$APP" == "$CURRENT_APP" ]] && ICON+=" $APP"
+    # Append app name only for the focused app, except on the built-in/notched display.
+    append_focused_app_title "$APP" "$CURRENT_APP" && ICON+=" $APP"
 
     LABEL+="$ICON"
     [[ ${#APPS[@]} -gt 1 ]] && LABEL+=" "
@@ -39,6 +69,7 @@ update_icons() {
     BACKGROUND_COLOR=$HIGHLIGHT_25
     PADDING=$PADDINGS
   else
+    BACKGROUND_COLOR=$TRANSPARENT
     PADDING=0
   fi
 
@@ -67,7 +98,7 @@ update_icons() {
     for APP in "${APPS[@]}"; do
       local TITLE=$(echo "$QUERY" | jq -r 'map(select((.title | length) > 0 and .app == "'"$APP"'")) | .[0].title')
       ICON=$("$HOME/.config/sketchybar/plugins/app_icon.sh" "$APP" "$TITLE")
-      [[ "$APP" == "$CURRENT_APP" ]] && ICON+=" $APP"
+      append_focused_app_title "$APP" "$CURRENT_APP" && ICON+=" $APP"
       LABEL+="$ICON"
       [[ ${#APPS[@]} -gt 1 ]] && LABEL+=" "
     done

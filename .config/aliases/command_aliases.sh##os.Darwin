@@ -32,4 +32,8 @@ alias vim="nvim"
 alias matlab="/Applications/MATLAB_R2024b.app/bin/matlab -nojvm -nodesktop"
 alias mount_DS="$HOME/.scripts/mount_synology.sh -m"
 alias umount_DS="$HOME/.scripts/mount_synology.sh -u"
-
+# engram syncing
+alias engram-sync-pull="$HOME/.scripts/engram-sync pull"
+alias engram-sync-push="$HOME/.scripts/engram-sync push"
+alias engram-sync-full="$HOME/.scripts/engram-sync full"
+alias engram-sync-status="$HOME/.scripts/engram-sync status"

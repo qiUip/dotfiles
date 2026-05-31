@@ -17,7 +17,7 @@ ZSH_DISABLE_COMPFIX=true
 
 # Load oh-my-zsh:
 source $ZSH/oh-my-zsh.sh
-_comp_options+=(globaldots)
+_comp_options+=(globdots)
 
 # Aliases:
 source $HOME/.config/aliases/command_aliases.sh

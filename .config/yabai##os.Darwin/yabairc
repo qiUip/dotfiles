@@ -72,6 +72,12 @@ yabai -m rule --add label="Dictionary" app="^Dictionary$" manage=off
 yabai -m rule --add label="Software Update" title="Software Update" manage=off
 yabai -m rule --add label="About This Mac" app="System Information" title="About This Mac" manage=off
 yabai -m rule --add label="System Preferences" app="^System Preferences$" title=".*" manage=off
+# App placement
+yabai -m rule --add app="^Slack$" space=chat
+yabai -m rule --add app="^Microsoft Teams$" space=chat
+yabai -m rule --add app="^zoom.us$" space=chat
+yabai -m rule --add app="^Google Chrome$" space=watch
+
 # Other apps / windows
 yabai -m rule --add app="^Floorp$" title="^Library" manage=off
 yabai -m signal --add event=window_created app="^Floorp$" title="^Library" action="yabai -m window --grid 11:11:3:2:5:7"

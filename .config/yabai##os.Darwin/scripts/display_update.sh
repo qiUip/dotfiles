@@ -1,187 +1,297 @@
 #!/opt/homebrew/bin/bash
 
-# Space labels (must match yabairc configuration)
+set -u
+
+# Simple, conservative yabai space repair.
+#
+# Goals:
+# - Keep exactly these labels available for skhd bindings.
+# - Avoid fragile cross-display space moves.
+# - Avoid global space reordering.
+# - Reuse/relabel spaces that already exist on each display.
+# - Move windows back to their original labeled workspace after relabeling.
+#
+# Layout:
+#   1 display: all labels on display 1
+#   2 displays: non-dev labels on display 1, dev labels on display 2
+#   3 displays: non-dev labels on display 1, dev1/dev2 on display 2, dev3 on display 3
+
 SPACE_LABELS=(main dev1 dev2 dev3 chat files write edit watch)
+RUN_ID="$$"
+SETTLE_SHORT=0.2
+SETTLE_LONG=0.8
 
-# Get displays (sorted by index for consistent left-to-right order)
-DISPLAYS=($(yabai -m query --displays | jq -r 'sort_by(.index) | .[].index'))
-NUM_DISPLAYS=${#DISPLAYS[@]}
-MAIN_DISPLAY=${DISPLAYS[0]}
-DISP2=${DISPLAYS[1]:-}
-DISP3=${DISPLAYS[2]:-}
+log() {
+  printf '%s\n' "$*"
+}
 
-echo "Detected $NUM_DISPLAYS display(s)"
-echo "Displays: Main=$MAIN_DISPLAY, 2nd=$DISP2, 3rd=$DISP3"
+notify() {
+  osascript -e "display notification \"$1\" with title \"Yabai Display Update\"" >/dev/null 2>&1 || true
+}
 
-# Verify all labeled spaces exist
-echo "Verifying labeled spaces..."
-echo "Expected labels: ${SPACE_LABELS[*]}"
-echo ""
+spaces_json() {
+  yabai -m query --spaces
+}
 
-MISSING_LABELS=()
-for label in "${SPACE_LABELS[@]}"; do
-  if ! yabai -m query --spaces | jq -e ".[] | select(.label == \"$label\")" >/dev/null 2>&1; then
-    echo "ERROR: Space with label '$label' not found!"
-    MISSING_LABELS+=("$label")
-  else
-    echo "  ✓ Found space '$label'"
-  fi
-done
+displays_json() {
+  yabai -m query --displays
+}
 
-if (( ${#MISSING_LABELS[@]} > 0 )); then
-  echo ""
-  echo "FATAL: Missing ${#MISSING_LABELS[@]} labeled space(s): ${MISSING_LABELS[*]}"
-  echo "Aborting to prevent data loss."
-  exit 1
-fi
-
-echo ""
-echo "All 9 labeled spaces verified ✓"
-
-if (( NUM_DISPLAYS == 2 )); then
-  echo "Configuring for 2 displays..."
-  echo "Layout: Main(main,dev1,dev2,dev3) | Second(chat,files,write,edit,watch)"
-
-  # Move spaces to main display
-  for label in main dev1 dev2 dev3; do
-    echo "Moving space '$label' to display $MAIN_DISPLAY"
-    yabai -m space "$label" --display "$MAIN_DISPLAY" 2>/dev/null || echo "Warning: Failed to move space '$label'"
-  done
-
-  # Move spaces to second display
-  for label in chat files write edit watch; do
-    echo "Moving space '$label' to display $DISP2"
-    yabai -m space "$label" --display "$DISP2" 2>/dev/null || echo "Warning: Failed to move space '$label'"
-  done
-
-elif (( NUM_DISPLAYS == 3 )); then
-  echo "Configuring for 3 displays..."
-  echo "Layout: Main(main,dev3) | Second(dev1,dev2) | Third(chat,files,write,edit,watch)"
-
-  # Spaces to main display
-  for label in main dev3; do
-    echo "Moving space '$label' to display $MAIN_DISPLAY"
-    yabai -m space "$label" --display "$MAIN_DISPLAY" 2>/dev/null || echo "Warning: Failed to move space '$label'"
-  done
-
-  # Spaces to second display
-  for label in dev1 dev2; do
-    echo "Moving space '$label' to display $DISP2"
-    yabai -m space "$label" --display "$DISP2" 2>/dev/null || echo "Warning: Failed to move space '$label'"
-  done
-
-  # Spaces to third display
-  for label in chat files write edit watch; do
-    echo "Moving space '$label' to display $DISP3"
-    yabai -m space "$label" --display "$DISP3" 2>/dev/null || echo "Warning: Failed to move space '$label'"
-  done
-
-elif (( NUM_DISPLAYS == 1 )); then
-  echo "Configuring for 1 display (reordering spaces)..."
-  echo "Layout: All spaces (main,dev1,dev2,dev3,chat,files,write,edit,watch) on main display"
-
-  # Ensure all spaces are on the main display
+is_expected_label() {
+  local wanted="$1" label
   for label in "${SPACE_LABELS[@]}"; do
-    echo "Ensuring space '$label' is on display $MAIN_DISPLAY"
-    yabai -m space "$label" --display "$MAIN_DISPLAY" 2>/dev/null || echo "Warning: Failed to move space '$label'"
+    [[ "$wanted" == "$label" ]] && return 0
+  done
+  return 1
+}
+
+space_count_for_label() {
+  local label="$1"
+  spaces_json | jq -r --arg label "$label" '[.[] | select(.label == $label)] | length'
+}
+
+windows_for_label() {
+  local label="$1"
+  spaces_json | jq -r --arg label "$label" '
+    [.[] | select(.label == $label) | (.windows // [])[]] | .[]?
+  '
+}
+
+labels_for_display_position() {
+  local position="$1"
+  local count="$2"
+
+  if (( count == 1 )); then
+    printf '%s\n' main dev1 dev2 dev3 chat files write edit watch
+  elif (( count == 2 )); then
+    case "$position" in
+      1) printf '%s\n' main chat files write edit watch ;;
+      2) printf '%s\n' dev1 dev2 dev3 ;;
+    esac
+  else
+    case "$position" in
+      1) printf '%s\n' main chat files write edit watch ;;
+      2) printf '%s\n' dev1 dev2 ;;
+      3) printf '%s\n' dev3 ;;
+    esac
+  fi
+}
+
+space_indices_for_display() {
+  local display="$1"
+  spaces_json | jq -r --argjson display "$display" '
+    [.[] | select(.display == $display) | .index] | sort | .[]
+  '
+}
+
+create_space_on_display() {
+  local display="$1"
+
+  log "Creating space on display $display"
+  yabai -m display "$display" --focus >/dev/null 2>&1 || true
+  sleep 0.2
+  yabai -m space --create >/dev/null 2>&1 || return 1
+  sleep 0.5
+}
+
+ensure_space_count() {
+  local display="$1"
+  local required="$2"
+  local current attempts=0
+
+  current=$(space_indices_for_display "$display" | wc -l | tr -d ' ')
+  while (( current < required && attempts < 5 )); do
+    if ! create_space_on_display "$display"; then
+      log "WARNING: Could not create space on display $display"
+      break
+    fi
+    current=$(space_indices_for_display "$display" | wc -l | tr -d ' ')
+    attempts=$((attempts + 1))
   done
 
-  # Reorder spaces to match expected order
-  echo "Reordering spaces..."
-  for i in "${!SPACE_LABELS[@]}"; do
-    label="${SPACE_LABELS[i]}"
-    target_index=$((i + 1))  # indices are 1-based
+  if (( current < required )); then
+    log "WARNING: Display $display has $current spaces but wants $required labels"
+    return 1
+  fi
 
-    # Get current index of this labeled space
-    current_index=$(yabai -m query --spaces | jq -r ".[] | select(.label == \"$label\") | .index")
+  return 0
+}
 
-    if [[ "$current_index" != "$target_index" ]]; then
-      echo "Moving space '$label' from index $current_index to $target_index"
-      # Move space to correct position by swapping
-      yabai -m space "$label" --move "$target_index" 2>/dev/null || echo "Warning: Failed to reorder space '$label'"
+snapshot_windows() {
+  local label var count
+
+  log "Snapshotting windows by current labels..."
+  for label in "${SPACE_LABELS[@]}"; do
+    var="WINDOWS_${label}"
+    printf -v "$var" '%s' "$(windows_for_label "$label")"
+    count=$(printf '%s\n' "${!var}" | sed '/^$/d' | wc -l | tr -d ' ')
+    log "  $label: $count window(s)"
+  done
+}
+
+clear_expected_labels() {
+  local idx label tmp
+
+  log "Temporarily clearing managed labels..."
+  while IFS=$'\t' read -r idx label; do
+    [[ -z "$idx" ]] && continue
+    if is_expected_label "$label" || [[ "$label" == __repair_* ]]; then
+      tmp="__repair_${RUN_ID}_${idx}"
+      yabai -m space "$idx" --label "$tmp" >/dev/null 2>&1 || \
+        log "WARNING: Could not temporarily relabel space $idx"
+      sleep "$SETTLE_SHORT"
+    fi
+  done < <(spaces_json | jq -r '.[] | [.index, (.label // "")] | @tsv')
+
+  log "Waiting for label clearing to settle..."
+  sleep "$SETTLE_LONG"
+}
+
+assign_labels() {
+  local display="$1"
+  local position="$2"
+  local -a labels spaces
+  local i label idx max
+
+  mapfile -t labels < <(labels_for_display_position "$position" "$NUM_DISPLAYS")
+  (( ${#labels[@]} == 0 )) && return 0
+
+  ensure_space_count "$display" "${#labels[@]}" || true
+  mapfile -t spaces < <(space_indices_for_display "$display")
+
+  max=${#labels[@]}
+  (( ${#spaces[@]} < max )) && max=${#spaces[@]}
+
+  log "Assigning display $display labels: ${labels[*]}"
+  for (( i = 0; i < max; i++ )); do
+    label="${labels[$i]}"
+    idx="${spaces[$i]}"
+    log "  space $idx -> $label"
+    yabai -m space "$idx" --label "$label" >/dev/null 2>&1 || \
+      log "WARNING: Could not label space $idx as $label"
+    sleep "$SETTLE_SHORT"
+  done
+
+  log "Waiting for display $display label assignment to settle..."
+  sleep "$SETTLE_LONG"
+}
+
+move_windows_back() {
+  local label var windows window_id
+
+  log "Waiting before moving windows back..."
+  sleep "$SETTLE_LONG"
+
+  log "Moving windows back to their labels..."
+  for label in "${SPACE_LABELS[@]}"; do
+    var="WINDOWS_${label}"
+    windows="${!var:-}"
+    [[ -z "$windows" ]] && continue
+
+    while read -r window_id; do
+      [[ -z "$window_id" ]] && continue
+      yabai -m window "$window_id" --space "$label" >/dev/null 2>&1 || \
+        log "WARNING: Could not move window $window_id to $label"
+      sleep "$SETTLE_SHORT"
+    done <<< "$windows"
+  done
+
+  log "Waiting for window moves to settle..."
+  sleep "$SETTLE_LONG"
+}
+
+cleanup_empty_extras() {
+  local focused idx
+  local -a extras
+
+  focused=$(yabai -m query --spaces --space | jq -r '.index' 2>/dev/null || true)
+  mapfile -t extras < <(spaces_json | jq -r '
+    [.[] |
+      select(
+        (((.label // "") == "") or ((.label // "") | startswith("__repair_"))) and
+        ((.windows // []) | length == 0)
+      ) |
+      .index
+    ] | sort | reverse | .[]
+  ')
+
+  (( ${#extras[@]} == 0 )) && return 0
+
+  log "Cleaning empty unmanaged spaces: ${extras[*]}"
+  for idx in "${extras[@]}"; do
+    if [[ "$idx" == "$focused" ]]; then
+      yabai -m space --focus main >/dev/null 2>&1 || true
+      sleep 0.2
+    fi
+    yabai -m space "$idx" --destroy >/dev/null 2>&1 || \
+      log "WARNING: Could not destroy extra space $idx"
+  done
+}
+
+verify_labels() {
+  local label count ok=0
+
+  log "Final spaces:"
+  spaces_json | jq -r '.[] | "  Space \(.index): label=\"\(.label // "")\", display=\(.display), windows=\((.windows // []) | length)"'
+
+  for label in "${SPACE_LABELS[@]}"; do
+    count=$(space_count_for_label "$label")
+    if (( count != 1 )); then
+      log "WARNING: label '$label' count is $count"
+      ok=1
     fi
   done
 
-else
-  echo "Only 1, 2, or 3 display configurations supported (detected $NUM_DISPLAYS)"
-  exit 1
+  return "$ok"
+}
+
+log "Waiting for macOS display/space state to settle..."
+sleep 2
+
+mapfile -t ALL_DISPLAYS < <(displays_json | jq -r 'sort_by(.index) | .[].index')
+FOCUSED_DISPLAY=$(yabai -m query --displays --display | jq -r '.index // empty' 2>/dev/null || true)
+
+DISPLAYS=()
+if [[ -n "$FOCUSED_DISPLAY" ]]; then
+  DISPLAYS+=("$FOCUSED_DISPLAY")
 fi
 
-echo ""
-echo "=== Post-redistribution verification ==="
-
-# Verify all labeled spaces still exist after moving
-echo "Re-verifying all labeled spaces are present..."
-MISSING_AFTER=()
-for label in "${SPACE_LABELS[@]}"; do
-  if ! yabai -m query --spaces | jq -e ".[] | select(.label == \"$label\")" >/dev/null 2>&1; then
-    echo "  ✗ MISSING: Space '$label' disappeared after redistribution!"
-    MISSING_AFTER+=("$label")
-  else
-    echo "  ✓ Space '$label' still present"
-  fi
+for display in "${ALL_DISPLAYS[@]}"; do
+  [[ "$display" != "$FOCUSED_DISPLAY" ]] && DISPLAYS+=("$display")
 done
 
-if (( ${#MISSING_AFTER[@]} > 0 )); then
-  echo ""
-  echo "FATAL: ${#MISSING_AFTER[@]} labeled space(s) lost during redistribution: ${MISSING_AFTER[*]}"
-  echo "This should not happen. Aborting space destruction to prevent further data loss."
-  echo ""
-  echo "All current spaces:"
-  yabai -m query --spaces | jq -r '.[] | "  Space \(.index): label=\"\(.label // "NONE")\", display=\(.display)"'
+NUM_DISPLAYS=${#DISPLAYS[@]}
+
+if (( NUM_DISPLAYS < 1 )); then
+  log "ERROR: No displays detected"
+  notify "No displays detected"
   exit 1
 fi
 
-echo ""
-echo "=== Checking for unlabeled spaces ==="
-
-# Show all current spaces with their labels for debugging
-echo "Current spaces:"
-yabai -m query --spaces | jq -r '.[] | "  Space \(.index): label=\"\(.label // "NONE")\", display=\(.display)"'
-
-# Only destroy unlabeled spaces when on multiple displays
-# On single display, we just reordered - don't destroy anything
-if (( NUM_DISPLAYS >= 2 )); then
-  # Get spaces that don't have one of our expected labels
-  EXPECTED_LABELS="main|dev1|dev2|dev3|chat|files|write|edit|watch"
-
-  # Find unlabeled spaces (label is null, empty, or not in our expected list)
-  mapfile -t UNLABELED_SPACES < <(yabai -m query --spaces | jq -r --arg labels "$EXPECTED_LABELS" '
-    .[] |
-    select(
-      .label == null or
-      .label == "" or
-      (.label | test($labels) | not)
-    ) |
-    .index
-  ')
-
-  if (( ${#UNLABELED_SPACES[@]} > 0 )); then
-    echo ""
-    echo "Found ${#UNLABELED_SPACES[@]} unlabeled/unexpected space(s) to destroy: ${UNLABELED_SPACES[*]}"
-
-    # Get current focused space to avoid destroying it
-    FOCUSED_SPACE=$(yabai -m query --spaces --space | jq -r '.index')
-
-    for space_idx in "${UNLABELED_SPACES[@]}"; do
-      # If we're about to destroy the focused space, focus a labeled space first
-      if [[ "$space_idx" == "$FOCUSED_SPACE" ]]; then
-        echo "Focused space is being destroyed, switching to 'main' space"
-        yabai -m space --focus main
-        sleep 0.2  # Give focus time to change
-      fi
-
-      echo "Destroying unlabeled space $space_idx"
-      yabai -m space "$space_idx" --destroy 2>/dev/null || echo "Warning: Failed to destroy space $space_idx"
-    done
-  else
-    echo "No unlabeled spaces found ✓"
-  fi
-else
-  echo "Single display mode - skipping destruction (only reordered spaces)"
+if (( NUM_DISPLAYS > 3 )); then
+  log "WARNING: More than 3 displays detected; only first 3 are managed"
 fi
 
-echo "Display update complete"
+log "Detected $NUM_DISPLAYS display(s): ${ALL_DISPLAYS[*]}"
+log "Focused display: ${FOCUSED_DISPLAY:-unknown}"
+log "Logical display order: ${DISPLAYS[*]}"
 
-# Show notification
-osascript -e "display notification \"Redistributed 9 spaces across $NUM_DISPLAYS displays\" with title \"Display Update\" subtitle \"Complete\""
+snapshot_windows
+clear_expected_labels
+
+for i in "${!DISPLAYS[@]}"; do
+  position=$((i + 1))
+  (( position > 3 )) && continue
+  assign_labels "${DISPLAYS[$i]}" "$position"
+done
+
+move_windows_back
+cleanup_empty_extras
+
+if verify_labels; then
+  notify "Display update complete"
+  log "Display update complete"
+else
+  notify "Display update completed with warnings"
+  log "Display update completed with warnings"
+fi

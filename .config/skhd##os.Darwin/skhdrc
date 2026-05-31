@@ -16,12 +16,14 @@ cmd + lalt - e : emacsclient --eval '(emacs-everywhere)'
 cmd + shift - n : "${HOME}"/.config/emacs/bin/org-capture
 cmd - b : /Applications/Floorp.app/Contents/MacOS/floorp
 cmd + lctrl - s : /Applications/Slack.app/Contents/MacOS/Slack
+cmd + lctrl - t : /Applications/Microsoft\ Teams.app/Contents/MacOS/MSTeams
 cmd + lctrl - d : /Applications/Discord.app/Contents/MacOS/Discord
 
 # Dmenu (same as Linux)
 f13 d : "${HOME}"/.config/yabai/scripts/dmenu_launcher.sh
 f13 w g : "${HOME}"/.config/yabai/scripts/dmenu_focus.sh
 f13 w b : "${HOME}"/.config/yabai/scripts/dmenu_bring.sh
+f13 c : "${HOME}"/.config/yabai/scripts/dmenu_scripts.sh
 f13 p p : "${HOME}"/.config/yabai/scripts/dmenu_pass.sh
 f13 p s : "${HOME}"/.config/yabai/scripts/dmenu_ssh.sh
 # Dmenu (MBP keyboad fallbacks)

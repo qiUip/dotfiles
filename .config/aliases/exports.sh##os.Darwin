@@ -14,10 +14,18 @@ source $(brew --prefix)/opt/chruby/share/chruby/chruby.sh
 source $(brew --prefix)/opt/chruby/share/chruby/auto.sh
 chruby ruby-3.4.1
 
-# nvm
+# nvm lazy load
 export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+load_nvm() {
+  unset -f nvm node npm npx
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"
+}
+
+nvm()  { load_nvm; nvm "$@"; }
+node() { load_nvm; node "$@"; }
+npm()  { load_nvm; npm "$@"; }
+npx()  { load_nvm; npx "$@"; }
 
 # bun
 [ -s "/Users/mashy/.bun/_bun" ] && source "/Users/mashy/.bun/_bun"
